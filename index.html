@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="xjs.js"></script>
+    <script src="xjsSelect.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- <button id="btn">DoThings</button><div id="output"></div>
+    <div id="app" style="position: absolute; left: 100px; top: 100px; width: 100px; height: 100px; background-color: red"></div> -->
+
+    <xjs-select id="select" options='[{"value": "1", "textContent": "uno"}, {"value": "2", "textContent": "dos"}, {"value": "3", "textContent": "tres"}]' 
+    style="background-color: rgb(213, 171, 230);" width="200px" arrow-color="green"></xjs-select>
+</body>
+
+</html>
+<script>
+    xjs.withnew(xjs.xjselements.xjsSelect, "select2").appendTo(document.body);
+
+    xjs.withnew("button").setProperty("id", "btn").setProperty("innerHTML", "DoThings").bindEvent("click", doThings).appendTo(document.body);
+
+    xjs.withnew("div").setProperty("id", "output").appendTo(document.body);
+
+    xjs.withnew("div").setProperty("id", "app").setStyle({ position: "absolute", left: "100px", top: "100px", width: "100px", height: "100px", backgroundColor: "red" }).appendTo(document.body);
+
+    var index = 0;
+    function doThings() {
+        switch (index) {
+            case 0:
+                document.getElm("output").innerHTML = document.getElm("app").style.leftPos();
+                //setProperty("output", "innerHTML", getStyle("app", "left"));
+                index++;
+                break;
+            case 1:
+                document.getElm("app").style.leftPos("200");
+                setProperty("output", "innerHTML", getStyleProperty("app", "left"));
+                /* three ways to set attributes */
+                /* xjs.with("select").setAttribute("arrow-color", "magenta").setAttribute("width", "150px"); */
+                xjs.with("select").setAttributes({"arrow-color":"magenta", "width":"150px"});
+                /* xjs.with("select").setAttributes([["arrow-color","magenta"], ["width","150px"]]); */
+                index++;
+                break;
+            case 2:
+                /* four ways to set positions */
+                //document.getElementById("app").style.lef="80em";
+                //document.getElementById("app").style.top="250pt";
+
+                //document.getElm("app").left("80em");
+                //document.getElm("app").top("250pt");
+
+                // leftPos and topPos admit integers and strings. Integers are treated as pixels.
+                //document.getElementById("app").style.leftPos("80em");
+                //document.getElementById("app").style.topPos("250pt");
+
+                // pos admit integers and strings. Integers are treated as pixels.
+                xjs.with("app").pos("80em", "250pt");
+
+                setProperty("output", "innerHTML", getStyleProperty("app", "left"));
+                index++;
+                break;
+            case 3:
+                let newdiv = xjs.withnew(xjs.htmlElements.panel, "newdiv").setStyle({ left: "10px", top: "50px", width: "10px", height: "10px", backgroundColor: "blue" });
+                document.getElm("app").appendChild(newdiv);
+                /* let newInputText = xjs.withnew(xjs.htmlElements.inputText).setProperties({ "id": "textinput", "size": "8", "value": "Hello World" }).appendTo(xjs.getElm("app")); */
+                let newInputText = xjs.withnew(xjs.htmlElements.inputText, "textinput", "textinput", "Hello World").setAttribute("size", "8").appendTo(xjs.getElm("app"));
+                xjs.register("myinputpanel", xjs.getElm("app"));
+                index++;
+                break;
+            case 4:
+                xjs.with("app").pos(100, 100);
+                //setProperty("output", "innerHTML", getStyleProperty("app", "left"));
+                xjs.with("newdiv").setStyleProperty("backgroundColor", "green");
+                xjs.with("output").setProperty("innerHTML", getStyleProperty("app", "left"));
+                xjs.with("app").delChilds("textinput", xjs.getElm("newdiv"));
+
+                xjs.with(xjs.getComponent("myinputpanel")).setStyleProperty("background-color", "rgb("+xjs.randomInt(255)+", "+xjs.random(255)+", "+xjs.random(255)+")").pos(xjs.random(10, 1500), xjs.random(500, 1000)).appendTo(document.body);
+                index = 0;
+                break;
+            default:
+                break;
+        }
+    }
+
+</script>

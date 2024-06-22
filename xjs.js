@@ -1,12 +1,6 @@
-/* 
-my old bind version
-Function.prototype.addEvent = function (method, ...args) {
-    var instance = this;
-    return function (event) {
-        instance.call(method, event || window.event, ...args);
-    }
-} */
-
+/*
+    xjs
+*/
 Node.prototype.appendTo = function (node) {
     node.appendChild(this);
     return this;

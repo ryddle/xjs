@@ -13,7 +13,7 @@
     <div id="app" style="position: absolute; left: 100px; top: 100px; width: 100px; height: 100px; background-color: red"></div> -->
 
     <xjs-select id="select" options='[{"value": "1", "textContent": "uno"}, {"value": "2", "textContent": "dos"}, {"value": "3", "textContent": "tres"}]' 
-    style="background-color: rgb(213, 171, 230);" width="200px" arrow-color="green"></xjs-select>
+    style="background-color: rgb(173, 233, 181);" width="200px" arrow-color="green"></xjs-select>
 </body>
 
 </html>
@@ -25,6 +25,9 @@
     xjs.withnew("div").setProperty("id", "output").appendTo(document.body);
 
     xjs.withnew("div").setProperty("id", "app").setStyle({ position: "absolute", left: "100px", top: "100px", width: "100px", height: "100px", backgroundColor: "red" }).appendTo(document.body);
+
+    xjs.withnew("div").setProperty("id", "message1").setStyle({ position: "absolute", left: "400px", top: "10px", width: "400px", height: "100px"}).appendTo(document.body);
+    xjs.withnew("div").setProperty("id", "message2").setStyle({ position: "absolute", left: "900px", top: "10px", width: "250px", height: "100px"}).appendTo(document.body);
 
     var index = 0;
     function doThings() {
@@ -39,7 +42,7 @@
                 setProperty("output", "innerHTML", getStyleProperty("app", "left"));
                 /* three ways to set attributes */
                 /* xjs.with("select").setAttribute("arrow-color", "magenta").setAttribute("width", "150px"); */
-                xjs.with("select").setAttributes({"arrow-color":"magenta", "width":"150px"});
+                xjs.with("select").setAttributes({"arrow-color":"magenta", "width":"150px"}).setStyleProperty("background-color","rgb(251,173,251)");
                 /* xjs.with("select").setAttributes([["arrow-color","magenta"], ["width","150px"]]); */
                 index++;
                 break;
@@ -84,4 +87,25 @@
         }
     }
 
+    class TimeTask {
+        constructor(id, elm) {
+            this.id = id;
+            this.elm = elm;
+        }
+
+        showMessage() {
+            xjs.with(this.elm).setProperty("innerHTML","Hello World from " + this.id);
+        }
+
+        showDate() {
+            xjs.with(this.elm).setProperty("innerHTML","Date from " + this.id + ": " + xjs.formatDate("dd/MM/yyyy hh:mm:ss", new Date()));
+        }
+    }
+
+    var timeTask1 = new TimeTask("task1", xjs.getElm("message1"));
+    var timeTask2 = new TimeTask("task2", xjs.getElm("message2"));
+
+    xjs.registerTimer("timer1", timeTask1, timeTask1.showDate, 1000, timeTask1);
+
+    xjs.timeOut(timeTask2.showMessage, 5500, timeTask2);
 </script>

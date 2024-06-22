@@ -321,6 +321,24 @@ class _xjs {
     }
 
     //// Function ////
+    #timers = {};
+    registerTimer(name, object,callback, interval, ...args) {
+        this.#timers[name] = setInterval(callback.bind(object, ...args), interval);
+    }
+
+    unregisterTimer(name) {
+        clearInterval(this.#timers[name]);
+        delete this.#timers[name];
+    }
+
+    timeOut(callback, time, object, ...args) {
+        if (object !== undefined) {
+            setTimeout(callback.bind(object, ...args), time);
+        } else {
+            setTimeout(callback, time);
+        }
+    }
+    
     lazy(creator) {
         let res;
         let processed = false;

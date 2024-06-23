@@ -270,6 +270,37 @@ String.prototype.fromBase64 = function () {
 }
 
 //////////////////////////////////////////////////////////////////////////////
+// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+
+// requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
+
+// MIT license
+
+/* (function() {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] 
+                                   || window[vendors[x]+'CancelRequestAnimationFrame'];
+    }
+ 
+    if (!window.requestAnimationFrame)
+        window.requestAnimationFrame = function(callback, element) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+              timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+ 
+    if (!window.cancelAnimationFrame)
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+}()); */
 
 const setProperty = function (id, property, value) {
     document.getElementById(id)[property] = value;
@@ -316,7 +347,7 @@ class _xjs {
 
     //// Function ////
     #timers = {};
-    registerTimer(name, object,callback, interval, ...args) {
+    registerTimer(name, object, callback, interval, ...args) {
         this.#timers[name] = setInterval(callback.bind(object, ...args), interval);
     }
 
@@ -332,7 +363,7 @@ class _xjs {
             setTimeout(callback, time);
         }
     }
-    
+
     lazy(creator) {
         let res;
         let processed = false;
@@ -343,6 +374,108 @@ class _xjs {
             return res;
         };
     };
+
+    //// Animation ////
+    get easeTypes() {
+        return {
+            linear: "linear",
+            ease: "ease",
+            easeIn: "easeIn",
+            easeOut: "easeOut",
+            easeInOut: "easeInOut",
+            easeInElastic: "easeInElastic",
+            easeOutElastic: "easeOutElastic",
+        }
+    };
+
+    #easeFunctions = {
+        linear: this.easeLinear,
+        ease: this.easeInOutQuad,
+        easeIn: this.easeInQuad,
+        easeOut: this.easeOutQuad,
+        easeInOut: this.easeInOutQuad,
+        easeInElastic: this.easeInElastic,
+        easeOutElastic: this.easeOutElastic
+    };
+
+    async animate(elements, styles, time, callback) {
+        return Promise.all([
+            this.#animateElements(elements, styles, time)
+        ]).then(() => {
+            console.log('Animations completed');
+            if (callback) callback();
+        });
+    }
+    #animationStyleGroups = {
+        pixels: ["top", "left", "right", "bottom", "width", "height", "margin", "padding", "borderRadius", "borderWidth", "fontSize"],
+        opacity: ["opacity"],
+        colors: ["backgroundColor", "color", "borderColor", "outlineColor", "fontColor"],
+    };
+    #animateElements(elements, styles, duration) {
+        const promises = [];
+
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            const style = styles[i];
+            const _self = this;
+            const promise = new Promise((resolve) => {
+                const start = performance.now();
+
+                function animate(currentTime) {
+                    const elapsedTime = currentTime - start;
+
+                    if (elapsedTime < duration) {;
+                        Object.keys(style).forEach((prop) => {
+                            if (_self.#animationStyleGroups.pixels.includes(prop)) {
+                                const startValue = parseFloat(style[prop].start) || 0;
+                                const endValue = parseFloat(style[prop].end) || 0;
+                                const change = endValue - startValue;
+                                const ease = style[prop].ease || "linear";
+                                element.style[prop] = _self.#easeFunctions[ease](elapsedTime/1000, startValue, change, duration/1000) + 'px';
+                            }
+                            if (_self.#animationStyleGroups.opacity.includes(prop)) {
+                                const startValue = parseFloat(style[prop].start) || 0;
+                                const endValue = parseFloat(style[prop].end) || 0;
+                                const change = endValue - startValue;
+                                const ease = style[prop].ease || "linear";
+                                element.style[prop] = _self.#easeFunctions[ease](elapsedTime/1000, startValue, change, duration/1000);
+                            }
+                            if (_self.#animationStyleGroups.colors.includes(prop)) {
+                                const startRgba = _self.#hexaToRgbaArray(style[prop].start);
+                                const endRgba = _self.#hexaToRgbaArray(style[prop].end);
+                                const changeRgba = [endRgba[0] - startRgba[0], endRgba[1] - startRgba[1], endRgba[2] - startRgba[2], endRgba[3] - startRgba[3]];
+                                let progress = [];
+                                changeRgba.forEach((value, index) => {
+                                    progress[index] = (elapsedTime / duration) * value;
+                                });
+                                element.style[prop] = `rgba(${startRgba[0] + progress[0]}, ${startRgba[1] + progress[1]}, ${startRgba[2] + progress[2]}, ${startRgba[3] + progress[3]})`;
+                            }
+                        });
+                        requestAnimationFrame(animate);
+                    } else {
+                        Object.keys(style).forEach((prop) => {
+                            if (_self.#animationStyleGroups.pixels.includes(prop)) {
+                            element.style[prop] = style[prop].end + 'px';
+                            }
+                            if (_self.#animationStyleGroups.opacity.includes(prop)) {
+                                element.style[prop] = style[prop].end;
+                            }
+                            if (_self.#animationStyleGroups.colors.includes(prop)) {
+                                element.style[prop] = style[prop].end;
+                            }
+                        });
+                        resolve();
+                    }
+                }
+
+                requestAnimationFrame(animate);
+            });
+
+            promises.push(promise);
+        }
+
+        return Promise.all(promises);
+    }
 
     //// Property ////
     getProperty(id, property) {
@@ -404,8 +537,95 @@ class _xjs {
         this.clamp((a - x) / (y - x));
     }
 
-    range(x1, y1, x2, y2, a) {
-        this.lerp(x2, y2, this.invlerp(x1, y1, a));
+    easeLinear(t, b, c, d) {
+        return c * t / d + b;
+    }
+
+    easeInQuad(t, b, c, d) {
+        return c * (t /= d) * t + b;
+    }
+
+    easeOutQuad(t, b, c, d) {
+        return -c * (t /= d) * (t - 2) + b;
+    }
+
+    easeInOutQuad(t, b, c, d) {
+        if ((t /= d / 2) < 1) return c / 2 * t * t + b;
+        return -c / 2 * ((--t) * (t - 2) - 1) + b;
+    }
+
+    easeInSine(t, b, c, d) {
+        return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;
+    }
+
+    easeOutSine(t, b, c, d) {
+        return c * Math.sin(t / d * (Math.PI / 2)) + b;
+    }
+
+    easeInExpo(t, b, c, d) {
+        return (t == 0) ? b : c * Math.pow(2, 10 * (t / d - 1)) + b;
+    }
+
+    easeOutExpo(t, b, c, d) {
+        return (t == d) ? b + c : c * (-Math.pow(2, -10 * t / d) + 1) + b;
+    }
+
+    easeInOutExpo(t, b, c, d) {
+        if (t == 0) return b;
+        if (t == d) return b + c;
+        if ((t /= d / 2) < 1) return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
+        return c / 2 * (-Math.pow(2, -10 * --t) + 2) + b;
+    }
+
+    easeInCirc(t, b, c, d) {
+        return -c * (Math.sqrt(1 - (t /= d) * t) - 1) + b;
+    }
+
+    easeOutCirc(t, b, c, d) {
+        return c * Math.sqrt(1 - (t = t / d - 1) * t) + b;
+    }
+
+    easeInOutCirc(t, b, c, d) {
+        if ((t /= d / 2) < 1) return -c / 2 * (Math.sqrt(1 - t * t) - 1) + b;
+        return c / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1) + b;
+    }
+
+    easeInCubic(t, b, c, d) {
+        return c * (t /= d) * t * t + b;
+    }
+
+    easeOutCubic(t, b, c, d) {
+        return c * ((t = t / d - 1) * t * t + 1) + b;
+    }
+
+    easeInElastic (t, b, c, d) {
+        var s = 1.70158;
+        var p = 0;
+        var a = c;
+        if (t == 0) return b;
+        if ((t /= d) == 1) return b + c;
+        if (!p) p = d * .3;
+        if (a < Math.abs(c)) {
+            a = c;
+            var s = p / 4;
+        }
+        else var s = p / (2 * Math.PI) * Math.asin(c / a);
+        return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / p)) + b;
+    }
+
+    easeOutElastic (t, b, c, d) {
+        var s = 1.70158;
+        var p = 0;
+        var a = c;
+        if (t == 0) return b;
+        if ((t /= d) == 1) return b + c;
+        if (!p) p = d * .3;
+        if (a < Math.abs(c)) {
+            a = c;
+            var s = p / 4;
+        }
+        else var s = p / (2 * Math.PI) * Math.asin(c / a);
+        return a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p) + c + b;
     }
 
     sigmoid(x) {
@@ -414,6 +634,10 @@ class _xjs {
 
     logistic(x, start, end) {
         return start + (end - start) * this.sigmoid((x - start) / (end - start));
+    }
+
+    range(x1, y1, x2, y2, a) {
+        this.lerp(x2, y2, this.invlerp(x1, y1, a));
     }
 
     distance(x1, y1, x2, y2) {
@@ -459,6 +683,15 @@ class _xjs {
         // If array length is even, return the average of the two middle elements.
         const mid = values.length / 2;
         return (values[mid - 1] + values[mid]) / 2;
+    }
+
+    //// Color ////
+    #hexaToRgbaArray(hexa) {
+        const r = parseInt(hexa.slice(1, 3), 16);
+        const g = parseInt(hexa.slice(3, 5), 16);
+        const b = parseInt(hexa.slice(5, 7), 16);
+        const a = (hexa.length === 9)?parseInt(hexa.slice(7, 9), 16) / 255:1;
+        return [r, g, b, a];
     }
 
     //// Date ////

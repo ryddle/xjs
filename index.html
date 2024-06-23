@@ -29,6 +29,8 @@
     xjs.withnew("div").setProperty("id", "message1").setStyle({ position: "absolute", left: "400px", top: "10px", width: "400px", height: "100px"}).appendTo(document.body);
     xjs.withnew("div").setProperty("id", "message2").setStyle({ position: "absolute", left: "900px", top: "10px", width: "250px", height: "100px"}).appendTo(document.body);
 
+    xjs.withnew("div").setProperty("id", "app2").setStyle({ position: "absolute", left: "100px", top: "400px", width: "100px", height: "100px", backgroundColor: "blue" }).appendTo(document.body);
+
     var index = 0;
     function doThings() {
         switch (index) {
@@ -59,7 +61,23 @@
                 //document.getElementById("app").style.topPos("250pt");
 
                 // pos admit integers and strings. Integers are treated as pixels.
-                xjs.with("app").pos("80em", "250pt");
+                //xjs.with("app").pos("80em", "250pt");
+
+
+                xjs.animate([xjs.with("app")], [{ 
+                    top: { start: 100, end: 250, ease: xjs.easeTypes.easeOutElastic }, 
+                    left: { start: 200, end: 900, ease: xjs.easeTypes.easeOutElastic }, 
+                    width: { start: 100, end: 200, ease: xjs.easeTypes.easeInOut },
+                    backgroundColor: { start: '#ff0000', end: '#00ffff', ease: xjs.easeTypes.easeOut } }], 500);
+
+                xjs.animate([xjs.with("app2")], [{
+                    top: { start: 400, end: 200, ease: xjs.easeTypes.easeInOut },
+                    left: { start: 100, end: 100, ease: xjs.easeTypes.easeInOut },
+                    opacity: { start: 1, end: 0.1, ease: xjs.easeTypes.easeInOut },
+                    backgroundColor: { start: '#0000ff', end: '#00ffff', ease: xjs.easeTypes.easeIn } }], 500);
+
+                //xjs.animate( xjs.with("app"), "left", "900px", 1000, xjs.easeTypes.easeInOut);
+                //xjs.animate( xjs.with("app"), "top", "250px", 1000, xjs.easeTypes.easeInOut);
 
                 setProperty("output", "innerHTML", getStyleProperty("app", "left"));
                 index++;
@@ -73,10 +91,24 @@
                 index++;
                 break;
             case 4:
-                xjs.with("app").pos(100, 100);
+                //xjs.with("app").pos(100, 100);
+                xjs.animate([xjs.with("app")], [{ 
+                    top: { start: 250, end: 100, ease: xjs.easeTypes.easeInOut }, 
+                    left: { start: 900, end: 100, ease: xjs.easeTypes.easeInOut },
+                    width: { start: 200, end: 100, ease: xjs.easeTypes.easeInOut },
+                    backgroundColor: { start: '#00ffff', end: '#ff0000', ease: xjs.easeTypes.easeIn } }], 1000)
+                .then(() => {
+                    xjs.with("output").setProperty("innerHTML", getStyleProperty("app", "left"));
+                });
+                
+                xjs.animate([xjs.with("app2")], [{
+                    top: { start: 200, end: 400, ease: xjs.easeTypes.easeInOut },
+                    left: { start: 100, end: 100, ease: xjs.easeTypes.easeInOut },
+                    opacity: { start: 0.1, end: 1, ease: xjs.easeTypes.easeInOut },
+                    backgroundColor: { start: '#00ffff', end: '#0000ff', ease: xjs.easeTypes.easeIn } }], 1000);
+
                 //setProperty("output", "innerHTML", getStyleProperty("app", "left"));
                 xjs.with("newdiv").setStyleProperty("backgroundColor", "green");
-                xjs.with("output").setProperty("innerHTML", getStyleProperty("app", "left"));
                 xjs.with("app").delChilds("textinput", xjs.getElm("newdiv"));
 
                 xjs.with(xjs.getComponent("myinputpanel")).setStyleProperty("background-color", "rgb("+xjs.randomInt(255)+", "+xjs.random(255)+", "+xjs.random(255)+")").pos(xjs.random(10, 1500), xjs.random(500, 1000)).appendTo(document.body);

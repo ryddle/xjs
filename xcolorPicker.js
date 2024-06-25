@@ -106,7 +106,7 @@ class xcolorPicker {
             let inputColorElmLabel = xjs.getComponent("inputColorElmLabel").setAttribute("for", id).setText(label);
             let inputColorElm = xjs.getComponent("inputColorElm")
                 .setStyle(params.style)
-                .setAttributes({"type": type,"id": id, "value": value, "min": params.min || "0", "max": params.max || "100" });
+                .setAttributes({ "type": type, "id": id, "value": value, "min": params.min || "0", "max": params.max || "100" });
             return { form: xjs.getComponent("inputColorElmForm"), label: inputColorElmLabel, input: inputColorElm };
         }
     }
@@ -122,31 +122,39 @@ class xcolorPicker {
     }
 
     #createCircle(left, top) {
-        let _circleOut = xjs.withnew(xjs.htmlElements.panel)
-            .setStyle({
-                border: '2px solid #444',
-                borderRadius: '13px',
-                willChange: 'transform',
-                top: top + 'px',
-                left: left + 'px',
-                width: '24px',
-                height: '24px',
-                overflow: 'visible'
-            });
+        if (!xjs.hasComponent("circleOut")) {
+            let _circleOut = xjs.withnew(xjs.htmlElements.panel)
+                .setStyle({
+                    border: '2px solid #444',
+                    borderRadius: '13px',
+                    willChange: 'transform',
+                    top: top + 'px',
+                    left: left + 'px',
+                    width: '24px',
+                    height: '24px',
+                    overflow: 'visible'
+                });
 
-        xjs.withnew(xjs.htmlElements.panel)
-            .setStyle({
-                border: '2px solid rgb(255, 255, 255)',
-                borderRadius: '12px',
-                top: '0px',
-                left: '0px',
-                width: '20px',
-                height: '20px',
-                overflow: 'visible'
-            })
-            .appendTo(_circleOut);
+            xjs.withnew(xjs.htmlElements.panel)
+                .setStyle({
+                    border: '2px solid rgb(255, 255, 255)',
+                    borderRadius: '12px',
+                    top: '0px',
+                    left: '0px',
+                    width: '20px',
+                    height: '20px',
+                    overflow: 'visible'
+                })
+                .appendTo(_circleOut);
 
-        return _circleOut;
+            xjs.registerComponent("circleOut", _circleOut);
+
+            return _circleOut;
+        } else {
+            let _circleOut = xjs.getComponent("circleOut");
+            _circleOut.pos(left, top);
+            return _circleOut;
+        }
     }
 
     #createCopyButton(copyElm) {
@@ -162,7 +170,7 @@ class xcolorPicker {
 
     #createFormPanel() {
         /// form panel
-        let _formPanel = document.createElement("div")
+        let _formPanel = xjs.withnew(xjs.htmlElements.div)
             .setStyle({
                 padding: '5px',
                 float: "right",
@@ -200,12 +208,12 @@ class xcolorPicker {
         this.rgbRedForm = _rgbRedForm.form;
         this.rgbRedLabel = _rgbRedForm.label;
         this.rgbRedInput = _rgbRedForm.input;
-        this.rgbRedInput.onchange = function () {
-            _self.color = xcolor.getRgb(this.value, _self.color.rgb.g, _self.color.rgb.b);
-            _self.rgbWheelPanel.style.backgroundColor = _self.color.getRgbString();
-            _self.#updateRgbForm();
-            _self.#updateRgbPickers();
-        };
+        this.rgbRedInput.bindEvent("change", function () {
+            this.color = xcolor.getRgb(this.value, this.color.rgb.g, this.color.rgb.b);
+            this.rgbWheelPanel.style.backgroundColor = this.color.getRgbString();
+            this.#updateRgbForm();
+            this.#updateRgbPickers();
+        }, this);
         this.rgbRedForm.appendChild(this.rgbRedLabel);
         this.rgbRedForm.appendChild(this.rgbRedInput);
         // green
@@ -856,7 +864,8 @@ class xcolorPicker {
             this.isDragging = true;
             this.initialPosition = { x: this.left(), y: this.top() };
             this.initDragPosition = { x: e.clientX, y: e.clientY };
-        }).bindEvent("mousemove", function (e) {
+        }).appendTo(this.rgbHueSlider01);
+        this.rgbHueSlider01.bindEvent("mousemove", function (e) {
             let me = e.target;
             if (me.isDragging) {
                 let newleft = (e.clientX > me.initDragPosition.x) ? me.initialPosition.x + (e.clientX - me.initDragPosition.x) : me.initialPosition.x - (me.initDragPosition.x - e.clientX);
@@ -869,11 +878,11 @@ class xcolorPicker {
                 this.#updateRgbPickers();
             }
         }, this)
-            .bindEvent("mouseup", function (e) {
-                this.isDragging = false;
-                this.initialPosition = { x: this.left(), y: this.top() };
-            })
-            .appendTo(this.rgbHueSlider01);
+        .bindEvent("mouseup", function (e) {
+            this.isDragging = false;
+            this.initialPosition = { x: this.left(), y: this.top() };
+        }, this.rgbHueSliderCircleOut);
+        
 
         this.rgbWheelPanelContainer.appendChild(this.rgbHueSlider01);
 
@@ -936,8 +945,8 @@ class xcolorPicker {
             this.isDragging = true;
             this.initialPosition = { x: this.left(), y: this.top() };
             this.initDragPosition = { x: e.clientX, y: e.clientY };
-        })
-            .bindEvent("mousemove", function (e) {
+        }).appendTo(this.rgbLightSlider01);
+        this.rgbLightSlider01.bindEvent("mousemove", function (e) {
                 let me = e.target;
                 if (me.isDragging) {
                     let newleft = (e.clientX > me.initDragPosition.x) ? me.initialPosition.x + (e.clientX - me.initDragPosition.x) : me.initialPosition.x - (me.initDragPosition.x - e.clientX);
@@ -952,8 +961,8 @@ class xcolorPicker {
             .bindEvent("mouseup", function (e) {
                 this.isDragging = false;
                 this.initialPosition = { x: this.left(), y: this.top() };
-            })
-            .appendTo(this.rgbLightSlider01);
+            }, this.rgbLightSliderCircleOut);
+            
 
         this.rgbWheelPanelContainer.appendChild(this.rgbLightSlider01);
         /////////////////////////////////////////////////////
@@ -1078,8 +1087,8 @@ class xcolorPicker {
                 this.isDragging = true;
                 this.initialPosition = { x: this.left(), y: this.top() };
                 this.initDragPosition = { x: e.clientX, y: e.clientY };
-            })
-            .bindEvent("mousemove", function (e) {
+            }).appendTo(this.hslHueSlider01);
+        this.hslHueSlider01.bindEvent("mousemove", function (e) {
                 let me = e.target;
                 if (me.isDragging) {
                     let newleft = (e.clientX > me.initDragPosition.x) ? me.initialPosition.x + (e.clientX - me.initDragPosition.x) : me.initialPosition.x - (me.initDragPosition.x - e.clientX);
@@ -1094,8 +1103,7 @@ class xcolorPicker {
             .bindEvent("mouseup", function (e) {
                 this.isDragging = false;
                 this.initialPosition = { x: this.left(), y: this.top() };
-            })
-            .appendTo(this.hslHueSlider01);
+            }, this.hslHueSliderCircleOut);
 
         this.hslWheelPanelContainer.appendChild(this.hslHueSlider01);
 
@@ -1121,8 +1129,8 @@ class xcolorPicker {
                 this.isDragging = true;
                 this.initialPosition = { x: this.left(), y: this.top() };
                 this.initDragPosition = { x: e.clientX, y: e.clientY };
-            })
-            .bindEvent("mousemove", function (e) {
+            }).appendTo(this.hslSaturationSlider01);
+        this.hslSaturationSlider01.bindEvent("mousemove", function (e) {
                 let me = e.target;
                 if (me.isDragging) {
                     let newleft = (e.clientX > me.initDragPosition.x) ? me.initialPosition.x + (e.clientX - me.initDragPosition.x) : me.initialPosition.x - (me.initDragPosition.x - e.clientX);
@@ -1137,8 +1145,7 @@ class xcolorPicker {
             .bindEvent("mouseup", function (e) {
                 this.isDragging = false;
                 this.initialPosition = { x: this.left(), y: this.top() };
-            })
-            .appendTo(this.hslSaturationSlider01);
+            }, this.hslSaturationSliderCircleOut);
 
         this.hslWheelPanelContainer.appendChild(this.hslSaturationSlider01);
 
@@ -1164,8 +1171,8 @@ class xcolorPicker {
                 this.isDragging = true;
                 this.initialPosition = { x: this.left(), y: this.top() };
                 this.initDragPosition = { x: e.clientX, y: e.clientY };
-            })
-            .bindEvent("mousemove", function (e) {
+            }).appendTo(this.hslLightnessSlider01);
+        this.hslLightnessSlider01.bindEvent("mousemove", function (e) {
                 let me = e.target;
                 if (me.isDragging) {
                     let newleft = (e.clientX > me.initDragPosition.x) ? me.initialPosition.x + (e.clientX - me.initDragPosition.x) : me.initialPosition.x - (me.initDragPosition.x - e.clientX);
@@ -1180,8 +1187,7 @@ class xcolorPicker {
             .bindEvent("mouseup", function (e) {
                 this.isDragging = false;
                 this.initialPosition = { x: this.left(), y: this.top() };
-            })
-            .appendTo(this.hslLightnessSlider01);
+            }, this.hslLightnessSliderCircleOut);
 
         this.hslWheelPanelContainer.appendChild(this.hslLightnessSlider01);
         /////////////////////////////////////////////////////
@@ -1307,8 +1313,8 @@ class xcolorPicker {
             this.isDragging = true;
             this.initialPosition = { x: this.left(), y: this.top() };
             this.initDragPosition = { x: e.clientX, y: e.clientY };
-        })
-            .bindEvent("mousemove", function (e) {
+        }).appendTo(this.hsbHueSlider01);
+        this.hsbHueSlider01.bindEvent("mousemove", function (e) {
                 let me = e.target;
                 if (me.isDragging) {
                     let newleft = (e.clientX > me.initDragPosition.x) ? me.initialPosition.x + (e.clientX - me.initDragPosition.x) : me.initialPosition.x - (me.initDragPosition.x - e.clientX);
@@ -1323,8 +1329,7 @@ class xcolorPicker {
             .bindEvent("mouseup", function (e) {
                 this.isDragging = false;
                 this.initialPosition = { x: this.left(), y: this.top() };
-            })
-            .appendTo(this.hsbHueSlider01);
+            }, this.hsbHueSliderCircleOut);
 
         this.hsbWheelPanelContainer.appendChild(this.hsbHueSlider01);
 
@@ -1341,17 +1346,17 @@ class xcolorPicker {
             this.#updateHsbForm();
             this.#updateHsbPickers();
         }, this)
-            .appendTo(this.hsbSaturationSlider01);
+        .appendTo(this.hsbSaturationSlider01);
 
         this.hsbSaturationSliderCircleOut = this.#createCircle(315, 8);
         this.hsbSaturationSliderCircleOut.bindEvent("mousedown", function (e) {
             this.isDragging = true;
             this.initialPosition = { x: this.left(), y: this.top() };
             this.initDragPosition = { x: e.clientX, y: e.clientY };
-        })
-            .bindEvent("mousemove", function (e) {
+        }).appendTo(this.hsbSaturationSlider01);
+        this.hsbSaturationSlider01.bindEvent("mousemove", function (e) {
                 let me = e.target;
-                if (this.isDragging) {
+                if (me.isDragging) {
                     let newleft = (e.clientX > me.initDragPosition.x) ? me.initialPosition.x + (e.clientX - me.initDragPosition.x) : me.initialPosition.x - (me.initDragPosition.x - e.clientX);
                     newleft = Math.max(8, Math.min(315, newleft));
                     me.left(newleft);
@@ -1364,8 +1369,7 @@ class xcolorPicker {
             .bindEvent("mouseup", function (e) {
                 this.isDragging = false;
                 this.initialPosition = { x: this.left(), y: this.top() };
-            })
-            .appendTo(this.hsbSaturationSlider01);
+            }, this.hsbSaturationSliderCircleOut);
 
         this.hsbWheelPanelContainer.appendChild(this.hsbSaturationSlider01);
 
@@ -1382,17 +1386,17 @@ class xcolorPicker {
             this.#updateHsbForm();
             this.#updateHsbPickers();
         }, this)
-            .appendTo(this.hsbBrightnessSlider01);
+        .appendTo(this.hsbBrightnessSlider01);
 
         this.hsbBrightnessSliderCircleOut = this.#createCircle(315, 8);
         this.hsbBrightnessSliderCircleOut.bindEvent("mousedown", function (e) {
             this.isDragging = true;
             this.initialPosition = { x: this.left(), y: this.top() };
             this.initDragPosition = { x: e.clientX, y: e.clientY };
-        })
-            .bindEvent("mousemove", function (e) {
+        }).appendTo(this.hsbBrightnessSlider01);
+        this.hsbBrightnessSlider01.bindEvent("mousemove", function (e) {
                 let me = e.target;
-                if (this.isDragging) {
+                if (me.isDragging) {
                     let newleft = (e.clientX > me.initDragPosition.x) ? me.initialPosition.x + (e.clientX - me.initDragPosition.x) : me.initialPosition.x - (me.initDragPosition.x - e.clientX);
                     newleft = Math.max(8, Math.min(315, newleft));
                     me.left(newleft);
@@ -1405,8 +1409,7 @@ class xcolorPicker {
             .bindEvent("mouseup", function (e) {
                 this.isDragging = false;
                 this.initialPosition = { x: this.left(), y: this.top() };
-            })
-            .appendTo(this.hsbBrightnessSlider01);
+            }, this.hsbBrightnessSliderCircleOut);
 
         this.hsbWheelPanelContainer.appendChild(this.hsbBrightnessSlider01);
         /////////////////////////////////////////////////////
@@ -1615,7 +1618,7 @@ class xcolorPicker {
                     this.#updateHsbPickers();
                 }, this);
 
-            let htmlBoxColor = xjs.withnew(xjs.htmlElements.div)
+            xjs.withnew(xjs.htmlElements.div)
                 .setClass("htmlListBoxColor")
                 .setStyle({
                     backgroundColor: xhtmlColors[(Object.keys(xhtmlColors)[i])],
@@ -1625,7 +1628,7 @@ class xcolorPicker {
                 })
                 .appendTo(htmlListBtn);
 
-            let htmlColorName = xjs.withnew(xjs.htmlElements.div)
+            xjs.withnew(xjs.htmlElements.div)
                 .setClass("htmlColorName")
                 .setText(Object.keys(xhtmlColors)[i])
                 .setStyle({

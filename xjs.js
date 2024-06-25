@@ -4,25 +4,54 @@
 Node.prototype.appendTo = function (node) {
     node.appendChild(this);
     return this;
-}
+};
 
 Node.prototype.prependTo = function (node) {
     node.insertBefore(this);
     return this;
-}
+};
 
 Element.prototype.__eh = {};
 
 Element.prototype.unbindEvent = function (evnt) {
     this.removeEventListener(evnt, this.__eh[evnt]);
     delete this.__eh[evnt];
-}
+};
 
 Element.prototype.bindEvent = function (evnt, method, scope, ...args) {
     this.__eh[evnt] = method.bind(scope || this, ...args);
     this.addEventListener(evnt, this.__eh[evnt]);
     return this;
-}
+};
+
+Document.prototype.__eh = {};
+
+Document.prototype.getElm = function (elm, queryType) {
+    if (queryType === undefined) {
+        return this.getElementById(elm);
+    } else if (queryType == this.queryTypes.NAME) {
+        return this.getElementsByName(elm);
+    } else if (queryType == this.queryTypes.CLASS) {
+        return this.getElementsByClassName(elm);
+    } else if (queryType == this.queryTypes.TAG) {
+        return this.getElementsByTagName(elm);
+    } else {
+        return this.getElementById(elm);
+    }
+};
+
+Document.prototype.unbindEvent = function (evnt, scope) {
+    let ehid = evnt + "_" + method.toString().hashCode() + scope.constructor.name.hashCode();
+    this.removeEventListener(evnt, this.__eh[ehid]);
+    delete this.__eh[ehid];
+};
+
+Document.prototype.bindEvent = function (evnt, method, scope, ...args) {
+    let ehid = evnt + "_" + method.toString().hashCode() + scope.constructor.name.hashCode();
+    this.__eh[ehid] = method.bind(scope || this, ...args);
+    this.addEventListener(evnt, this.__eh[ehid]);
+    return this;
+};
 
 HTMLElement.prototype.delChilds = function (...elm) {
     for (let i = 0; i < elm.length; i++) {
@@ -32,12 +61,12 @@ HTMLElement.prototype.delChilds = function (...elm) {
             this.removeChild(elm[i]);
         }
     }
-}
+};
 
 HTMLElement.prototype.setAttribute = function (attribute, value) {
     Element.prototype.setAttribute.apply(this, [attribute, value]);
     return this;
-}
+};
 
 HTMLElement.prototype.setAttributes = function (attributes) {
     if (Array.isArray(attributes)) {
@@ -53,16 +82,16 @@ HTMLElement.prototype.setAttributes = function (attributes) {
         }
     }
     return this;
-}
+};
 
 HTMLElement.prototype.getProperty = function (property) {
     return this[property];
-}
+};
 
 HTMLElement.prototype.setProperty = function (property, value) {
     this[property] = value;
     return this;
-}
+};
 
 HTMLElement.prototype.setProperties = function (properties) {
     if (typeof properties == "object") {
@@ -73,17 +102,17 @@ HTMLElement.prototype.setProperties = function (properties) {
         }
     }
     return this;
-}
+};
 
 HTMLElement.prototype.setStyle = function (_style) {
     Object.assign(this.style, _style);
     return this;
-}
+};
 
 HTMLElement.prototype.setStyleProperty = function (property, value) {
     this.style.setProperty(property, value);
     return this;
-}
+};
 
 HTMLElement.prototype.setStyles = function (styles) {
     if (typeof styles == "object") {
@@ -94,7 +123,7 @@ HTMLElement.prototype.setStyles = function (styles) {
         }
     }
     return this;
-}
+};
 
 /*
  * get the style property
@@ -107,7 +136,7 @@ HTMLElement.prototype.getStyleProperty = function (property, format) {
     } else if (format == "string") {
         return this.style[property];
     }
-}
+};
 
 HTMLElement.prototype.queryTypes = { ID: "id", CLASS: "class", NAME: "name", TAG: "tag" };
 
@@ -123,21 +152,7 @@ HTMLElement.prototype.getElm = function (elm, queryType) {
     } else {
         return document.getElementById(elm);
     }
-}
-
-Document.prototype.getElm = function (elm, queryType) {
-    if (queryType === undefined) {
-        return this.getElementById(elm);
-    } else if (queryType == this.queryTypes.NAME) {
-        return this.getElementsByName(elm);
-    } else if (queryType == this.queryTypes.CLASS) {
-        return this.getElementsByClassName(elm);
-    } else if (queryType == this.queryTypes.TAG) {
-        return this.getElementsByTagName(elm);
-    } else {
-        return this.getElementById(elm);
-    }
-}
+};
 
 HTMLElement.prototype.pos = function (_x, _y, _xref, _yref) {
     if (_xref !== undefined && _xref != null) {
@@ -160,7 +175,7 @@ HTMLElement.prototype.pos = function (_x, _y, _xref, _yref) {
         this.top(_y);
     }
     return this;
-}
+};
 
 HTMLElement.prototype.left = function (_left) {
     if (_left !== undefined) {
@@ -169,7 +184,7 @@ HTMLElement.prototype.left = function (_left) {
         return parseInt(this.style.getPropertyValue("left"));
     }
     return this;
-}
+};
 
 HTMLElement.prototype.right = function (_right) {
     if (_right !== undefined) {
@@ -178,7 +193,7 @@ HTMLElement.prototype.right = function (_right) {
         return parseInt(this.style.getPropertyValue("right"));
     }
     return this;
-}
+};
 
 HTMLElement.prototype.top = function (_top) {
     if (_top !== undefined) {
@@ -187,7 +202,7 @@ HTMLElement.prototype.top = function (_top) {
         return parseInt(this.style.getPropertyValue("top"));
     }
     return this;
-}
+};
 
 HTMLElement.prototype.bottom = function (_bottom) {
     if (_bottom !== undefined) {
@@ -196,7 +211,7 @@ HTMLElement.prototype.bottom = function (_bottom) {
         return parseInt(this.style.getPropertyValue("bottom"));
     }
     return this;
-}
+};
 
 
 HTMLElement.prototype.setSize = function (_w, _h) {
@@ -209,54 +224,54 @@ HTMLElement.prototype.setSize = function (_w, _h) {
     }
 
     return this;
-}
+};
 
 
 HTMLElement.prototype.setWidth = function (width) {
     return this.setProperty("width", width);
-}
+};
 
-HTMLElement.prototype.getWidth = function (asNumber=false) {
+HTMLElement.prototype.getWidth = function (asNumber = false) {
     if (asNumber) {
         return parseInt(this.style.getPropertyValue("width"));
     }
     return this.style.getPropertyValue("width");
-}
+};
 
 
 HTMLElement.prototype.setHeight = function (height) {
     return this.setProperty("height", height);
-}
+};
 
-HTMLElement.prototype.getHeight = function (asNumber=false) {
+HTMLElement.prototype.getHeight = function (asNumber = false) {
     if (asNumber) {
         return parseInt(this.style.getPropertyValue("height"));
     }
     return this.style.getPropertyValue("height");
-}
+};
 
 HTMLElement.prototype.setClass = function (classes) {
     this.className = classes;
     return this;
-}
+};
 
 HTMLElement.prototype.setText = function (text) {
     this.innerText = text;
     return this;
-}
+};
 
 HTMLElement.prototype.getText = function () {
     return this.innerText;
-}
+};
 
 HTMLElement.prototype.setHTML = function (html) {
     this.innerHTML = html;
     return this;
-}
+};
 
 HTMLElement.prototype.getHTML = function () {
     return this.innerHTML;
-}
+};
 
 HTMLElement.prototype.bgColor = function (_bgcolor) {
     if (_bgcolor !== undefined) {
@@ -265,7 +280,7 @@ HTMLElement.prototype.bgColor = function (_bgcolor) {
         return this.style.getPropertyValue("background-color");
     }
     return this;
-}
+};
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -275,7 +290,7 @@ CSSStyleDeclaration.prototype.leftPos = function (_left) {
     } else {
         return this.getPropertyValue("left");
     }
-}
+};
 
 CSSStyleDeclaration.prototype.rightPos = function (_right) {
     if (_right !== undefined) {
@@ -283,7 +298,7 @@ CSSStyleDeclaration.prototype.rightPos = function (_right) {
     } else {
         return this.getPropertyValue("right");
     }
-}
+};
 
 CSSStyleDeclaration.prototype.topPos = function (_top) {
     if (_top !== undefined) {
@@ -291,7 +306,7 @@ CSSStyleDeclaration.prototype.topPos = function (_top) {
     } else {
         return this.getPropertyValue("top");
     }
-}
+};
 
 CSSStyleDeclaration.prototype.bottomPos = function (_bottom) {
     if (_bottom !== undefined) {
@@ -299,26 +314,26 @@ CSSStyleDeclaration.prototype.bottomPos = function (_bottom) {
     } else {
         return this.getPropertyValue("bottom");
     }
-}
+};
 
 
 //////////////////////////////////////////////////////////////////////////////
 
 String.prototype.asInt = function () {
     return parseInt(this);
-}
+};
 
 String.prototype.asFloat = function () {
     return parseFloat(this);
-}
+};
 
 String.prototype.asBool = function () {
     return (this == "true");
-}
+};
 
 String.prototype.asHex = function () {
     return Array.from(this, (char) => char.charCodeAt(0).toString(16).padStart(2, '0')).join('');
-}
+};
 
 String.prototype.fromHex = function () {
     const view = new Uint8Array((this.length / 2) * 1);
@@ -326,15 +341,28 @@ String.prototype.fromHex = function () {
         view[(i / 2) | 0] = parseInt(this.substring(i, 2), 16);
     }
     return String.fromCharCode(...view);
-}
+};
 
 String.prototype.asBase64 = function () {
     return btoa(this);
-}
+};
 
 String.prototype.fromBase64 = function () {
     return atob(this);
-}
+};
+
+String.prototype.hashCode = function () {
+    var hash = 0,
+        i, chr;
+    if (this.length === 0) return hash;
+    for (i = 0; i < this.length; i++) {
+        chr = this.charCodeAt(i);
+        hash = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+};
+
 
 //////////////////////////////////////////////////////////////////////////////
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -371,27 +399,27 @@ String.prototype.fromBase64 = function () {
 
 const setProperty = function (id, property, value) {
     document.getElementById(id)[property] = value;
-}
+};
 
 const getProperty = function (id, property) {
     return document.getElementById(id)[property];
-}
+};
 
 const removeProperty = function (id, property) {
     document.getElementById(id)[property] = null;
-}
+};
 
 const setStyleProperty = function (id, property, value) {
     document.getElementById(id).style[property] = value;
-}
+};
 
 const getStyleProperty = function (id, property) {
     return document.getElementById(id).style[property];
-}
+};
 
 const removeStyleProperty = function (id, property) {
     document.getElementById(id).style[property] = null;
-}
+};
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -452,7 +480,7 @@ class _xjs {
             easeInOut: "easeInOut",
             easeInElastic: "easeInElastic",
             easeOutElastic: "easeOutElastic",
-        }
+        };
     };
 
     #easeFunctions = {
@@ -491,21 +519,22 @@ class _xjs {
                 function animate(currentTime) {
                     const elapsedTime = currentTime - start;
 
-                    if (elapsedTime < duration) {;
+                    if (elapsedTime < duration) {
+                        ;
                         Object.keys(style).forEach((prop) => {
                             if (_self.#animationStyleGroups.pixels.includes(prop)) {
                                 const startValue = parseFloat(style[prop].start) || 0;
                                 const endValue = parseFloat(style[prop].end) || 0;
                                 const change = endValue - startValue;
                                 const ease = style[prop].ease || "linear";
-                                element.style[prop] = _self.#easeFunctions[ease](elapsedTime/1000, startValue, change, duration/1000) + 'px';
+                                element.style[prop] = _self.#easeFunctions[ease](elapsedTime / 1000, startValue, change, duration / 1000) + 'px';
                             }
                             if (_self.#animationStyleGroups.opacity.includes(prop)) {
                                 const startValue = parseFloat(style[prop].start) || 0;
                                 const endValue = parseFloat(style[prop].end) || 0;
                                 const change = endValue - startValue;
                                 const ease = style[prop].ease || "linear";
-                                element.style[prop] = _self.#easeFunctions[ease](elapsedTime/1000, startValue, change, duration/1000);
+                                element.style[prop] = _self.#easeFunctions[ease](elapsedTime / 1000, startValue, change, duration / 1000);
                             }
                             if (_self.#animationStyleGroups.colors.includes(prop)) {
                                 const startRgba = _self.#hexaToRgbaArray(style[prop].start);
@@ -522,7 +551,7 @@ class _xjs {
                     } else {
                         Object.keys(style).forEach((prop) => {
                             if (_self.#animationStyleGroups.pixels.includes(prop)) {
-                            element.style[prop] = style[prop].end + 'px';
+                                element.style[prop] = style[prop].end + 'px';
                             }
                             if (_self.#animationStyleGroups.opacity.includes(prop)) {
                                 element.style[prop] = style[prop].end;
@@ -565,7 +594,7 @@ class _xjs {
     }
 
     setStyleProperty(id, property, value) {
-        document.getElementById(id)
+        document.getElementById(id);
         let _elm = document.getElementById(id);
         _elm.style.setProperty(property, value);
         return _elm;
@@ -665,7 +694,7 @@ class _xjs {
         return c * ((t = t / d - 1) * t * t + 1) + b;
     }
 
-    easeInElastic (t, b, c, d) {
+    easeInElastic(t, b, c, d) {
         var s = 1.70158;
         var p = 0;
         var a = c;
@@ -680,7 +709,7 @@ class _xjs {
         return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / p)) + b;
     }
 
-    easeOutElastic (t, b, c, d) {
+    easeOutElastic(t, b, c, d) {
         var s = 1.70158;
         var p = 0;
         var a = c;
@@ -757,7 +786,7 @@ class _xjs {
         const r = parseInt(hexa.slice(1, 3), 16);
         const g = parseInt(hexa.slice(3, 5), 16);
         const b = parseInt(hexa.slice(5, 7), 16);
-        const a = (hexa.length === 9)?parseInt(hexa.slice(7, 9), 16) / 255:1;
+        const a = (hexa.length === 9) ? parseInt(hexa.slice(7, 9), 16) / 255 : 1;
         return [r, g, b, a];
     }
 
@@ -803,7 +832,7 @@ class _xjs {
             panel: "panel",
             div: "div",
             span: "span",
-            input:{
+            input: {
                 text: "inputText",
                 number: "inputNumber",
                 password: "inputPassword",

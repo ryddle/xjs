@@ -3,8 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
-    <script src="xjs.js"></script>
-    <script src="xjsSelect.js"></script>
+    <script src="xjs.js" type="text/javascript"></script>
+    <script src="xutils/xutils.js" type="text/javascript"></script>
+    <script src="xhtmlColors.js" type="text/javascript"></script>
+    <script src="xcolor.js" type="text/javascript"></script>
+    <script src="xjsSelect.js" type="text/javascript"></script>
+    <script src="xcolorPickerButton.js" type="text/javascript"></script>
+    <script src="xcolorPicker.js" type="text/javascript"></script>
     <title>Document</title>
 </head>
 
@@ -20,16 +25,20 @@
 <script>
     xjs.withnew(xjs.xjselements.xjsSelect, "select2").appendTo(document.body);
 
+    xjs.registerXJSElement("xjsXcolorPickerBtn", "xcolor-picker-btn");
+
+    xjs.withnew(xjs.xjselements.xjsXcolorPickerBtn, "colorPickerBtn").appendTo(document.body);
+
     xjs.withnew("button").setProperty("id", "btn").setProperty("innerHTML", "DoThings").bindEvent("click", doThings).appendTo(document.body);
 
     xjs.withnew("div").setProperty("id", "output").appendTo(document.body);
 
-    xjs.withnew("div").setProperty("id", "app").setStyle({ position: "absolute", left: "100px", top: "100px", width: "100px", height: "100px", backgroundColor: "red" }).appendTo(document.body);
+    xjs.withnew("panel", "app").pos(100,120).setSize(100,100).bgColor("red").appendTo(document.body);
 
-    xjs.withnew("div").setProperty("id", "message1").setStyle({ position: "absolute", left: "400px", top: "10px", width: "400px", height: "100px"}).appendTo(document.body);
-    xjs.withnew("div").setProperty("id", "message2").setStyle({ position: "absolute", left: "900px", top: "10px", width: "250px", height: "100px"}).appendTo(document.body);
+    xjs.withnew("panel").setProperty("id", "message1").pos(400,10).setSize(400,100).appendTo(document.body);
+    xjs.withnew("panel").setProperty("id", "message2").pos(900,10).setSize(250,100).appendTo(document.body);
 
-    xjs.withnew("div").setProperty("id", "app2").setStyle({ position: "absolute", left: "100px", top: "400px", width: "100px", height: "100px", backgroundColor: "blue" }).appendTo(document.body);
+    xjs.withnew("panel").setProperty("id", "app2").pos(100,400).setStyle({ width: "100px", height: "100px", backgroundColor: "blue" }).appendTo(document.body);
 
     var index = 0;
     function doThings() {
@@ -49,7 +58,7 @@
                 index++;
                 break;
             case 2:
-                /* four ways to set positions */
+                /* fiive ways to set positions */
                 //document.getElementById("app").style.lef="80em";
                 //document.getElementById("app").style.top="250pt";
 
@@ -86,14 +95,14 @@
                 let newdiv = xjs.withnew(xjs.htmlElements.panel, "newdiv").setStyle({ left: "10px", top: "50px", width: "10px", height: "10px", backgroundColor: "blue" });
                 document.getElm("app").appendChild(newdiv);
                 /* let newInputText = xjs.withnew(xjs.htmlElements.inputText).setProperties({ "id": "textinput", "size": "8", "value": "Hello World" }).appendTo(xjs.getElm("app")); */
-                let newInputText = xjs.withnew(xjs.htmlElements.inputText, "textinput", "textinput", "Hello World").setAttribute("size", "8").appendTo(xjs.getElm("app"));
-                xjs.register("myinputpanel", xjs.getElm("app"));
+                let newInputText = xjs.withnew(xjs.htmlElements.input.text, "textinput", "textinput", "Hello World").setAttribute("size", "8").appendTo(xjs.getElm("app"));
+                xjs.registerComponent("myinputpanel", xjs.getElm("app"));
                 index++;
                 break;
             case 4:
                 //xjs.with("app").pos(100, 100);
                 xjs.animate([xjs.with("app")], [{ 
-                    top: { start: 250, end: 100, ease: xjs.easeTypes.easeInOut }, 
+                    top: { start: 250, end: 120, ease: xjs.easeTypes.easeInOut }, 
                     left: { start: 900, end: 100, ease: xjs.easeTypes.easeInOut },
                     width: { start: 200, end: 100, ease: xjs.easeTypes.easeInOut },
                     backgroundColor: { start: '#00ffff', end: '#ff0000', ease: xjs.easeTypes.easeIn } }], 1000)

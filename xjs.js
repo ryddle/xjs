@@ -85,6 +85,17 @@ HTMLElement.prototype.setStyleProperty = function (property, value) {
     return this;
 }
 
+HTMLElement.prototype.setStyles = function (styles) {
+    if (typeof styles == "object") {
+        Object.assign(this.style, styles);
+    } else if (typeof styles == "array") {
+        for (let i = 0; i < styles.length; i++) {
+            this[styles[i][0]] = styles[i][1];
+        }
+    }
+    return this;
+}
+
 /*
  * get the style property
  * @param property the property name
@@ -155,7 +166,7 @@ HTMLElement.prototype.left = function (_left) {
     if (_left !== undefined) {
         this.style.setProperty("left", (typeof _left === "string" && isNaN(_left)) ? _left : _left + "px");
     } else {
-        return this.style.getPropertyValue("left");
+        return parseInt(this.style.getPropertyValue("left"));
     }
     return this;
 }
@@ -164,7 +175,7 @@ HTMLElement.prototype.right = function (_right) {
     if (_right !== undefined) {
         this.style.setProperty("right", (typeof _right === "string" && isNaN(_right)) ? _right : _right + "px");
     } else {
-        return this.style.getPropertyValue("right");
+        return parseInt(this.style.getPropertyValue("right"));
     }
     return this;
 }
@@ -173,7 +184,7 @@ HTMLElement.prototype.top = function (_top) {
     if (_top !== undefined) {
         this.style.setProperty("top", (typeof _top === "string" && isNaN(_top)) ? _top : _top + "px");
     } else {
-        return this.style.getPropertyValue("top");
+        return parseInt(this.style.getPropertyValue("top"));
     }
     return this;
 }
@@ -182,7 +193,7 @@ HTMLElement.prototype.bottom = function (_bottom) {
     if (_bottom !== undefined) {
         this.style.setProperty("bottom", (typeof _bottom === "string" && isNaN(_bottom)) ? _bottom : _bottom + "px");
     } else {
-        return this.style.getPropertyValue("bottom");
+        return parseInt(this.style.getPropertyValue("bottom"));
     }
     return this;
 }
@@ -197,6 +208,62 @@ HTMLElement.prototype.setSize = function (_w, _h) {
         this.style.setProperty("height", (typeof _h === "string" && isNaN(_h)) ? _h : _h + "px");
     }
 
+    return this;
+}
+
+
+HTMLElement.prototype.setWidth = function (width) {
+    return this.setProperty("width", width);
+}
+
+HTMLElement.prototype.getWidth = function (asNumber=false) {
+    if (asNumber) {
+        return parseInt(this.style.getPropertyValue("width"));
+    }
+    return this.style.getPropertyValue("width");
+}
+
+
+HTMLElement.prototype.setHeight = function (height) {
+    return this.setProperty("height", height);
+}
+
+HTMLElement.prototype.getHeight = function (asNumber=false) {
+    if (asNumber) {
+        return parseInt(this.style.getPropertyValue("height"));
+    }
+    return this.style.getPropertyValue("height");
+}
+
+HTMLElement.prototype.setClass = function (classes) {
+    this.className = classes;
+    return this;
+}
+
+HTMLElement.prototype.setText = function (text) {
+    this.innerText = text;
+    return this;
+}
+
+HTMLElement.prototype.getText = function () {
+    return this.innerText;
+}
+
+HTMLElement.prototype.setHTML = function (html) {
+    this.innerHTML = html;
+    return this;
+}
+
+HTMLElement.prototype.getHTML = function () {
+    return this.innerHTML;
+}
+
+HTMLElement.prototype.bgColor = function (_bgcolor) {
+    if (_bgcolor !== undefined) {
+        this.style.setProperty("background-color", _bgcolor);
+    } else {
+        return this.style.getPropertyValue("background-color");
+    }
     return this;
 }
 
@@ -695,48 +762,17 @@ class _xjs {
     }
 
     //// Date ////
-    formatDate(format, date) {
-        if (!date) {
-            date = new Date();
-        }
-
-        if (!format) {
-            format = "yyyy/MM/dd hh:mm:ss";
-        }
-
-        let result = format;
-
-        const formatItems = format.match(/([a-z]+)/ig);
-        const dateItems = date.toISOString().split(/[-T:.Z]/i);
-        for (let i = 0; i < formatItems.length; i++) {
-            switch (formatItems[i]) {
-                case "yyyy":
-                    result = result.replace("yyyy", dateItems[0]);
-                    break;
-                case "yy":
-                    result = result.replace("yy", dateItems[0].slice(-2));
-                    break;
-                case "MM":
-                    result = result.replace("MM", dateItems[1].padStart(2, '0'));
-                    break;
-                case "dd":
-                    result = result.replace("dd", dateItems[2].padStart(2, '0'));
-                    break;
-                case "hh":
-                    result = result.replace("hh", dateItems[3].padStart(2, '0'));
-                    break;
-                case "mm":
-                    result = result.replace("mm", dateItems[4].padStart(2, '0'));
-                    break;
-                case "ss":
-                    result = result.replace("ss", dateItems[5].padStart(2, '0'));
-                    break;
-                default:
-                    result += formatItems[i];
-                    break;
-            }
-        }
-        return result;
+    formatDate(format = "yyyy/MM/dd hh:mm:ss", date = new Date()) {
+        const f = {
+            yyyy: date.getFullYear().toString(),
+            yy: date.getFullYear().toString().slice(-2),
+            MM: (date.getMonth() + 1).toString().padStart(2, '0'),
+            dd: date.getDate().toString().padStart(2, '0'),
+            hh: date.getHours().toString().padStart(2, '0'),
+            mm: date.getMinutes().toString().padStart(2, '0'),
+            ss: date.getSeconds().toString().padStart(2, '0')
+        };
+        return format.replace(/yyyy|yy|MM|dd|hh|mm|ss/g, matched => f[matched]);
     }
 
     //// Time //
@@ -767,12 +803,15 @@ class _xjs {
             panel: "panel",
             div: "div",
             span: "span",
-            inputText: "inputText",
-            inputPassword: "inputPassword",
-            inputCheckbox: "inputCheckbox",
-            inputRadio: "inputRadio",
-            inputFile: "inputFile",
-            inputColor: "inputColor",
+            input:{
+                text: "inputText",
+                number: "inputNumber",
+                password: "inputPassword",
+                checkbox: "inputCheckbox",
+                radio: "inputRadio",
+                file: "inputFile",
+                color: "inputColor",
+            },
             button: "button",
             submit: "submit",
             label: "label",
@@ -804,14 +843,16 @@ class _xjs {
             textarea: "textarea",
             iframe: "iframe",
             audio: "audio",
-            video: "video"
+            video: "video",
+            dialog: "dialog",
         };
     }
     #htmlelements = {
-        panel: this.lazy(() => document.createElement("div").setStyle({ position: "absolute", left: "100px", top: "100px", width: "100px", height: "100px" })),
+        panel: this.lazy(() => document.createElement("div").setStyle({ position: "absolute", left: "0px", top: "0px", width: "100px", height: "100px" })),
         div: this.lazy(() => document.createElement("div")),
         span: this.lazy(() => document.createElement("span")),
         inputText: this.lazy(() => document.createElement("input").setProperty("type", "text")),
+        inputNumber: this.lazy(() => document.createElement("input").setProperty("type", "number")),
         inputPassword: this.lazy(() => document.createElement("input").setProperty("type", "password")),
         inputCheckbox: this.lazy(() => document.createElement("input").setProperty("type", "checkbox")),
         inputRadio: this.lazy(() => document.createElement("input").setProperty("type", "radio")),
@@ -848,13 +889,16 @@ class _xjs {
         textarea: this.lazy(() => document.createElement("textarea")),
         iframe: this.lazy(() => document.createElement("iframe").setStyle({ position: "absolute", left: "0px", top: "0px", width: "0px", height: "0px" })),
         audio: this.lazy(() => document.createElement("audio")),
-        video: this.lazy(() => document.createElement("video"))
+        video: this.lazy(() => document.createElement("video")),
+        dialog: this.lazy(() => document.createElement("dialog"))
     };
 
+    #xjselementsMap = {
+        xjsSelect: "xjsSelect",
+        xjsXcolorPickerBtn: "xjsXcolorPickerBtn"
+    };
     get xjselements() {
-        return {
-            xjsSelect: "xjsSelect"
-        }
+        return this.#xjselementsMap;
     }
 
     #xjselements = {
@@ -865,7 +909,22 @@ class _xjs {
         ])))
     };
 
-    #components = {};
+    /**
+     * 
+     * @param {string} name - it must start with xjs
+     * @param {string} tag - the tag name 
+     */
+    registerXJSElement(name, tag) {
+        if (!name.startsWith("xjs")) {
+            throw new Error("name must start with xjs");
+        }
+
+        if (this.#xjselements[name] != null) {
+            throw new Error("name already exists");
+        }
+        this.#xjselementsMap[name] = name;
+        this.#xjselements[name] = this.lazy(() => document.createElement(tag));
+    }
 
     with(elm) {
         if (typeof elm == "string") {
@@ -892,8 +951,14 @@ class _xjs {
         return null;
     }
 
-    register(name, component) {
+    #components = {};
+
+    registerComponent(name, component) {
         this.#components[name] = component.cloneNode(true);
+    }
+
+    hasComponent(name) {
+        return this.#components[name] != null;
     }
 
     getComponent(name) {

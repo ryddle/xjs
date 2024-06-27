@@ -83,7 +83,10 @@
                     top: { start: 400, end: 200, ease: xjs.easeTypes.easeInOut },
                     left: { start: 100, end: 100, ease: xjs.easeTypes.easeInOut },
                     opacity: { start: 1, end: 0.1, ease: xjs.easeTypes.easeInOut },
-                    backgroundColor: { start: '#0000ff', end: '#00ffff', ease: xjs.easeTypes.easeIn } }], 500);
+                    backgroundColor: { start: '#0000ff', end: '#00ffff', ease: xjs.easeTypes.easeIn } }], 500)
+                .then(() => {
+                    xjs.with("output").setProperty("innerHTML", getStyleProperty("app", "left"));
+                });
 
                 //xjs.animate( xjs.with("app"), "left", "900px", 1000, xjs.easeTypes.easeInOut);
                 //xjs.animate( xjs.with("app"), "top", "250px", 1000, xjs.easeTypes.easeInOut);
@@ -124,7 +127,6 @@
 
                 xjs.with(xjs.getComponent("myinputpanel")).setStyleProperty("background-color", "rgb("+xjs.randomInt(255)+", "+xjs.random(255)+", "+xjs.random(255)+")").pos(xjs.random(10, 1500), xjs.random(500, 1000)).appendTo(document.body);
                 
-                setProperty("output", "innerHTML", getStyleProperty("app", "left"));
                 index = 0;
                 break;
             default:

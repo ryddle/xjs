@@ -38,7 +38,8 @@
     xjs.withnew("panel").setProperty("id", "message1").pos(400,10).setSize(400,100).appendTo(document.body);
     xjs.withnew("panel").setProperty("id", "message2").pos(900,10).setSize(250,100).appendTo(document.body);
 
-    xjs.withnew("panel").setProperty("id", "app2").pos(100,400).setStyle({ width: "100px", height: "100px", backgroundColor: "blue" }).appendTo(document.body);
+    // short way
+    xjs.withnew("panel", "app2").pos(100,400).setSize(100, 100).bgColor("blue").appendTo(document.body);
 
     var index = 0;
     function doThings() {
@@ -73,7 +74,7 @@
                 //xjs.with("app").pos("80em", "250pt");
 
 
-                xjs.animate([xjs.with("app")], [{ 
+                /* xjs.animate([xjs.with("app")], [{ 
                     top: { start: 100, end: 250, ease: xjs.easeTypes.easeOutElastic }, 
                     left: { start: 200, end: 900, ease: xjs.easeTypes.easeOutElastic }, 
                     width: { start: 100, end: 200, ease: xjs.easeTypes.easeInOut },
@@ -84,6 +85,28 @@
                     left: { start: 100, end: 100, ease: xjs.easeTypes.easeInOut },
                     opacity: { start: 1, end: 0.1, ease: xjs.easeTypes.easeInOut },
                     backgroundColor: { start: '#0000ff', end: '#00ffff', ease: xjs.easeTypes.easeIn } }], 500)
+                .then(() => {
+                    xjs.with("output").setProperty("innerHTML", getStyleProperty("app", "left"));
+                }); */
+                xjs.animate(
+                    [
+                        xjs.with("app"), 
+                        xjs.with("app2")
+                    ], 
+                    [
+                        { 
+                        top: { start: 100, end: 250, ease: xjs.easeTypes.easeOutElastic }, 
+                        left: { start: 200, end: 900, ease: xjs.easeTypes.easeOutElastic }, 
+                        width: { start: 100, end: 200, ease: xjs.easeTypes.easeInOut },
+                        backgroundColor: { start: '#ff0000', end: '#00ffff', ease: xjs.easeTypes.easeOut } 
+                        }, 
+                        {
+                        top: { start: 400, end: 200, ease: xjs.easeTypes.easeInOut },
+                        left: { start: 100, end: 100, ease: xjs.easeTypes.easeInOut },
+                        opacity: { start: 1, end: 0.1, ease: xjs.easeTypes.easeInOut },
+                        backgroundColor: { start: '#0000ff', end: '#00ffff', ease: xjs.easeTypes.easeIn } 
+                        }
+                    ], 500)
                 .then(() => {
                     xjs.with("output").setProperty("innerHTML", getStyleProperty("app", "left"));
                 });
@@ -142,6 +165,9 @@
 
         showMessage() {
             xjs.with(this.elm).setProperty("innerHTML","Hello World from " + this.id);
+            xjs.animate([xjs.with("message2")],[{
+                color: { start: '#000000', end: '#ff00ff', ease: xjs.easeTypes.easeIn }
+            }], 10000);
         }
 
         showDate() {

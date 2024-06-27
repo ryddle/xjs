@@ -50,7 +50,7 @@ var xhtmlColors = {
     "Darkred": "#8B0000",
     "Brown": "#A52A2A",
     "Indianred": "#CD5C5C",
-    "Lightcoral": "##F08080",
+    "Lightcoral": "#F08080",
     "Salmon": "#FA8072",
     "Darksalmon": "#E9967A",
     "Rosybrown": "#BC8F8F",

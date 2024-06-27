@@ -41,17 +41,23 @@ Document.prototype.getElm = function (elm, queryType) {
 };
 
 Document.prototype.unbindEvent = function (evnt, scope) {
-    let ehid = evnt + "_" + method.toString().hashCode() + scope.constructor.name.hashCode();
+    let ehid = evnt.concat("_", method.toString().hashCode(), scope.constructor.name.hashCode());
     this.removeEventListener(evnt, this.__eh[ehid]);
     delete this.__eh[ehid];
 };
 
 Document.prototype.bindEvent = function (evnt, method, scope, ...args) {
-    let ehid = evnt + "_" + method.toString().hashCode() + scope.constructor.name.hashCode();
+    let ehid = evnt.concat("_", method.toString().hashCode(), scope.constructor.name.hashCode());
     this.__eh[ehid] = method.bind(scope || this, ...args);
     this.addEventListener(evnt, this.__eh[ehid]);
     return this;
 };
+
+HTMLElement.prototype.insert = function (elm, name) {
+    this[name] = elm;
+    this.appendChild(elm);
+    return this;
+}
 
 HTMLElement.prototype.delChilds = function (...elm) {
     for (let i = 0; i < elm.length; i++) {

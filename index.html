@@ -97,6 +97,8 @@
                 /* let newInputText = xjs.withnew(xjs.htmlElements.inputText).setProperties({ "id": "textinput", "size": "8", "value": "Hello World" }).appendTo(xjs.getElm("app")); */
                 let newInputText = xjs.withnew(xjs.htmlElements.input.text, "textinput", "textinput", "Hello World").setAttribute("size", "8").appendTo(xjs.getElm("app"));
                 xjs.registerComponent("myinputpanel", xjs.getElm("app"));
+                
+                setProperty("output", "innerHTML", getStyleProperty("app", "left"));
                 index++;
                 break;
             case 4:
@@ -121,6 +123,8 @@
                 xjs.with("app").delChilds("textinput", xjs.getElm("newdiv"));
 
                 xjs.with(xjs.getComponent("myinputpanel")).setStyleProperty("background-color", "rgb("+xjs.randomInt(255)+", "+xjs.random(255)+", "+xjs.random(255)+")").pos(xjs.random(10, 1500), xjs.random(500, 1000)).appendTo(document.body);
+                
+                setProperty("output", "innerHTML", getStyleProperty("app", "left"));
                 index = 0;
                 break;
             default:

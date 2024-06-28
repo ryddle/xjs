@@ -57,7 +57,7 @@ HTMLElement.prototype.insert = function (elm, name) {
     this[name] = elm;
     this.appendChild(elm);
     return this;
-}
+};
 
 HTMLElement.prototype.delChilds = function (...elm) {
     for (let i = 0; i < elm.length; i++) {
@@ -288,6 +288,225 @@ HTMLElement.prototype.bgColor = function (_bgcolor) {
     return this;
 };
 
+HTMLElement.prototype.bg = function () {
+    return new (function (_parent) {
+        this.hex = function (_h) {
+            if (_h !== undefined) {
+                _parent.style.backgroundColor = _h;
+                return _parent;
+            }
+            let _c = _parent.style.backgroundColor;
+            return (_c[0] == "#") ? _c : (_c.startsWith("rgb")) ? this.rgb2hex(_c) : xhtmlColors.get(_c);
+        };
+        this.rgb = function (...args) {
+            if (args !== undefined) {
+                if (args.length == 1) {
+                    let arg = args[0];
+                    if (Array.isArray(arg)) {
+                        if (arg.length == 3) {
+                            _parent.style.backgroundColor = `rgb(${arg[0]}, ${arg[1]}, ${arg[2]})`;
+                        } else if (arg.length == 4) {
+                            _parent.style.backgroundColor = `rgba(${arg[0]}, ${arg[1]}, ${arg[2]}, ${arg[3]})`;
+                        }
+                    } else {
+                        _parent.style.backgroundColor = arg;
+                    }
+                } else if (args.length == 3) {
+                    _parent.style.backgroundColor = `rgb(${args[0]}, ${args[1]}, ${args[2]})`;
+                } else if (args.length == 4) {
+                    _parent.style.backgroundColor = `rgba(${args[0]}, ${args[1]}, ${args[2]}, ${args[3]})`;
+                }
+            }
+            let _c = _parent.style.backgroundColor;
+            return (_c[0] == "#") ? this.hex2rgb(_c) : (_c.startsWith("rgb")) ? _c : this.hex2rgb(xhtmlColors.get(_c));
+        };
+        this.rgb2hex = function (color) {
+            return '#' + color.match(/[\d\.]+/g).map((x, i) => Math.round((+x) * (i < 3 ? 1 : 255)).toString(16).padStart(2, 0)).join``;
+        };
+        this.hex2rgb = function (color) {
+            let [r, g, b] = color.match(/\w\w/g).map(x => +`0x${x}`);
+            return `rgb(${r},${g},${b})`;
+        };
+        this.image = function () {
+            return new (function (_parent) {
+                this.parent = _parent;
+                this._url = null;
+                this._repeat = "no-repeat";
+                this._origin = "50% 50%";
+                this._position = "center";
+                this._attachment = "scroll";
+                this._size = "";
+                this._blendMode = "normal";
+                this._clip = "auto";
+                this.url = function (_url) {
+                    this._url = _url;
+                    return this;
+                };
+                this.repeat = function (_repeat) {
+                    this._repeat = _repeat;
+                    return this;
+                };
+                this.origin = function (_origin) {
+                    this._origin = _origin;
+                    return this;
+                };
+                this.position = function (_position) {
+                    this._position = _position;
+                    return this;
+                };
+                this.attachment = function (_attachment) {
+                    this._attachment = _attachment;
+                    return this;
+                };
+                this.size = function (_x, _y) {
+                    if(typeof _x === "string"){
+                        this._size = _x;
+                    }else{
+                        this._size = `${_x}px ${_y}px`;                        
+                    }
+                    return this;
+                };
+                this.blendMode = function (_blendMode) {
+                    this._blendMode = _blendMode;
+                    return this;
+                };
+                this.clip = function (_clip) {
+                    this._clip = _clip;
+                    return this;
+                };
+                this.set = function () {
+                    _parent.style.setProperty("background-image", `url(${this._url})`);
+                    if(this._repeat!==null) _parent.style.setProperty("background-repeat", this._repeat);
+                    if(this._origin!==null) _parent.style.setProperty("background-origin", this._origin);
+                    if(this._position!==null) _parent.style.setProperty("background-position", this._position);
+                    if(this._attachment!==null) _parent.style.setProperty("background-attachment", this._attachment);
+                    if(this._size!==null) _parent.style.setProperty("background-size", this._size);
+                    if(this._blendMode!==null) _parent.style.setProperty("background-blend-mode", this._blendMode);
+                    if(this._clip!==null) _parent.style.setProperty("background-clip", this._clip);
+                    return _parent;
+                };
+                this.clear = function () {
+                    _parent.style.removeProperty("background-image");
+                    _parent.style.removeProperty("background-repeat");
+                    _parent.style.removeProperty("background-origin");
+                    _parent.style.removeProperty("background-position");
+                    _parent.style.removeProperty("background-attachment");
+                    _parent.style.removeProperty("background-size");
+                    _parent.style.removeProperty("background-blend-mode");
+                    _parent.style.removeProperty("background-clip");
+                    return _parent;
+                }
+            })(_parent);
+        };
+        this.gradient = function () {
+            return new (function (_parent) {
+                this.parent = _parent;
+                this.options = {
+                    colors: [],
+                    type: "linear",
+                    repeating: false,
+                    angle: null,
+                    direction: null,
+                    side: null,
+                    from: null,
+                    at: null
+                };
+                this.linear = function () {
+                    this.options.type = "linear";
+                    return this;
+                };
+                this.radial = function () {
+                    this.options.type = "radial";
+                    return this;
+                };
+                this.conic = function () {
+                    this.options.type = "conic";
+                    return this;
+                };
+                this.repeat = function () {
+                    this.options.repeating = true;
+                    return this;
+                };
+                this.angle = function (_angle) {
+                    if (this.options.type == "linear") {
+                        this.options.angle = _angle;
+                    }else if (this.options.type == "conic") {
+                        this.options.angle = "from "+_angle;
+                    }
+                    return this;
+                };
+                this.direction = function (_direction) {
+                    if (this.options.type == "linear") {
+                        this.options.direction = _direction;
+                    }
+                    return this;
+                };
+                this.side = function (_side) {
+                    if (this.options.type == "radial") {
+                        this.options.side = _side;
+                    }
+                    return this;
+                };
+                this.from = function (_angle) {
+                    if (this.options.type == "conic") {
+                        this.options.from = "from "+_angle;
+                    }
+                    return this;
+                };
+                this.at = function (_per01, _per02) {
+                    if (this.options.type == "conic") {
+                        this.options.at = "at "+_per01+"% "+_per02+"%";
+                    }
+                    return this;
+                };
+                this.color = function (_color, _percentage_or_angle) {
+                    /* if (this.options.type == "linear" || this.options.type == "radial") {
+                        this.options.colors.push(percentage_or_angle !== undefined ? `${_color} ${percentage_or_angle}%` : _color);
+                    }
+                    if (this.options.type == "conic") {
+                        this.options.colors.push((percentage_or_angle !== undefined ? `${_color} ${percentage_or_angle}deg` : _color));
+                    } */
+                    this.options.colors.push({color:_color,percentage_or_angle:_percentage_or_angle});
+                    return this;
+                };
+                this.set = function (_options) {
+                    if (_options !== undefined) {
+                        this.options = _options;
+                    }
+                    let colors = [];
+                    for (const color of this.options.colors) {
+                        let unit = "%";
+                        if (this.options.type == "conic") {
+                            unit = "deg";
+                        }
+                        colors.push(color.percentage_or_angle !== undefined ? `${color.color} ${color.percentage_or_angle}${unit}` : color.color);
+                    }
+
+                    if (this.options.angle != null) {
+                        this.parent.style.background = `${this.options.repeating ? "repeating-" : ""}${this.options.type}-gradient(${this.options.angle}deg, ${colors.join(", ")})`;
+                    } else if (this.options.direction != null) {
+                        this.parent.style.background = `${this.options.repeating ? "repeating-" : ""}${this.options.type}-gradient(${this.options.direction}, ${colors.join(", ")})`;
+                    } else if (this.options.side != null) {
+                        this.parent.style.background = `${this.options.repeating ? "repeating-" : ""}${this.options.type}-gradient(${this.options.side}, ${colors.join(", ")})`;
+                    } else if (this.options.from != null) {
+                        this.parent.style.background = `${this.options.repeating ? "repeating-" : ""}${this.options.type}-gradient(${this.options.from}, ${colors.join(", ")})`;
+                    } else if (this.options.at != null) {
+                        this.parent.style.background = `${this.options.repeating ? "repeating-" : ""}${this.options.type}-gradient(${this.options.at}, ${colors.join(", ")})`;
+                    } else {
+                        this.parent.style.background = `${this.options.repeating ? "repeating-" : ""}${this.options.type}-gradient(${colors.join(", ")})`;
+                    }
+                    this.parent.bgGradientOptions = this.options;
+                    return this.parent;
+                };
+                this.clear = function () {
+                    this.parent.style.removeProperty("background");
+                    return this.parent;
+                };
+            })(_parent);
+        };
+    })(this);
+};
+
 //////////////////////////////////////////////////////////////////////////////
 
 CSSStyleDeclaration.prototype.leftPos = function (_left) {
@@ -324,6 +543,9 @@ CSSStyleDeclaration.prototype.bottomPos = function (_bottom) {
 
 
 //////////////////////////////////////////////////////////////////////////////
+String.prototype.capitalize = function () {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+};
 
 String.prototype.asInt = function () {
     return parseInt(this);
@@ -431,6 +653,27 @@ const removeStyleProperty = function (id, property) {
 
 
 class _xjs {
+    //// Constants ////
+    GradientDirection = {
+        TO_TOP: 'to top',
+        TO_RIGHT: 'to right',
+        TO_BOTTOM: 'to bottom',
+        TO_LEFT: 'to left'
+    };
+
+    GradientSide = {
+        CLOSEST_SIDE: "closest-side",
+        FARTHEST_SIDE: "farthest-side",
+        CLOSEST_CORNER: "closest-corner",
+        FARTHEST_SIDE: "farthest-corner"
+    };
+
+    BgImageOrigin = {
+        BORDER_BOX: 'border-box',
+        PADDING_BOX: 'padding-box',
+        CONTENT_BOX: 'content-box'
+    };
+
     //// Query ////
     getElm(id, queryType, index) {
         if (queryType === undefined) {
@@ -511,6 +754,7 @@ class _xjs {
         pixels: ["top", "left", "right", "bottom", "width", "height", "margin", "padding", "borderRadius", "borderWidth", "fontSize"],
         opacity: ["opacity"],
         colors: ["backgroundColor", "color", "borderColor", "outlineColor", "fontColor"],
+        gradient: ["bg_gradient_angle"]
     };
     #animateElements(elements, styles, duration) {
         const promises = [];
@@ -526,7 +770,6 @@ class _xjs {
                     const elapsedTime = currentTime - start;
 
                     if (elapsedTime < duration) {
-                        ;
                         Object.keys(style).forEach((prop) => {
                             if (_self.#animationStyleGroups.pixels.includes(prop)) {
                                 const startValue = parseFloat(style[prop].start) || 0;
@@ -551,6 +794,14 @@ class _xjs {
                                     progress[index] = (elapsedTime / duration) * value;
                                 });
                                 element.style[prop] = `rgba(${startRgba[0] + progress[0]}, ${startRgba[1] + progress[1]}, ${startRgba[2] + progress[2]}, ${startRgba[3] + progress[3]})`;
+                            }
+                            if (_self.#animationStyleGroups.gradient.includes(prop)) {
+                                const startValue = parseFloat(style[prop].start) || 0;
+                                const endValue = parseFloat(style[prop].end) || 0;
+                                const change = endValue - startValue;
+                                const ease = style[prop].ease || "linear";
+                                element.bgGradientOptions.angle = _self.#easeFunctions[ease](elapsedTime / 1000, startValue, change, duration / 1000);
+                                element.bg().gradient().set(element.bgGradientOptions);
                             }
                         });
                         requestAnimationFrame(animate);

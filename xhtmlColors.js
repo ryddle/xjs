@@ -1,4 +1,9 @@
 var xhtmlColors = {
+    get:function(_code){
+        let code = _code.capitalize();
+        let c = this[code];
+        return c;
+    },
     "White": "#FFFFFF",
     "Snow": "#FFFAFA",
     "Ivory": "#FFFFF0",

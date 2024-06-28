@@ -51,6 +51,27 @@
                 break;
             case 1:
                 document.getElm("app").style.leftPos("200");
+                /* Gradient examples */
+                //xjs.with("app").bg().gradient().linear().angle(45).color("#ff0000", 35).color("#00ff00", 85).set();
+                //xjs.with("app").bg().gradient().linear().direction(xjs.GradientDirection.TO_RIGHT).color("#ff0000", 33).color("#00ff00", 33).color("#00ff00", 66).color("#0000ff", 66).set();
+                xjs.with("app").bg().gradient().linear().repeat().angle(90).color("#ff0000").color("#00ff00", 10).color("#0000ff", 20).set();
+                //xjs.with("app").bg().gradient().radial().side(xjs.GradientSide.CLOSEST_CORNER).color("#ff0000", 35).color("#00ff00", 85).set();
+                //xjs.with("app").bg().gradient().conic().from(90).color("#ff0000", 35).color("#00ff00", 85).set();
+                //xjs.with("app").bg().gradient().conic().at(60,45).color("red").color("yellow").color("green").set();
+                //xjs.with("app").bg().image().url("https://www.w3schools.com/css/img_flwr.gif").size(30,40).origin(xjs.BgImageOrigin.BORDER_BOX).position(10, 10).set();
+
+                xjs.animate(
+                    [xjs.with("app")],
+                    [
+                        {
+                            bg_gradient_angle: {start: 0, end: 360}
+                        }
+                    ],
+                    5000
+                ).then(() => {
+                    xjs.with("app").bg().gradient().clear().bgColor("#ff0000");
+                });
+
                 setProperty("output", "innerHTML", getStyleProperty("app", "left"));
                 /* three ways to set attributes */
                 /* xjs.with("select").setAttribute("arrow-color", "magenta").setAttribute("width", "150px"); */
@@ -88,6 +109,7 @@
                 .then(() => {
                     xjs.with("output").setProperty("innerHTML", getStyleProperty("app", "left"));
                 }); */
+                xjs.with("app").bg().gradient().clear();
                 xjs.animate(
                     [
                         xjs.with("app"), 

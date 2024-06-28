@@ -14,7 +14,6 @@ It consists of two parts:
 To see an example of use, you can see the file index.html or see the functional demo at https://ryddle.github.io/xjs/index.html
 
 ## Functionalities
-<b>SOON</b>
 
 ## DOM extensions
 

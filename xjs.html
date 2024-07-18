@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="xjs.js" type="text/javascript"></script>
+    <script src="xutils/xutils.js" type="text/javascript"></script>
+    <script src="xhtmlColors.js" type="text/javascript"></script>
+    <script src="xcolor.js" type="text/javascript"></script>
+    <script src="xjsSelect.js" type="text/javascript"></script>
+    <script src="xcolorPickerButton.js" type="text/javascript"></script>
+    <script src="xcolorPicker.js" type="text/javascript"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- <button id="btn">DoThings</button><div id="output"></div>
+    <div id="app" style="position: absolute; left: 100px; top: 100px; width: 100px; height: 100px; background-color: red"></div> -->
+
+    <xjs-select id="select" options='[{"value": "1", "textContent": "uno"}, {"value": "2", "textContent": "dos"}, {"value": "3", "textContent": "tres"}]' 
+    style="background-color: rgb(173, 233, 181);" width="200px" arrow-color="green"></xjs-select>
+</body>
+
+</html>
+<script>
+    xjs.withnew(xjs.xjselements.xjsSelect, "select2").appendTo(document.body);
+
+    xjs.registerXJSElement("xjsXcolorPickerBtn", "xcolor-picker-btn");
+
+    xjs.withnew(xjs.xjselements.xjsXcolorPickerBtn, "colorPickerBtn").appendTo(document.body);
+
+    xjs.withnew("button").setProperty("id", "btn").setProperty("innerHTML", "DoThings").bindEvent("click", doThings).appendTo(document.body);
+
+    xjs.withnew("div").setProperty("id", "output").appendTo(document.body);
+
+    xjs.withnew("panel", "app").pos(100,120).setSize(100,100).bgColor("red").appendTo(document.body);
+
+    xjs.withnew("panel").setProperty("id", "message1").pos(400,10).setSize(400,100).appendTo(document.body);
+    xjs.withnew("panel").setProperty("id", "message2").pos(900,10).setSize(250,100).appendTo(document.body);
+
+    // short way
+    xjs.withnew("panel", "app2").pos(100,400).setSize(100, 100).bgColor("blue").appendTo(document.body);
+
+    var index = 0;
+    function doThings() {
+        switch (index) {
+            case 0:
+                document.getElm("output").innerHTML = document.getElm("app").style.leftPos();
+                //setProperty("output", "innerHTML", getStyle("app", "left"));
+                index++;
+                break;
+            case 1:
+                document.getElm("app").style.leftPos("200");
+                /* Gradient examples */
+                //xjs.with("app").bg().gradient().linear().angle(45).color("#ff0000", 35).color("#00ff00", 85).set();
+                //xjs.with("app").bg().gradient().linear().direction(xjs.GradientDirection.TO_RIGHT).color("#ff0000", 33).color("#00ff00", 33).color("#00ff00", 66).color("#0000ff", 66).set();
+                xjs.with("app").bg().gradient().linear().repeat().angle(90).color("#ff0000").color("#00ff00", 10).color("#0000ff", 20).set();
+                //xjs.with("app").bg().gradient().radial().side(xjs.GradientSide.CLOSEST_CORNER).color("#ff0000", 35).color("#00ff00", 85).set();
+                //xjs.with("app").bg().gradient().conic().from(90).color("#ff0000", 35).color("#00ff00", 85).set();
+                //xjs.with("app").bg().gradient().conic().at(60,45).color("red").color("yellow").color("green").set();
+                //xjs.with("app").bg().image().url("https://www.w3schools.com/css/img_flwr.gif").size(30,40).origin(xjs.BgImageOrigin.BORDER_BOX).position(10, 10).set();
+
+                xjs.animate(
+                    [xjs.with("app")],
+                    [
+                        {
+                            bg_gradient_angle: {start: 0, end: 360}
+                        }
+                    ],
+                    5000
+                ).then(() => {
+                    xjs.with("app").bg().gradient().clear().bgColor("#ff0000");
+                });
+
+                setProperty("output", "innerHTML", getStyleProperty("app", "left"));
+                /* three ways to set attributes */
+                /* xjs.with("select").setAttribute("arrow-color", "magenta").setAttribute("width", "150px"); */
+                xjs.with("select").setAttributes({"arrow-color":"magenta", "width":"150px"}).setStyleProperty("background-color","rgb(251,173,251)");
+                /* xjs.with("select").setAttributes([["arrow-color","magenta"], ["width","150px"]]); */
+                index++;
+                break;
+            case 2:
+                /* fiive ways to set positions */
+                //document.getElementById("app").style.lef="80em";
+                //document.getElementById("app").style.top="250pt";
+
+                //document.getElm("app").left("80em");
+                //document.getElm("app").top("250pt");
+
+                // leftPos and topPos admit integers and strings. Integers are treated as pixels.
+                //document.getElementById("app").style.leftPos("80em");
+                //document.getElementById("app").style.topPos("250pt");
+
+                // pos admit integers and strings. Integers are treated as pixels.
+                //xjs.with("app").pos("80em", "250pt");
+
+
+                /* xjs.animate([xjs.with("app")], [{ 
+                    top: { start: 100, end: 250, ease: xjs.easeTypes.easeOutElastic }, 
+                    left: { start: 200, end: 900, ease: xjs.easeTypes.easeOutElastic }, 
+                    width: { start: 100, end: 200, ease: xjs.easeTypes.easeInOut },
+                    backgroundColor: { start: '#ff0000', end: '#00ffff', ease: xjs.easeTypes.easeOut } }], 500);
+
+                xjs.animate([xjs.with("app2")], [{
+                    top: { start: 400, end: 200, ease: xjs.easeTypes.easeInOut },
+                    left: { start: 100, end: 100, ease: xjs.easeTypes.easeInOut },
+                    opacity: { start: 1, end: 0.1, ease: xjs.easeTypes.easeInOut },
+                    backgroundColor: { start: '#0000ff', end: '#00ffff', ease: xjs.easeTypes.easeIn } }], 500)
+                .then(() => {
+                    xjs.with("output").setProperty("innerHTML", getStyleProperty("app", "left"));
+                }); */
+                xjs.with("app").bg().gradient().clear();
+                xjs.animate(
+                    [
+                        xjs.with("app"), 
+                        xjs.with("app2")
+                    ], 
+                    [
+                        { 
+                        top: { start: 100, end: 250, ease: xjs.easeTypes.easeOutElastic }, 
+                        left: { start: 200, end: 900, ease: xjs.easeTypes.easeOutElastic }, 
+                        width: { start: 100, end: 200, ease: xjs.easeTypes.easeInOut },
+                        backgroundColor: { start: '#ff0000', end: '#00ffff', ease: xjs.easeTypes.easeOut } 
+                        }, 
+                        {
+                        top: { start: 400, end: 200, ease: xjs.easeTypes.easeInOut },
+                        left: { start: 100, end: 100, ease: xjs.easeTypes.easeInOut },
+                        opacity: { start: 1, end: 0.1, ease: xjs.easeTypes.easeInOut },
+                        backgroundColor: { start: '#0000ff', end: '#00ffff', ease: xjs.easeTypes.easeIn } 
+                        }
+                    ], 500)
+                .then(() => {
+                    xjs.with("output").setProperty("innerHTML", getStyleProperty("app", "left"));
+                });
+
+                //xjs.animate( xjs.with("app"), "left", "900px", 1000, xjs.easeTypes.easeInOut);
+                //xjs.animate( xjs.with("app"), "top", "250px", 1000, xjs.easeTypes.easeInOut);
+
+                setProperty("output", "innerHTML", getStyleProperty("app", "left"));
+                index++;
+                break;
+            case 3:
+                let newdiv = xjs.withnew(xjs.htmlElements.panel, "newdiv").setStyle({ left: "10px", top: "50px", width: "10px", height: "10px", backgroundColor: "blue" });
+                document.getElm("app").appendChild(newdiv);
+                /* let newInputText = xjs.withnew(xjs.htmlElements.inputText).setProperties({ "id": "textinput", "size": "8", "value": "Hello World" }).appendTo(xjs.getElm("app")); */
+                let newInputText = xjs.withnew(xjs.htmlElements.input.text, "textinput", "textinput", "Hello World").setAttribute("size", "8").appendTo(xjs.getElm("app"));
+                xjs.registerComponent("myinputpanel", xjs.getElm("app"));
+                
+                setProperty("output", "innerHTML", getStyleProperty("app", "left"));
+                index++;
+                break;
+            case 4:
+                //xjs.with("app").pos(100, 100);
+                xjs.animate([xjs.with("app")], [{ 
+                    top: { start: 250, end: 120, ease: xjs.easeTypes.easeInOut }, 
+                    left: { start: 900, end: 100, ease: xjs.easeTypes.easeInOut },
+                    width: { start: 200, end: 100, ease: xjs.easeTypes.easeInOut },
+                    backgroundColor: { start: '#00ffff', end: '#ff0000', ease: xjs.easeTypes.easeIn } }], 1000)
+                .then(() => {
+                    xjs.with("output").setProperty("innerHTML", getStyleProperty("app", "left"));
+                });
+                
+                xjs.animate([xjs.with("app2")], [{
+                    top: { start: 200, end: 400, ease: xjs.easeTypes.easeInOut },
+                    left: { start: 100, end: 100, ease: xjs.easeTypes.easeInOut },
+                    opacity: { start: 0.1, end: 1, ease: xjs.easeTypes.easeInOut },
+                    backgroundColor: { start: '#00ffff', end: '#0000ff', ease: xjs.easeTypes.easeIn } }], 1000);
+
+                //setProperty("output", "innerHTML", getStyleProperty("app", "left"));
+                xjs.with("newdiv").setStyleProperty("backgroundColor", "green");
+                xjs.with("app").delChilds("textinput", xjs.getElm("newdiv"));
+
+                xjs.with(xjs.getComponent("myinputpanel")).setStyleProperty("background-color", "rgb("+xjs.randomInt(255)+", "+xjs.random(255)+", "+xjs.random(255)+")").pos(xjs.random(10, 1500), xjs.random(500, 1000)).appendTo(document.body);
+                
+                index = 0;
+                break;
+            default:
+                break;
+        }
+    }
+
+    class TimeTask {
+        constructor(id, elm) {
+            this.id = id;
+            this.elm = elm;
+        }
+
+        showMessage() {
+            xjs.with(this.elm).setProperty("innerHTML","Hello World from " + this.id);
+            xjs.animate([xjs.with("message2")],[{
+                color: { start: '#000000', end: '#ff00ff', ease: xjs.easeTypes.easeIn }
+            }], 10000);
+        }
+
+        showDate() {
+            xjs.with(this.elm).setProperty("innerHTML","Date from " + this.id + ": " + xjs.formatDate("dd/MM/yyyy hh:mm:ss", new Date()));
+        }
+    }
+
+    var timeTask1 = new TimeTask("task1", xjs.getElm("message1"));
+    var timeTask2 = new TimeTask("task2", xjs.getElm("message2"));
+
+    xjs.registerTimer("timer1", timeTask1, timeTask1.showDate, 1000, timeTask1);
+
+    xjs.timeOut(timeTask2.showMessage, 5500, timeTask2);
+</script>

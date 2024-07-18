@@ -59,6 +59,11 @@ HTMLElement.prototype.insert = function (elm, name) {
     return this;
 };
 
+HTMLElement.prototype.append = function (elm) {
+    this.appendChild(elm);
+    return this;
+};
+
 HTMLElement.prototype.delChilds = function (...elm) {
     for (let i = 0; i < elm.length; i++) {
         if (typeof elm[i] == "string") {
@@ -143,6 +148,15 @@ HTMLElement.prototype.getStyleProperty = function (property, format) {
         return this.style[property];
     }
 };
+
+HTMLElement.prototype.toggleClass = function (className) {
+    if (this.classList.contains(className)) {
+        this.classList.remove(className);
+    } else {
+        this.classList.add(className);
+    }
+    return this;
+}
 
 HTMLElement.prototype.queryTypes = { ID: "id", CLASS: "class", NAME: "name", TAG: "tag" };
 
@@ -234,7 +248,7 @@ HTMLElement.prototype.setSize = function (_w, _h) {
 
 
 HTMLElement.prototype.setWidth = function (width) {
-    return this.setProperty("width", width);
+    return this.style.setProperty("width", (typeof width === "string" && isNaN(width)) ? width : (width) + "px");
 };
 
 HTMLElement.prototype.getWidth = function (asNumber = false) {
@@ -246,7 +260,7 @@ HTMLElement.prototype.getWidth = function (asNumber = false) {
 
 
 HTMLElement.prototype.setHeight = function (height) {
-    return this.setProperty("height", height);
+    return this.style.setProperty("height", (typeof height === "string" && isNaN(height)) ? height : (height) + "px");
 };
 
 HTMLElement.prototype.getHeight = function (asNumber = false) {
@@ -857,6 +871,12 @@ class _xjs {
         return _elm;
     }
 
+    withcss(css) {
+        let style = document.createElement('style');
+        style.textContent = css;
+        document.head.appendChild(style);
+    }
+
     //// String ////
     toBaseAscii() {
         return normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -1112,6 +1132,7 @@ class _xjs {
             li: "li",
             ol: "ol",
             p: "p",
+            i: "i",
             h1: "h1",
             h2: "h2",
             h3: "h3",
@@ -1158,6 +1179,7 @@ class _xjs {
         li: this.lazy(() => document.createElement("li")),
         ol: this.lazy(() => document.createElement("ol")),
         p: this.lazy(() => document.createElement("p")),
+        i: this.lazy(() => document.createElement("i")),
         h1: this.lazy(() => document.createElement("h1")),
         h2: this.lazy(() => document.createElement("h2")),
         h3: this.lazy(() => document.createElement("h3")),

@@ -19,6 +19,9 @@
 <script>
     var xlo = new xgridlayout("grid");
     xlo.addRows(
+        xgridRow.get(xlo, "80px").addCols(
+            xgridCol.get(xlo, "auto", { backgroundColor: "black" }, "header"),
+        ),
         xgridRow.get(xlo, "auto").addCols(
             xgridCol.get(xlo, "300px", { backgroundColor: "#202124" }, "sidebar").add(
                 xjs.withnew(xjs.htmlElements.button, "sidebar_toggle_btn")
@@ -39,15 +42,7 @@
                         }
                     })
             ),
-            xgridCol.get(xlo, "auto", {}).addRows(
-                xgridRow.get(xlo, "80px").addCols(
-                    xgridCol.get(xlo, "auto", { backgroundColor: "black" }, "header"),
-                ),
-                xgridRow.get(xlo, "auto").addCols(
-                    xgridCol.get(xlo, "auto", { backgroundColor: "#ffffff" }, "main")
-                        .add(xjs.withnew(xjs.htmlElements.iframe).setStyle({ margin: "0px", border: "0px", width: "100%", height: "100%" }).setProperty("src", "xjs.html"))
-                )
-            )
+            xgridCol.get(xlo, "auto", {backgroundColor: "#353535"})
         ),
         xgridRow.get(xlo, "80px").addCols(
             xgridCol.get(xlo, "auto", { backgroundColor: "black" }, "header"),

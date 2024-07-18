@@ -60,7 +60,7 @@ This document describes a JavaScript code that provides a set of utility functio
 * **Background:**
     * `bgColor(_bgcolor)`: Sets or gets the background color of the element.
     * `bg()`: The `bg` function is a method added to the `HTMLElement.prototype` object. It returns a new object that provides methods for manipulating the background of an HTML element.
-        ### hex
+        #### hex
 
         The `hex` method is a method of the object returned by the `bg` function. It allows you to set or get the background color of an HTML element.
 
@@ -70,7 +70,7 @@ This document describes a JavaScript code that provides a set of utility functio
         - If `_h` is provided, it sets the background color of the HTML element to the specified color and returns the element.
         - If `_h` is not provided, it returns the current background color of the HTML element.
 
-        ### rgb
+        #### rgb
 
         The `rgb` method is a method of the object returned by the `bg` function. It allows you to set or get the background color of an HTML element using RGB values.
 
@@ -80,7 +80,7 @@ This document describes a JavaScript code that provides a set of utility functio
         - If `args` is provided, it sets the background color of the HTML element to the specified color and returns the element.
         - If `args` is not provided, it returns an array representing the RGB values of the current background color of the HTML element.
 
-        ### rgb2hex
+        #### rgb2hex
 
         The `rgb2hex` method is a method of the object returned by the `bg` function. It converts an RGB color to its corresponding hexadecimal color code.
 
@@ -89,7 +89,7 @@ This document describes a JavaScript code that provides a set of utility functio
         - Returns:
         - A string representing the hexadecimal color code.
 
-        ### hex2rgb
+        #### hex2rgb
 
         The `hex2rgb` method is a method of the object returned by the `bg` function. It converts a hexadecimal color code to its corresponding RGB values.
 
@@ -98,7 +98,7 @@ This document describes a JavaScript code that provides a set of utility functio
         - Returns:
         - A string representing the RGB values.
 
-        ### image
+        #### image
 
         The `image` method is a method of the object returned by the `bg` function. It provides methods for manipulating the background image of an HTML element.
 

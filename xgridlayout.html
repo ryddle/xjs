@@ -18,6 +18,10 @@
 
 <script>
     var xlo = new xgridlayout("grid");
+    
+    var mainCol = xgridCol.get(xlo, "auto", { backgroundColor: "#353535", color: "white", padding: "10px" }, "main");
+    mainCol.el().setProperty("innerText", xjs.loremipsum(1000));
+
     xlo.addRows(
         xgridRow.get(xlo, "auto").addCols(
             xgridCol.get(xlo, "300px", { backgroundColor: "#202124" }, "sidebar").add(
@@ -44,7 +48,8 @@
                     xgridCol.get(xlo, "auto", { backgroundColor: "black" }, "header"),
                 ),
                 xgridRow.get(xlo, "auto").addCols(
-                    xgridCol.get(xlo, "auto", { backgroundColor: "#353535" }, "main")
+                    //xgridCol.get(xlo, "auto", { backgroundColor: "#353535", color: "white" }, "main")
+                    mainCol
                 )
             )
         ),

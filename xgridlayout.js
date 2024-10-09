@@ -123,6 +123,8 @@ class xgridlayout {
                 cols.forEach(col => {
                     if (col !== _element) {
                         col.resizeGrid();
+                    }else{
+                        console.log('Same element');
                     }
                 });
             }

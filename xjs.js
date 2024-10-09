@@ -790,7 +790,7 @@ class _xjs {
                                 const endValue = parseFloat(style[prop].end) || 0;
                                 const change = endValue - startValue;
                                 const ease = style[prop].ease || "linear";
-                                element.style[prop] = _self.#easeFunctions[ease](elapsedTime / 1000, startValue, change, duration / 1000) + 'px';
+                                element.style[prop] = Math.round(_self.#easeFunctions[ease](elapsedTime / 1000, startValue, change, duration / 1000)) + 'px';
                             }
                             if (_self.#animationStyleGroups.opacity.includes(prop)) {
                                 const startValue = parseFloat(style[prop].start) || 0;
@@ -884,7 +884,7 @@ class _xjs {
 
     loremipsum(length) {
         let text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed id nunc non turpis ultrices aliquam. Sed id cursus velit. In hac habitasse platea dictumst. Nulla facilisi. Nulla facilisi. Nullam eget consectetur sem. Donec euismod, enim ac interdum malesuada, est nunc auctor nulla, et tincidunt nibh nisi non diam. In hac habitasse platea dictumst. Sed non metus vitae erat consectetur mattis. Etiam ut ante vel tortor ultrices condimentum. Sed bibendum, mauris id pulvinar vulputate, massa felis volutpat nunc, nec luctus nisl nibh in nunc. Sed semper, est in fermentum faucibus, mauris eros viverra nisl, nec posuere est nisi in nunc. Sed euismod, neque vel pulvinar lacinia, est nunc bibendum nisl, in ultricies nisl nunc in lacus. Sed luctus, ante ac tincidunt semper, nunc neque aliquam nulla, sed commodo nisl turpis vitae nisi. Nulla facilisi.";
-        return text.substring(0, length);
+        return (length)?text.substring(0, length):text;
     }
 
     //// Math ////

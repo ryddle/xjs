@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,7 @@
     <script src="xgridlayout.js" type="text/javascript"></script>
 </head>
 
-<body>
+<body style="margin: 0; overflow: hidden;">
 
 </body>
 
@@ -30,16 +30,18 @@
                     .setStyle({ float: "right", margin: "5px", cursor: "pointer" })
                     .bgColor("#353535")
                     .append(
-                        xjs.withnew(xjs.htmlElements.i).setStyle({ color: "white" }).setClass("fas fa-bars")
+                        xjs.withnew(xjs.htmlElements.i).setStyle({ color: "white" }).setClass("fas fa-close")
                     )
                     .bindEvent("click", function () {
                         let sidebar = xjs.with("sidebar");
                         if (sidebar.getWidth(true) == 300) {
                             //sidebar.setWidth(40);
                             xjs.animate([sidebar], [{ width: { start: 300, end: 40, ease: xjs.easeTypes.easeInOut }, }], 100);
+                            xjs.with("sidebar_toggle_btn").getChild(0).setClass("fas fa-bars    ");
                         } else {
                             //sidebar.setWidth(300);
                             xjs.animate([sidebar], [{ width: { start: 40, end: 300, ease: xjs.easeTypes.easeInOut }, }], 100);
+                            xjs.with("sidebar_toggle_btn").getChild(0).setClass("fas fa-close");
                         }
                     })
             ),
@@ -57,4 +59,56 @@
             xgridCol.get(xlo, "auto", { backgroundColor: "black" }, "footer"),
         )
     ).resizeGrid();
+
+    //menu option base element
+    var li = xjs.withnew(xjs.htmlElements.li).setStyles({ 
+        listStyle: "none", padding: "5px", paddingLeft: "12px", cursor: "pointer", height: "30px",
+        display: "flex",
+        alignItems: "center"
+    }).setVariable("menuStr", "Option 1")
+    .append(
+        xjs.withnew(xjs.htmlElements.i).setStyle({ color: "white", marginRight: "10px" }).setClass("fas fa-ellipsis-v")
+    ).append(
+        xjs.withnew(xjs.htmlElements.aButton, "btn").setStyles({ color: "white", cursor: "pointer", textDecoration: "none", marginLeft: "20px" }).setText("Option")
+    ).bindEvent("mouseover", function () {
+        this.setStyle({ backgroundColor: "#aaaaaa" });
+    }).bindEvent("mouseout", function () {
+        this.setStyle({ backgroundColor: "transparent" });
+    }).bindEvent("load", function () {
+        this.getChild(1).setText(this.getVariable("menuStr"));
+    });
+    xjs.registerComponent("menu_option", li);
+
+    xjs.with("sidebar").append(xjs.withnew(xjs.htmlElements.panel, "sidebar_content").pos(0, 85).setSize(300, 300).append(
+        //add menu options
+        xjs.withnew(xjs.htmlElements.ul, "menu").setStyles({ padding: "0px", margin: "0px" })
+            .append(xjs.getComponent("menu_option", true).setAttribute("title", "XJS Showcase")
+                .getChild(1).setText("XJS Showcase").parentElement
+                .getChild(0).setClass("fas fa-images").parentElement
+                .bindEvent("click", function () {
+                    xjs.with("main").setText("").append(xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", "./xjs.html"));
+            }))
+            .append(xjs.getComponent("menu_option", true).setAttribute("title", "GridLayout 2")
+                .getChild(1).setText("GridLayout 2").parentElement
+                .getChild(0).setClass("fas fa-table").parentElement
+                .bindEvent("click", function () {
+                    xjs.with("main").setText("").append(xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", "./xgridlayout2.html"));
+            }))
+            .append(xjs.getComponent("menu_option", true).setAttribute("title", "GridLayout 3")
+                .getChild(1).setText("GridLayout 3").parentElement
+                .getChild(0).setClass("fas fa-table-columns").parentElement
+                .bindEvent("click", function () {
+                    xjs.with("main").setText("").append(xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", "./xgridlayout3.html"));
+            }))
+            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 4").parentElement)
+            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 5").parentElement)
+            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 6").parentElement)
+            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 7").parentElement)
+            .append(xjs.getComponent("menu_option").getChild(1).setText("Option 8").parentElement
+                .bindEvent("mouseover", function () {
+                    this.setStyle({ backgroundColor: "#aaaaaa" });
+                }).bindEvent("mouseout", function () {
+                    this.setStyle({ backgroundColor: "transparent" });
+                }))
+    ))
 </script>

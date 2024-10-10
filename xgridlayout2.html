@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -34,11 +34,11 @@
                     .bindEvent("click", function () {
                         let sidebar = xjs.with("sidebar");
                         if (sidebar.getWidth(true) == 300) {
-                            sidebar.setWidth(40);
-                            //xjs.animate([sidebar], [{ width: { start: 300, end: 40, ease: xjs.easeTypes.easeInOut }, }], 5000);
+                            //sidebar.setWidth(40);
+                            xjs.animate([sidebar], [{ width: { start: 300, end: 40, ease: xjs.easeTypes.easeInOut }, }], 100);
                         } else {
-                            sidebar.setWidth(300);
-                            //xjs.animate([sidebar], [{ width: { start: 40, end: 300, ease: xjs.easeTypes.easeInOut }, }], 5000);
+                            //sidebar.setWidth(300);
+                            xjs.animate([sidebar], [{ width: { start: 40, end: 300, ease: xjs.easeTypes.easeInOut }, }], 100);
                         }
                     })
             ),

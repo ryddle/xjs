@@ -11,7 +11,7 @@ Node.prototype.prependTo = function (node) {
     return this;
 };
 
-Element.prototype.__eh = {};
+//Element.prototype.__eh = {};
 
 Element.prototype.unbindEvent = function (evnt) {
     this.removeEventListener(evnt, this.__eh[evnt]);
@@ -19,8 +19,11 @@ Element.prototype.unbindEvent = function (evnt) {
 };
 
 Element.prototype.bindEvent = function (evnt, method, scope, ...args) {
-    this.__eh[evnt] = method.bind(scope || this, ...args);
-    this.addEventListener(evnt, this.__eh[evnt]);
+    this.__eh = this.__eh || {};
+    this.__eh[evnt] = {};
+    this.__eh[evnt]['method'] = method.bind(scope || this, ...args);
+    this.__eh[evnt]['targetFunction'] = method;
+    this.addEventListener(evnt, this.__eh[evnt]['method']);
     return this;
 };
 
@@ -48,6 +51,7 @@ Document.prototype.unbindEvent = function (evnt, scope) {
 
 Document.prototype.bindEvent = function (evnt, method, scope, ...args) {
     let ehid = evnt.concat("_", method.toString().hashCode(), scope.constructor.name.hashCode());
+    this.__eh = this.__eh || {};
     this.__eh[ehid] = method.bind(scope || this, ...args);
     this.addEventListener(evnt, this.__eh[ehid]);
     return this;
@@ -63,6 +67,15 @@ HTMLElement.prototype.append = function (elm) {
     this.appendChild(elm);
     return this;
 };
+
+HTMLElement.prototype.getChild = function (selector) {
+    //selector can be a number or tag
+    if (typeof selector == "number") {
+        return this.children[selector];
+    } else {
+        return this.querySelectorAll(selector);
+    }
+}
 
 HTMLElement.prototype.delChilds = function (...elm) {
     for (let i = 0; i < elm.length; i++) {
@@ -115,6 +128,36 @@ HTMLElement.prototype.setProperties = function (properties) {
     return this;
 };
 
+
+HTMLElement.prototype.getVariable = function (variable) {
+    return this.variables[variable];
+}
+
+HTMLElement.prototype.setVariable = function (variable, value) {
+    this.variables = this.variables || {};
+    this.variables[variable] = value;
+    return this;
+}
+
+HTMLElement.prototype.removeVariable = function (variable) {
+    if (!this.variables) return this;
+    delete this.variables[variable];
+    return this;
+}
+
+HTMLElement.prototype.setVariables = function (variables) {
+    this.variables = this.variables || {};
+    if (typeof variables == "object") {
+        Object.assign(this.variables, variables);
+    } else if (typeof variables == "array") {
+        for (let i = 0; i < variables.length; i++) {
+            this.variables[variables[i][0]] = variables[i][1];
+        }
+    }
+    return this;
+}
+
+
 HTMLElement.prototype.setStyle = function (_style) {
     Object.assign(this.style, _style);
     return this;
@@ -156,7 +199,7 @@ HTMLElement.prototype.toggleClass = function (className) {
         this.classList.add(className);
     }
     return this;
-}
+};
 
 HTMLElement.prototype.queryTypes = { ID: "id", CLASS: "class", NAME: "name", TAG: "tag" };
 
@@ -373,10 +416,10 @@ HTMLElement.prototype.bg = function () {
                     return this;
                 };
                 this.size = function (_x, _y) {
-                    if(typeof _x === "string"){
+                    if (typeof _x === "string") {
                         this._size = _x;
-                    }else{
-                        this._size = `${_x}px ${_y}px`;                        
+                    } else {
+                        this._size = `${_x}px ${_y}px`;
                     }
                     return this;
                 };
@@ -390,13 +433,13 @@ HTMLElement.prototype.bg = function () {
                 };
                 this.set = function () {
                     _parent.style.setProperty("background-image", `url(${this._url})`);
-                    if(this._repeat!==null) _parent.style.setProperty("background-repeat", this._repeat);
-                    if(this._origin!==null) _parent.style.setProperty("background-origin", this._origin);
-                    if(this._position!==null) _parent.style.setProperty("background-position", this._position);
-                    if(this._attachment!==null) _parent.style.setProperty("background-attachment", this._attachment);
-                    if(this._size!==null) _parent.style.setProperty("background-size", this._size);
-                    if(this._blendMode!==null) _parent.style.setProperty("background-blend-mode", this._blendMode);
-                    if(this._clip!==null) _parent.style.setProperty("background-clip", this._clip);
+                    if (this._repeat !== null) _parent.style.setProperty("background-repeat", this._repeat);
+                    if (this._origin !== null) _parent.style.setProperty("background-origin", this._origin);
+                    if (this._position !== null) _parent.style.setProperty("background-position", this._position);
+                    if (this._attachment !== null) _parent.style.setProperty("background-attachment", this._attachment);
+                    if (this._size !== null) _parent.style.setProperty("background-size", this._size);
+                    if (this._blendMode !== null) _parent.style.setProperty("background-blend-mode", this._blendMode);
+                    if (this._clip !== null) _parent.style.setProperty("background-clip", this._clip);
                     return _parent;
                 };
                 this.clear = function () {
@@ -409,7 +452,7 @@ HTMLElement.prototype.bg = function () {
                     _parent.style.removeProperty("background-blend-mode");
                     _parent.style.removeProperty("background-clip");
                     return _parent;
-                }
+                };
             })(_parent);
         };
         this.gradient = function () {
@@ -444,8 +487,8 @@ HTMLElement.prototype.bg = function () {
                 this.angle = function (_angle) {
                     if (this.options.type == "linear") {
                         this.options.angle = _angle;
-                    }else if (this.options.type == "conic") {
-                        this.options.angle = "from "+_angle;
+                    } else if (this.options.type == "conic") {
+                        this.options.angle = "from " + _angle;
                     }
                     return this;
                 };
@@ -463,13 +506,13 @@ HTMLElement.prototype.bg = function () {
                 };
                 this.from = function (_angle) {
                     if (this.options.type == "conic") {
-                        this.options.from = "from "+_angle;
+                        this.options.from = "from " + _angle;
                     }
                     return this;
                 };
                 this.at = function (_per01, _per02) {
                     if (this.options.type == "conic") {
-                        this.options.at = "at "+_per01+"% "+_per02+"%";
+                        this.options.at = "at " + _per01 + "% " + _per02 + "%";
                     }
                     return this;
                 };
@@ -480,7 +523,7 @@ HTMLElement.prototype.bg = function () {
                     if (this.options.type == "conic") {
                         this.options.colors.push((percentage_or_angle !== undefined ? `${_color} ${percentage_or_angle}deg` : _color));
                     } */
-                    this.options.colors.push({color:_color,percentage_or_angle:_percentage_or_angle});
+                    this.options.colors.push({ color: _color, percentage_or_angle: _percentage_or_angle });
                     return this;
                 };
                 this.set = function (_options) {
@@ -884,7 +927,7 @@ class _xjs {
 
     loremipsum(length) {
         let text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed id nunc non turpis ultrices aliquam. Sed id cursus velit. In hac habitasse platea dictumst. Nulla facilisi. Nulla facilisi. Nullam eget consectetur sem. Donec euismod, enim ac interdum malesuada, est nunc auctor nulla, et tincidunt nibh nisi non diam. In hac habitasse platea dictumst. Sed non metus vitae erat consectetur mattis. Etiam ut ante vel tortor ultrices condimentum. Sed bibendum, mauris id pulvinar vulputate, massa felis volutpat nunc, nec luctus nisl nibh in nunc. Sed semper, est in fermentum faucibus, mauris eros viverra nisl, nec posuere est nisi in nunc. Sed euismod, neque vel pulvinar lacinia, est nunc bibendum nisl, in ultricies nisl nunc in lacus. Sed luctus, ante ac tincidunt semper, nunc neque aliquam nulla, sed commodo nisl turpis vitae nisi. Nulla facilisi.";
-        return (length)?text.substring(0, length):text;
+        return (length) ? text.substring(0, length) : text;
     }
 
     //// Math ////
@@ -1263,14 +1306,38 @@ class _xjs {
 
     registerComponent(name, component) {
         this.#components[name] = component.cloneNode(true);
+
+        if (component.__eh) {
+            this.#components[name].__eh = component.__eh;
+        }
+
+        if(component.variables){
+            this.#components[name].variables = component.variables;
+        }
     }
 
     hasComponent(name) {
         return this.#components[name] != null;
     }
 
-    getComponent(name) {
-        return this.#components[name].cloneNode(true);
+    getComponent(name, withevents = false) {
+        var component = this.#components[name].cloneNode(true);
+
+        if (withevents) {
+            var events = this.#components[name].__eh;
+            if (events) {
+                for (var i = 0; i < Object.keys(events).length; i++) {
+                    component.bindEvent(Object.keys(events)[i], events[Object.keys(events)[i]]['targetFunction'], component);
+                }
+
+            }
+        }
+
+        if (this.#components[name].variables) {
+            component.setVariables(this.#components[name].variables);
+        }
+
+        return component;
     }
 }
 

@@ -68,6 +68,15 @@ HTMLElement.prototype.append = function (elm) {
     return this;
 };
 
+HTMLElement.prototype.prepend = function (elm) {
+    this.insertBefore(elm);
+    return this;
+};
+
+HTMLElement.prototype.parent = function () {
+    return this.parentElement;
+};
+
 HTMLElement.prototype.getChild = function (selector) {
     //selector can be a number or tag
     if (typeof selector == "number") {

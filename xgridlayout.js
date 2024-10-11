@@ -123,7 +123,7 @@ class xgridlayout {
                 cols.forEach(col => {
                     if (col !== _element) {
                         col.resizeGrid();
-                    }else{
+                    } else {
                         console.log('Same element');
                     }
                 });
@@ -213,6 +213,11 @@ class xgridCol {
         }
 
         let _self = this;
+
+        this.col.parent = function () {
+            return _self;
+        };
+
         this.observer = new MutationObserver(function (mutations) {
             mutations.forEach(function (mutation) {
                 if (mutation.attributeName === 'style') {

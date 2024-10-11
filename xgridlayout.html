@@ -24,7 +24,7 @@
 
     xlo.addRows(
         xgridRow.get(xlo, "auto").addCols(
-            xgridCol.get(xlo, "300px", { backgroundColor: "#202124" }, "sidebar").add(
+            xgridCol.get(xlo, "300px", { backgroundColor: "#202124", borderRight: "1px solid #353535" }, "sidebar").add(
                 xjs.withnew(xjs.htmlElements.button, "sidebar_toggle_btn")
                     .setSize(30, 30)
                     .setStyle({ float: "right", margin: "5px", cursor: "pointer" })
@@ -47,16 +47,20 @@
             ),
             xgridCol.get(xlo, "auto", {}).addRows(
                 xgridRow.get(xlo, "80px").addCols(
-                    xgridCol.get(xlo, "auto", { backgroundColor: "black" }, "header"),
+                    xgridCol.get(xlo, "auto", { backgroundColor: "black", borderBottom: "1px solid #353535" }, "header"),
                 ),
                 xgridRow.get(xlo, "auto").addCols(
-                    //xgridCol.get(xlo, "auto", { backgroundColor: "#353535", color: "white" }, "main")
-                    mainCol
+                    xgridCol.get(xlo, "auto", { backgroundColor: "#353535", color: "white" }, "main")
+                        .el()
+                            .setProperty("innerText", xjs.loremipsum(1000))
+                            .setStyles({ padding: "10px" })
+                    .parent()
+                    //mainCol
                 )
             )
         ),
         xgridRow.get(xlo, "80px").addCols(
-            xgridCol.get(xlo, "auto", { backgroundColor: "black" }, "footer"),
+            xgridCol.get(xlo, "auto", { backgroundColor: "black", borderTop: "1px solid #353535" }, "footer"),
         )
     ).resizeGrid();
 
@@ -83,32 +87,36 @@
         //add menu options
         xjs.withnew(xjs.htmlElements.ul, "menu").setStyles({ padding: "0px", margin: "0px" })
             .append(xjs.getComponent("menu_option", true).setAttribute("title", "XJS Showcase")
-                .getChild(1).setText("XJS Showcase").parentElement
-                .getChild(0).setClass("fas fa-images").parentElement
+                .getChild(1).setText("XJS Showcase").parent()
+                .getChild(0).setClass("fas fa-images").parent()
                 .bindEvent("click", function () {
                     xjs.with("main").setText("").append(xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", "./xjs.html"));
             }))
             .append(xjs.getComponent("menu_option", true).setAttribute("title", "GridLayout 2")
-                .getChild(1).setText("GridLayout 2").parentElement
-                .getChild(0).setClass("fas fa-table").parentElement
+                .getChild(1).setText("GridLayout 2").parent()
+                .getChild(0).setClass("fas fa-table").parent()
                 .bindEvent("click", function () {
                     xjs.with("main").setText("").append(xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", "./xgridlayout2.html"));
             }))
             .append(xjs.getComponent("menu_option", true).setAttribute("title", "GridLayout 3")
-                .getChild(1).setText("GridLayout 3").parentElement
-                .getChild(0).setClass("fas fa-table-columns").parentElement
+                .getChild(1).setText("GridLayout 3").parent()
+                .getChild(0).setClass("fas fa-table-columns").parent()
                 .bindEvent("click", function () {
                     xjs.with("main").setText("").append(xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", "./xgridlayout3.html"));
             }))
-            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 4").parentElement)
-            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 5").parentElement)
-            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 6").parentElement)
-            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 7").parentElement)
-            .append(xjs.getComponent("menu_option").getChild(1).setText("Option 8").parentElement
+            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 4").parent())
+            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 5").parent())
+            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 6").parent())
+            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 7").parent())
+            .append(xjs.getComponent("menu_option").getChild(1).setText("Option 8").parent()
                 .bindEvent("mouseover", function () {
                     this.setStyle({ backgroundColor: "#aaaaaa" });
                 }).bindEvent("mouseout", function () {
                     this.setStyle({ backgroundColor: "transparent" });
                 }))
-    ))
+    ));
+
+    xjs.with("header").append(
+        xjs.withnew(xjs.htmlElements.h1).setText("XJS / XGridLayout - Showcase").setStyle({ color: "white", textAlign: "center", fontFamily: "monospace" })
+    );
 </script>

@@ -104,7 +104,12 @@
                 .bindEvent("click", function () {
                     xjs.with("main").setText("").append(xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", "./xgridlayout3.html"));
             }))
-            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 4").parent())
+            .append(xjs.getComponent("menu_option", true).setAttribute("title", "GridLayout 4")
+                .getChild(1).setText("GridLayout 4").parent()
+                .getChild(0).setClass("fas fa-table-columns").parent()
+                .bindEvent("click", function () {
+                    xjs.with("main").setText("").append(xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", "./xgridlayout4.html"));
+            }))
             .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 5").parent())
             .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 6").parent())
             .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 7").parent())

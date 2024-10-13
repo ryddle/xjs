@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grid Layout</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="xjs.js" type="text/javascript"></script>
+    <script src="xgridlayout.js" type="text/javascript"></script>
+</head>
+
+<body>
+
+</body>
+
+</html>
+
+<script>
+    var xlo = new xgridlayout("grid");
+    xlo.addRows(
+        xgridRow.get(xlo, "80px").addCols(
+            xgridCol.get(xlo, "auto", { backgroundColor: "black" }, "header"),
+        ),
+        xgridRow.get(xlo, "auto").addCols(
+            xgridCol.get(xlo, "auto", {backgroundColor: "#353535"}),
+            xgridCol.get(xlo, "300px", { backgroundColor: "#202124" }, "sidebar").add(
+                xjs.withnew(xjs.htmlElements.button, "sidebar_toggle_btn")
+                    .setSize(30, 30)
+                    .setStyle({ float: "righleftt", margin: "5px", cursor: "pointer" })
+                    .bgColor("#353535")
+                    .append(
+                        xjs.withnew(xjs.htmlElements.i).setStyle({ color: "white" }).setClass("fas fa-bars")
+                    )
+                    .bindEvent("click", function () {
+                        let sidebar = xjs.with("sidebar");
+                        if (sidebar.getWidth(true) == 300) {
+                            //sidebar.setWidth(40);
+                            xjs.animate([sidebar], [{ width: { start: 300, end: 40, ease: xjs.easeTypes.easeInOut }, }], 100);
+                        } else {
+                            //sidebar.setWidth(300);
+                            xjs.animate([sidebar], [{ width: { start: 40, end: 300, ease: xjs.easeTypes.easeInOut }, }], 100);
+                        }
+                    })
+            )
+        ),
+        xgridRow.get(xlo, "80px").addCols(
+            xgridCol.get(xlo, "auto", { backgroundColor: "black" }, "footer"),
+        )
+    ).resizeGrid();
+</script>

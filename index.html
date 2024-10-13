@@ -10,7 +10,7 @@
     <script src="xgridlayout.js" type="text/javascript"></script>
 </head>
 
-<body>
+<body style="margin: 0; overflow: hidden;">
 
 </body>
 
@@ -18,39 +18,105 @@
 
 <script>
     var xlo = new xgridlayout("grid");
+    
+    var mainCol = xgridCol.get(xlo, "auto", { backgroundColor: "#353535", color: "white", padding: "10px" }, "main");
+    mainCol.el().setProperty("innerText", xjs.loremipsum(1000));
+
     xlo.addRows(
         xgridRow.get(xlo, "auto").addCols(
-            xgridCol.get(xlo, "300px", { backgroundColor: "#202124" }, "sidebar").add(
+            xgridCol.get(xlo, "300px", { backgroundColor: "#202124", borderRight: "1px solid #353535" }, "sidebar").add(
                 xjs.withnew(xjs.htmlElements.button, "sidebar_toggle_btn")
                     .setSize(30, 30)
                     .setStyle({ float: "right", margin: "5px", cursor: "pointer" })
                     .bgColor("#353535")
                     .append(
-                        xjs.withnew(xjs.htmlElements.i).setStyle({ color: "white" }).setClass("fas fa-bars")
+                        xjs.withnew(xjs.htmlElements.i).setStyle({ color: "white" }).setClass("fas fa-close")
                     )
                     .bindEvent("click", function () {
                         let sidebar = xjs.with("sidebar");
                         if (sidebar.getWidth(true) == 300) {
-                            sidebar.setWidth(40);
-                            //xjs.animate([sidebar], [{ width: { start: 300, end: 40, ease: xjs.easeTypes.easeInOut }, }], 5000);
+                            //sidebar.setWidth(40);
+                            xjs.animate([sidebar], [{ width: { start: 300, end: 40, ease: xjs.easeTypes.easeInOut }, }], 100);
+                            xjs.with("sidebar_toggle_btn").getChild(0).setClass("fas fa-bars    ");
                         } else {
-                            sidebar.setWidth(300);
-                            //xjs.animate([sidebar], [{ width: { start: 40, end: 300, ease: xjs.easeTypes.easeInOut }, }], 5000);
+                            //sidebar.setWidth(300);
+                            xjs.animate([sidebar], [{ width: { start: 40, end: 300, ease: xjs.easeTypes.easeInOut }, }], 100);
+                            xjs.with("sidebar_toggle_btn").getChild(0).setClass("fas fa-close");
                         }
                     })
             ),
             xgridCol.get(xlo, "auto", {}).addRows(
                 xgridRow.get(xlo, "80px").addCols(
-                    xgridCol.get(xlo, "auto", { backgroundColor: "black" }, "header"),
+                    xgridCol.get(xlo, "auto", { backgroundColor: "black", borderBottom: "1px solid #353535" }, "header"),
                 ),
                 xgridRow.get(xlo, "auto").addCols(
-                    xgridCol.get(xlo, "auto", { backgroundColor: "#ffffff" }, "main")
-                        .add(xjs.withnew(xjs.htmlElements.iframe).setStyle({ margin: "0px", border: "0px", width: "100%", height: "100%" }).setProperty("src", "xjs.html"))
+                    xgridCol.get(xlo, "auto", { backgroundColor: "#353535", color: "white" }, "main")
+                        .el()
+                            .setProperty("innerText", xjs.loremipsum(1000))
+                            .setStyles({ padding: "10px" })
+                    .parent()
+                    //mainCol
                 )
             )
         ),
         xgridRow.get(xlo, "80px").addCols(
-            xgridCol.get(xlo, "auto", { backgroundColor: "black" }, "footer"),
+            xgridCol.get(xlo, "auto", { backgroundColor: "black", borderTop: "1px solid #353535" }, "footer"),
         )
     ).resizeGrid();
+
+    //menu option base element
+    var li = xjs.withnew(xjs.htmlElements.li).setStyles({ 
+        listStyle: "none", padding: "5px", paddingLeft: "12px", cursor: "pointer", height: "30px",
+        display: "flex",
+        alignItems: "center"
+    }).setVariable("menuStr", "Option 1")
+    .append(
+        xjs.withnew(xjs.htmlElements.i).setStyle({ color: "white", marginRight: "10px" }).setClass("fas fa-ellipsis-v")
+    ).append(
+        xjs.withnew(xjs.htmlElements.aButton, "btn").setStyles({ color: "white", cursor: "pointer", textDecoration: "none", marginLeft: "20px" }).setText("Option")
+    ).bindEvent("mouseover", function () {
+        this.setStyle({ backgroundColor: "#aaaaaa" });
+    }).bindEvent("mouseout", function () {
+        this.setStyle({ backgroundColor: "transparent" });
+    }).bindEvent("load", function () {
+        this.getChild(1).setText(this.getVariable("menuStr"));
+    });
+    xjs.registerComponent("menu_option", li);
+
+    xjs.with("sidebar").append(xjs.withnew(xjs.htmlElements.panel, "sidebar_content").pos(0, 85).setSize(300, 300).append(
+        //add menu options
+        xjs.withnew(xjs.htmlElements.ul, "menu").setStyles({ padding: "0px", margin: "0px" })
+            .append(xjs.getComponent("menu_option", true).setAttribute("title", "XJS Showcase")
+                .getChild(1).setText("XJS Showcase").parent()
+                .getChild(0).setClass("fas fa-images").parent()
+                .bindEvent("click", function () {
+                    xjs.with("main").setText("").append(xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", "./xjs.html"));
+            }))
+            .append(xjs.getComponent("menu_option", true).setAttribute("title", "GridLayout 2")
+                .getChild(1).setText("GridLayout 2").parent()
+                .getChild(0).setClass("fas fa-table").parent()
+                .bindEvent("click", function () {
+                    xjs.with("main").setText("").append(xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", "./xgridlayout2.html"));
+            }))
+            .append(xjs.getComponent("menu_option", true).setAttribute("title", "GridLayout 3")
+                .getChild(1).setText("GridLayout 3").parent()
+                .getChild(0).setClass("fas fa-table-columns").parent()
+                .bindEvent("click", function () {
+                    xjs.with("main").setText("").append(xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", "./xgridlayout3.html"));
+            }))
+            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 4").parent())
+            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 5").parent())
+            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 6").parent())
+            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 7").parent())
+            .append(xjs.getComponent("menu_option").getChild(1).setText("Option 8").parent()
+                .bindEvent("mouseover", function () {
+                    this.setStyle({ backgroundColor: "#aaaaaa" });
+                }).bindEvent("mouseout", function () {
+                    this.setStyle({ backgroundColor: "transparent" });
+                }))
+    ));
+
+    xjs.with("header").append(
+        xjs.withnew(xjs.htmlElements.h1).setText("XJS / XGridLayout - Showcase").setStyle({ color: "white", textAlign: "center", fontFamily: "monospace" })
+    );
 </script>

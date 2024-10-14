@@ -96,7 +96,7 @@
     }); 
     xjs.registerComponent("menu_option", li);
 
-    xjs.with("sidebar").append(xjs.withnew(xjs.htmlElements.panel, "sidebar_content").pos(0, 85).setSize(300, 300).append(
+    xjs.with("sidebar").append(xjs.withnew(xjs.htmlElements.panel, "sidebar_content").pos(0, 80).setSize(300, 300).append(
         //add menu options
         xjs.withnew(xjs.htmlElements.ul, "menu").setStyles({ padding: "0px", margin: "0px" })
             .append(xjs.getComponent("menu_option", true, {"menuStr": "XJS Showcase", "menuIcon": "fas fa-images", "menuUrl": "./xjs.html"}))

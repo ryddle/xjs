@@ -27,7 +27,7 @@
             xgridCol.get(xlo, "300px", { backgroundColor: "#202124", borderRight: "1px solid #353535" }, "sidebar").add(
                 xjs.withnew(xjs.htmlElements.button, "sidebar_toggle_btn")
                     .setSize(30, 30)
-                    .setStyle({ float: "right", margin: "5px", cursor: "pointer" })
+                    .setStyles({ float: "right", margin: "5px", cursor: "pointer" })
                     .bgColor("#353535")
                     .append(
                         xjs.withnew(xjs.htmlElements.i).setStyle({ color: "white" }).setClass("fas fa-close")
@@ -69,55 +69,45 @@
         listStyle: "none", padding: "5px", paddingLeft: "12px", cursor: "pointer", height: "30px",
         display: "flex",
         alignItems: "center"
-    }).setVariable("menuStr", "Option 1")
+    }).setClass("menu_option").setAttribute("title", "${menuStr}")
     .append(
-        xjs.withnew(xjs.htmlElements.i).setStyle({ color: "white", marginRight: "10px" }).setClass("fas fa-ellipsis-v")
+        xjs.withnew(xjs.htmlElements.i).setStyle({ color: "white", marginRight: "10px" }).setClass("${menuIcon}")
     ).append(
-        xjs.withnew(xjs.htmlElements.aButton, "btn").setStyles({ color: "white", cursor: "pointer", textDecoration: "none", marginLeft: "20px" }).setText("Option")
+        xjs.withnew(xjs.htmlElements.aButton, "btn").setStyles({ color: "white", cursor: "pointer", textDecoration: "none", marginLeft: "20px" }).setText("${menuStr}")
     ).bindEvent("mouseover", function () {
-        this.setStyle({ backgroundColor: "#aaaaaa" });
+        this.bgColor("#aaaaaa");
     }).bindEvent("mouseout", function () {
-        this.setStyle({ backgroundColor: "transparent" });
-    }).bindEvent("load", function () {
-        this.getChild(1).setText(this.getVariable("menuStr"));
-    });
+        if(this.getProperty("selected")== true){
+            this.bgColor("#8f7429");
+        }else{
+            this.bgColor("transparent");
+        }
+    }).bindEvent("click", function () {
+            xjs.with(".menu_option").forEach(el => {
+                el.bgColor("transparent");
+                el.setProperty("selected", false);
+            });
+            this.bgColor("#8f7429");
+            this.setProperty("selected", true);
+
+            xjs.with("main").setText("").append(
+                xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", this.getVariable("menuUrl"))
+            );
+    }); 
     xjs.registerComponent("menu_option", li);
 
     xjs.with("sidebar").append(xjs.withnew(xjs.htmlElements.panel, "sidebar_content").pos(0, 85).setSize(300, 300).append(
         //add menu options
         xjs.withnew(xjs.htmlElements.ul, "menu").setStyles({ padding: "0px", margin: "0px" })
-            .append(xjs.getComponent("menu_option", true).setAttribute("title", "XJS Showcase")
-                .getChild(1).setText("XJS Showcase").parent()
-                .getChild(0).setClass("fas fa-images").parent()
-                .bindEvent("click", function () {
-                    xjs.with("main").setText("").append(xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", "./xjs.html"));
-            }))
-            .append(xjs.getComponent("menu_option", true).setAttribute("title", "GridLayout 2")
-                .getChild(1).setText("GridLayout 2").parent()
-                .getChild(0).setClass("fas fa-table").parent()
-                .bindEvent("click", function () {
-                    xjs.with("main").setText("").append(xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", "./xgridlayout2.html"));
-            }))
-            .append(xjs.getComponent("menu_option", true).setAttribute("title", "GridLayout 3")
-                .getChild(1).setText("GridLayout 3").parent()
-                .getChild(0).setClass("fas fa-table-columns").parent()
-                .bindEvent("click", function () {
-                    xjs.with("main").setText("").append(xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", "./xgridlayout3.html"));
-            }))
-            .append(xjs.getComponent("menu_option", true).setAttribute("title", "GridLayout 4")
-                .getChild(1).setText("GridLayout 4").parent()
-                .getChild(0).setClass("fas fa-table").parent()
-                .bindEvent("click", function () {
-                    xjs.with("main").setText("").append(xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", "./xgridlayout4.html"));
-            }))
-            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 5").parent())
-            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 6").parent())
-            .append(xjs.getComponent("menu_option", true).getChild(1).setText("Option 7").parent())
-            .append(xjs.getComponent("menu_option").getChild(1).setText("Option 8").parent()
+            .append(xjs.getComponent("menu_option", true, {"menuStr": "XJS Showcase", "menuIcon": "fas fa-images", "menuUrl": "./xjs.html"}))
+            .append(xjs.getComponent("menu_option", true, {"menuStr": "GridLayout 2", "menuIcon": "fas fa-table", "menuUrl": "./xgridlayout2.html"}))
+            .append(xjs.getComponent("menu_option", true, {"menuStr": "GridLayout 3", "menuIcon": "fas fa-table-columns", "menuUrl": "./xgridlayout3.html"}))
+            .append(xjs.getComponent("menu_option", true, {"menuStr": "GridLayout 4", "menuIcon": "fas fa-table", "menuUrl": "./xgridlayout4.html"}))
+            .append(xjs.getComponent("menu_option", false, {"menuStr": "Option 5", "menuIcon": "fas fa-ellipsis-v"})
                 .bindEvent("mouseover", function () {
-                    this.setStyle({ backgroundColor: "#aaaaaa" });
+                    this.bgColor("#aaaaaa");
                 }).bindEvent("mouseout", function () {
-                    this.setStyle({ backgroundColor: "transparent" });
+                    this.bgColor("transparent");
                 }))
     ));
 

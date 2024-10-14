@@ -57,6 +57,17 @@ Document.prototype.bindEvent = function (evnt, method, scope, ...args) {
     return this;
 };
 
+
+HTMLElement.prototype._chkvrs = function (value) {
+    if (this.variables !== undefined && typeof value == "string" && value.match(/^\$\{.*\}$/)) {
+        value = value.replace(/^\$\{(.*)\}$/, '$1');
+        if(this.getVariable(value) !== undefined){
+            value = this.getVariable(value);
+        }
+    }
+    return value;
+}
+
 HTMLElement.prototype.insert = function (elm, name) {
     this[name] = elm;
     this.appendChild(elm);
@@ -97,6 +108,11 @@ HTMLElement.prototype.delChilds = function (...elm) {
 };
 
 HTMLElement.prototype.setAttribute = function (attribute, value) {
+    /* if (typeof value == "string" && value.match(/^\$\{.*\}$/)) {
+        value = value.replace(/^\$\{(.*)\}$/, '$1');
+        value = this.getVariable(value);
+    } */
+    value = this._chkvrs(value);
     Element.prototype.setAttribute.apply(this, [attribute, value]);
     return this;
 };
@@ -122,6 +138,11 @@ HTMLElement.prototype.getProperty = function (property) {
 };
 
 HTMLElement.prototype.setProperty = function (property, value) {
+    /* if (typeof value == "string" && value.match(/^\$\{.*\}$/)) {
+        value = value.replace(/^\$\{(.*)\}$/, '$1');
+        value = this.getVariable(value);
+    } */
+    value = this._chkvrs(value);
     this[property] = value;
     return this;
 };
@@ -137,6 +158,10 @@ HTMLElement.prototype.setProperties = function (properties) {
     return this;
 };
 
+HTMLElement.prototype.removeProperty = function (property) {
+    delete this[property];
+    return this;
+};
 
 HTMLElement.prototype.getVariable = function (variable) {
     return this.variables[variable];
@@ -173,6 +198,7 @@ HTMLElement.prototype.setStyle = function (_style) {
 };
 
 HTMLElement.prototype.setStyleProperty = function (property, value) {
+    value = this._chkvrs(value);
     this.style.setProperty(property, value);
     return this;
 };
@@ -323,11 +349,13 @@ HTMLElement.prototype.getHeight = function (asNumber = false) {
 };
 
 HTMLElement.prototype.setClass = function (classes) {
+    classes = this._chkvrs(classes);
     this.className = classes;
     return this;
 };
 
 HTMLElement.prototype.setText = function (text) {
+    text = this._chkvrs(text);
     this.innerText = text;
     return this;
 };
@@ -337,6 +365,7 @@ HTMLElement.prototype.getText = function () {
 };
 
 HTMLElement.prototype.setHTML = function (html) {
+    html = this._chkvrs(html);
     this.innerHTML = html;
     return this;
 };
@@ -347,7 +376,7 @@ HTMLElement.prototype.getHTML = function () {
 
 HTMLElement.prototype.bgColor = function (_bgcolor) {
     if (_bgcolor !== undefined) {
-        this.style.setProperty("background-color", _bgcolor);
+        this.setStyleProperty("background-color", _bgcolor);
     } else {
         return this.style.getPropertyValue("background-color");
     }
@@ -1288,6 +1317,11 @@ class _xjs {
 
     with(elm) {
         if (typeof elm == "string") {
+            if (elm.startsWith(".")) {
+                return document.querySelectorAll(elm);
+            }else if (elm.startsWith("#")) {
+                return document.querySelectorAll(elm)[0];
+            }
             return this.getElm(elm);
         } else {
             return elm;
@@ -1329,8 +1363,24 @@ class _xjs {
         return this.#components[name] != null;
     }
 
-    getComponent(name, withevents = false) {
+    getComponent(name, withevents = false, variables = null) {
         var component = this.#components[name].cloneNode(true);
+        var strcomp = component.outerHTML;
+        let newvars = null;
+        //if (this.#components[name].variables) {
+            if (variables) {
+                newvars = {};
+                Object.keys(variables).forEach(variable => {
+                    strcomp = strcomp.replaceAll('${' + variable + '}', variables[variable]);
+                    newvars[variable] = variables[variable];
+                });
+            }
+            var wrapper= xjs.withnew(this.htmlElements.div, "wrapper").setHTML(strcomp);
+            component = wrapper.firstChild;
+            component.setVariables(newvars);
+
+            wrapper.remove();
+        //}
 
         if (withevents) {
             var events = this.#components[name].__eh;

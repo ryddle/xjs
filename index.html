@@ -99,6 +99,10 @@
     xjs.with("sidebar").append(xjs.withnew(xjs.htmlElements.panel, "sidebar_content").pos(0, 80).setSize(300, 300).append(
         //add menu options
         xjs.withnew(xjs.htmlElements.ul, "menu").setStyles({ padding: "0px", margin: "0px" })
+            .append(xjs.getComponent("menu_option", true, {"menuStr": "Home", "menuIcon": "fas fa-home"})
+                .bindEvent("click", function () {
+                    xjs.with("main").clear().setText(xjs.loremipsum(1000))
+                }))
             .append(xjs.getComponent("menu_option", true, {"menuStr": "XJS Showcase", "menuIcon": "fas fa-images", "menuUrl": "./xjs.html"}))
             .append(xjs.getComponent("menu_option", true, {"menuStr": "GridLayout 2", "menuIcon": "fas fa-table", "menuUrl": "./xgridlayout2.html"}))
             .append(xjs.getComponent("menu_option", true, {"menuStr": "GridLayout 3", "menuIcon": "fas fa-table-columns", "menuUrl": "./xgridlayout3.html"}))

@@ -58,6 +58,8 @@ Document.prototype.bindEvent = function (evnt, method, scope, ...args) {
 };
 
 HTMLElement.prototype._cv = function (value) {
+    //let caller = new Error().stack.split('\n')[3].trim().split(" ")[1];
+    //if (!caller.startsWith("HTMLElement")) return this;
     if (this.variables !== undefined && typeof value == "string" && value.match(/^\$\{.*\}$/)) {
         value = value.replace(/^\$\{(.*)\}$/, '$1');
         if (this.getVariable(value) !== undefined) {
@@ -83,17 +85,11 @@ HTMLElement.prototype.prepend = function (elm) {
     return this;
 };
 
-HTMLElement.prototype.parent = function () {
-    return this.parentElement;
-};
-
-HTMLElement.prototype.getChild = function (selector) {
-    //selector can be a number or tag
-    if (typeof selector == "number") {
-        return this.children[selector];
-    } else {
-        return this.querySelectorAll(selector);
+HTMLElement.prototype.clear = function () {
+    while (this.firstChild) {
+        this.removeChild(this.firstChild);
     }
+    return this;
 };
 
 HTMLElement.prototype.delChilds = function (...elm) {
@@ -104,6 +100,18 @@ HTMLElement.prototype.delChilds = function (...elm) {
             this.removeChild(elm[i]);
         }
     }
+};
+
+HTMLElement.prototype.parent = function () {
+    return this.parentElement;
+};
+
+HTMLElement.prototype.getChild = function (selector) {
+    //selector can be a number or tag
+    if (typeof selector == "number") {
+        return this.children[selector];
+    }
+    return this.querySelectorAll(selector);
 };
 
 HTMLElement.prototype.setAttribute = function (attribute, value) {

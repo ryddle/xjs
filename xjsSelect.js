@@ -10,7 +10,7 @@ class XJSSelect extends HTMLElement {
         this['focus-color'] = null;
         this['arrow-color'] = null;
 
-        let style = document.createElement('style');
+        let style = xjs.withnew(xjs.htmlElements.style);//document.createElement('style');
         style.textContent = `
             *,
             *::before,
@@ -243,12 +243,12 @@ class XJSSelect extends HTMLElement {
     }
 
     createSelectElement() {
-        const div = document.createElement('div');
+        const div = xjs.withnew("div");
         div.className = "select";
         const arrow = xjs.withnew("div");
         arrow.className = "arrow";
-        const select = document.createElement('select');
-        const span = document.createElement('span');
+        const select = xjs.withnew("select");
+        const span = xjs.withnew("span");
         span.className = "focus";
         //this.shadow.appendChild(select);
         select.addEventListener('change', () => {
@@ -267,7 +267,7 @@ class XJSSelect extends HTMLElement {
             select.innerHTML = '';
             const options = JSON.parse(this.getAttribute('options'));
             options.forEach((option) => {
-                const optionElement = document.createElement('option');
+                const optionElement = xjs.withnew("option");
                 optionElement.value = option.value;
                 optionElement.textContent = option.textContent;
                 select.appendChild(optionElement);

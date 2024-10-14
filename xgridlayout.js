@@ -124,7 +124,7 @@ class xgridlayout {
                     if (col !== _element) {
                         col.resizeGrid();
                     } else {
-                        console.log('Same element');
+                        // console.log('Same element');
                     }
                 });
             }
@@ -148,7 +148,7 @@ class xgridRow {
             throw new Error('grid must be an instance of xgridlayout');
         }
         this.cols = [];
-        this.row = document.createElement('div');
+        this.row = xjs.withnew(xjs.htmlElements.div);
         this.row.className = 'grid-row';
         if (height === 'auto') {
             this.row.classList.add('auto-height');
@@ -200,7 +200,7 @@ class xgridCol {
 
         this.rows = [];
 
-        this.col = document.createElement('div');
+        this.col = xjs.withnew(xjs.htmlElements.div);
         this.col.className = 'grid-col';
         if (width === 'auto') {
             this.col.classList.add('auto-width');
@@ -317,7 +317,7 @@ class xgridCol {
             const remainingWidth = row.offsetWidth - totalWidth;
             const autoWidth = remainingWidth / autoWidthCells.length;
 
-            console.log(remainingWidth, autoWidth, xjs.with('sidebar').getWidth(true));
+            // console.log(remainingWidth, autoWidth, xjs.with('sidebar').getWidth(true));
 
             autoWidthCells.forEach(cell => {
                 cell.style.width = `${autoWidth}px`;

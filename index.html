@@ -71,7 +71,7 @@
         alignItems: "center"
     }).setClass("menu_option").setAttribute("title", "${menuStr}")
     .append(
-        xjs.withnew(xjs.htmlElements.i).setStyle({ color: "white", marginRight: "10px" }).setClass("${menuIcon}")
+        xjs.withnew(xjs.htmlElements.i).setStyle({ color: "white", marginRight: "10px", width: "16px", textAlign: "center"}).setClass("${menuIcon}")
     ).append(
         xjs.withnew(xjs.htmlElements.aButton, "btn").setStyles({ color: "white", cursor: "pointer", textDecoration: "none", marginLeft: "20px" }).setText("${menuStr}")
     ).bindEvent("mouseover", function () {

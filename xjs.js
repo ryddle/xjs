@@ -57,16 +57,15 @@ Document.prototype.bindEvent = function (evnt, method, scope, ...args) {
     return this;
 };
 
-
-HTMLElement.prototype._chkvrs = function (value) {
+HTMLElement.prototype._cv = function (value) {
     if (this.variables !== undefined && typeof value == "string" && value.match(/^\$\{.*\}$/)) {
         value = value.replace(/^\$\{(.*)\}$/, '$1');
-        if(this.getVariable(value) !== undefined){
+        if (this.getVariable(value) !== undefined) {
             value = this.getVariable(value);
         }
     }
     return value;
-}
+};
 
 HTMLElement.prototype.insert = function (elm, name) {
     this[name] = elm;
@@ -95,7 +94,7 @@ HTMLElement.prototype.getChild = function (selector) {
     } else {
         return this.querySelectorAll(selector);
     }
-}
+};
 
 HTMLElement.prototype.delChilds = function (...elm) {
     for (let i = 0; i < elm.length; i++) {
@@ -108,11 +107,7 @@ HTMLElement.prototype.delChilds = function (...elm) {
 };
 
 HTMLElement.prototype.setAttribute = function (attribute, value) {
-    /* if (typeof value == "string" && value.match(/^\$\{.*\}$/)) {
-        value = value.replace(/^\$\{(.*)\}$/, '$1');
-        value = this.getVariable(value);
-    } */
-    value = this._chkvrs(value);
+    value = this._cv(value);
     Element.prototype.setAttribute.apply(this, [attribute, value]);
     return this;
 };
@@ -138,11 +133,7 @@ HTMLElement.prototype.getProperty = function (property) {
 };
 
 HTMLElement.prototype.setProperty = function (property, value) {
-    /* if (typeof value == "string" && value.match(/^\$\{.*\}$/)) {
-        value = value.replace(/^\$\{(.*)\}$/, '$1');
-        value = this.getVariable(value);
-    } */
-    value = this._chkvrs(value);
+    value = this._cv(value);
     this[property] = value;
     return this;
 };
@@ -165,19 +156,19 @@ HTMLElement.prototype.removeProperty = function (property) {
 
 HTMLElement.prototype.getVariable = function (variable) {
     return this.variables[variable];
-}
+};
 
 HTMLElement.prototype.setVariable = function (variable, value) {
     this.variables = this.variables || {};
     this.variables[variable] = value;
     return this;
-}
+};
 
 HTMLElement.prototype.removeVariable = function (variable) {
     if (!this.variables) return this;
     delete this.variables[variable];
     return this;
-}
+};
 
 HTMLElement.prototype.setVariables = function (variables) {
     this.variables = this.variables || {};
@@ -189,7 +180,7 @@ HTMLElement.prototype.setVariables = function (variables) {
         }
     }
     return this;
-}
+};
 
 
 HTMLElement.prototype.setStyle = function (_style) {
@@ -198,7 +189,7 @@ HTMLElement.prototype.setStyle = function (_style) {
 };
 
 HTMLElement.prototype.setStyleProperty = function (property, value) {
-    value = this._chkvrs(value);
+    value = this._cv(value);
     this.style.setProperty(property, value);
     return this;
 };
@@ -349,13 +340,13 @@ HTMLElement.prototype.getHeight = function (asNumber = false) {
 };
 
 HTMLElement.prototype.setClass = function (classes) {
-    classes = this._chkvrs(classes);
+    classes = this._cv(classes);
     this.className = classes;
     return this;
 };
 
 HTMLElement.prototype.setText = function (text) {
-    text = this._chkvrs(text);
+    text = this._cv(text);
     this.innerText = text;
     return this;
 };
@@ -365,7 +356,7 @@ HTMLElement.prototype.getText = function () {
 };
 
 HTMLElement.prototype.setHTML = function (html) {
-    html = this._chkvrs(html);
+    html = this._cv(html);
     this.innerHTML = html;
     return this;
 };
@@ -1233,6 +1224,46 @@ class _xjs {
             audio: "audio",
             video: "video",
             dialog: "dialog",
+            style: "style"
+            /* canvas: "canvas",
+            applet: "applet",
+            object: "object",
+            embed: "embed",
+            object: "object",
+            param: "param",
+            map: "map",
+            area: "area",
+            noscript: "noscript",
+            script: "script",
+            link: "link",
+            meta: "meta",
+            base: "base",
+            head: "head",
+            body: "body",
+            html: "html",
+            svg: "svg",
+            path: "path",
+            circle: "circle",
+            ellipse: "ellipse",
+            rect: "rect",
+            line: "line",
+            polyline: "polyline",
+            polygon: "polygon",
+            text: "text",
+            use: "use",
+            g: "g",
+            defs: "defs",
+            clipPath: "clipPath",
+            mask: "mask",
+            filter: "filter",
+            symbol: "symbol",
+            linearGradient: "linearGradient",
+            radialGradient: "radialGradient",
+            stop: "stop",
+            image: "image",
+            foreignObject: "foreignObject",
+            desc: "desc",
+            title: "title" */
         };
     }
     #htmlelements = {
@@ -1279,7 +1310,8 @@ class _xjs {
         iframe: this.lazy(() => document.createElement("iframe").setStyle({ position: "absolute", left: "0px", top: "0px", width: "0px", height: "0px" })),
         audio: this.lazy(() => document.createElement("audio")),
         video: this.lazy(() => document.createElement("video")),
-        dialog: this.lazy(() => document.createElement("dialog"))
+        dialog: this.lazy(() => document.createElement("dialog")),
+        style: this.lazy(() => document.createElement("style")),
     };
 
     #xjselementsMap = {
@@ -1295,7 +1327,7 @@ class _xjs {
             { value: "option1", textContent: "Option 1" },
             { value: "option2", textContent: "Option 2" },
             { value: "option3", textContent: "Option 3" }
-        ])))
+        ]))),
     };
 
     /**
@@ -1319,7 +1351,7 @@ class _xjs {
         if (typeof elm == "string") {
             if (elm.startsWith(".")) {
                 return document.querySelectorAll(elm);
-            }else if (elm.startsWith("#")) {
+            } else if (elm.startsWith("#")) {
                 return document.querySelectorAll(elm)[0];
             }
             return this.getElm(elm);
@@ -1331,15 +1363,9 @@ class _xjs {
     withnew(htmlelm, id, name, value) {
         if (typeof htmlelm == "string") {
             let elm = (htmlelm.startsWith("xjs")) ? this.#xjselements[htmlelm]().cloneNode(true) : this.#htmlelements[htmlelm]().cloneNode(true);
-            if (id) {
-                elm.id = id;
-            }
-            if (name) {
-                elm.name = name;
-            }
-            if (value) {
-                elm.value = value;
-            }
+            if (id) elm.setAttribute("id", id);
+            if (name) elm.setAttribute("name", name);
+            if (value) elm.setAttribute("value", value);
             return elm;
         }
         return null;
@@ -1348,13 +1374,15 @@ class _xjs {
     #components = {};
 
     registerComponent(name, component) {
-        this.#components[name] = component.cloneNode(true);
+        this.#components[name] = {};
+
+        this.#components[name].component = component.cloneNode(true).outerHTML;
 
         if (component.__eh) {
             this.#components[name].__eh = component.__eh;
         }
 
-        if(component.variables){
+        if (component.variables) {
             this.#components[name].variables = component.variables;
         }
     }
@@ -1364,23 +1392,21 @@ class _xjs {
     }
 
     getComponent(name, withevents = false, variables = null) {
-        var component = this.#components[name].cloneNode(true);
-        var strcomp = component.outerHTML;
+        var component = {};
+        let strcomp = this.#components[name].component;
         let newvars = null;
-        //if (this.#components[name].variables) {
-            if (variables) {
-                newvars = {};
-                Object.keys(variables).forEach(variable => {
-                    strcomp = strcomp.replaceAll('${' + variable + '}', variables[variable]);
-                    newvars[variable] = variables[variable];
-                });
-            }
-            var wrapper= xjs.withnew(this.htmlElements.div, "wrapper").setHTML(strcomp);
-            component = wrapper.firstChild;
-            component.setVariables(newvars);
+        if (variables) {
+            newvars = {};
+            Object.keys(variables).forEach(variable => {
+                strcomp = strcomp.replaceAll('${' + variable + '}', variables[variable]);
+                newvars[variable] = variables[variable];
+            });
+        }
+        var wrapper = xjs.withnew(this.htmlElements.div).setHTML(strcomp);
+        component = wrapper.firstChild;
+        component.setVariables(newvars);
 
-            wrapper.remove();
-        //}
+        wrapper.remove();
 
         if (withevents) {
             var events = this.#components[name].__eh;
@@ -1388,7 +1414,6 @@ class _xjs {
                 for (var i = 0; i < Object.keys(events).length; i++) {
                     component.bindEvent(Object.keys(events)[i], events[Object.keys(events)[i]]['targetFunction'], component);
                 }
-
             }
         }
 

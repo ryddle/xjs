@@ -28,7 +28,7 @@
     xjs.setCssVar("--bg-color-sidebar", "#202124");
     xjs.setCssVar("--bg-color-footer", "#000000");
 
-    xjs.setCssVar("--bg-color-selected", "#8f7429");
+    xjs.setCssVar("--bg-color-selected", "#ce2267");
 
     xjs.registerXJSElement("xjsXcolorPickerBtn", "xcolor-picker-btn");
 
@@ -50,12 +50,17 @@
                     .bindEvent("click", function () {
                         let sidebar = xjs.with("sidebar");
                         if (sidebar.getWidth(true) == 300) {
-                            xjs.with("config_panel").setStyle({visibility:"hidden"});
+                            //xjs.with("config_panel").setStyle({visibility:"hidden"});
+                            xjs.animate([xjs.with("config_panel")], [{ opacity: { start: "1", end: "0", ease: xjs.easeTypes.easeInOut }, }], 100, function () {
+                                xjs.with("config_panel").left(-300).bgColor("var(--bg-color-sidebar)");
+                            });
                             //sidebar.setWidth(40);
                             xjs.animate([sidebar], [{ width: { start: 300, end: 40, ease: xjs.easeTypes.easeInOut }, }], 100);
                             xjs.with("sidebar_toggle_btn").getChild(0).setClass("fas fa-bars");
                         } else {
-                            xjs.with("config_panel").setStyle({visibility:"visible"});
+                            //xjs.with("config_panel").setStyle({visibility:"visible"});
+                            xjs.with("config_panel").left(-260);
+                            xjs.animate([xjs.with("config_panel")], [{ opacity: { start: "0", end: "1", ease: xjs.easeTypes.easeInOut }, }], 100);
                             //sidebar.setWidth(300);
                             xjs.animate([sidebar], [{ width: { start: 40, end: 300, ease: xjs.easeTypes.easeInOut }, }], 100);
                             xjs.with("sidebar_toggle_btn").getChild(0).setClass("fas fa-close");

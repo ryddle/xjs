@@ -53,6 +53,7 @@
                             //xjs.with("config_panel").setStyle({visibility:"hidden"});
                             xjs.animate([xjs.with("config_panel")], [{ opacity: { start: "1", end: "0", ease: xjs.easeTypes.easeInOut }, }], 100, function () {
                                 xjs.with("config_panel").left(-300).bgColor("var(--bg-color-sidebar)");
+                                xjs.with("config_toggle_btn").getChild(0).setClass("fas fa-cog");
                             });
                             //sidebar.setWidth(40);
                             xjs.animate([sidebar], [{ width: { start: 300, end: 40, ease: xjs.easeTypes.easeInOut }, }], 100);

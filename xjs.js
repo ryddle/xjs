@@ -957,6 +957,18 @@ class _xjs {
         document.head.appendChild(style);
     }
 
+    getCssVar(name, selector) {
+        let r = document.querySelector(selector || ':root');
+        let rs = getComputedStyle(r);
+        return rs.getPropertyValue(name) || null;
+    }
+
+    setCssVar(name, value, selector) {
+        if(!selector) selector = ':root';
+        let r = document.querySelector(selector);
+        r.style.setProperty(name, value);
+    }
+
     //// String ////
     toBaseAscii() {
         return normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -964,7 +976,12 @@ class _xjs {
 
     loremipsum(length) {
         let text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed id nunc non turpis ultrices aliquam. Sed id cursus velit. In hac habitasse platea dictumst. Nulla facilisi. Nulla facilisi. Nullam eget consectetur sem. Donec euismod, enim ac interdum malesuada, est nunc auctor nulla, et tincidunt nibh nisi non diam. In hac habitasse platea dictumst. Sed non metus vitae erat consectetur mattis. Etiam ut ante vel tortor ultrices condimentum. Sed bibendum, mauris id pulvinar vulputate, massa felis volutpat nunc, nec luctus nisl nibh in nunc. Sed semper, est in fermentum faucibus, mauris eros viverra nisl, nec posuere est nisi in nunc. Sed euismod, neque vel pulvinar lacinia, est nunc bibendum nisl, in ultricies nisl nunc in lacus. Sed luctus, ante ac tincidunt semper, nunc neque aliquam nulla, sed commodo nisl turpis vitae nisi. Nulla facilisi.";
-        return (length) ? text.substring(0, Math.min(text.length, length)) : text;
+        if(length > text.length){
+            while(text.length < length){
+                text += ' ' + text;
+            }
+        }
+        return (length) ? text.substring(0, length) : text;
     }
 
     //// Math ////
@@ -1275,7 +1292,7 @@ class _xjs {
         };
     }
     #htmlelements = {
-        panel: this.lazy(() => document.createElement("div").setStyle({ position: "absolute", left: "0px", top: "0px", width: "100px", height: "100px" })),
+        panel: this.lazy(() => document.createElement("div").setStyle({ position: "absolute", width: "100px", height: "100px" })),
         div: this.lazy(() => document.createElement("div")),
         span: this.lazy(() => document.createElement("span")),
         inputText: this.lazy(() => document.createElement("input").setProperty("type", "text")),

@@ -20,7 +20,11 @@
     var xlo = new xgridlayout("grid");
     xlo.addRows(
         xgridRow.get(xlo, "80px").addCols(
-            xgridCol.get(xlo, "auto", { backgroundColor: "black" }, "header"),
+            xgridCol.get(xlo, "auto", { backgroundColor: "black" }, "header").add(
+                xjs.withnew(xjs.htmlElements.h1, "title")
+                    .setStyle({ textAlign: "center", color: "white" })
+                    .setHTML("Grid Layout 4")
+            )
         ),
         xgridRow.get(xlo, "auto").addCols(
             xgridCol.get(xlo, "auto", {backgroundColor: "#353535"}),

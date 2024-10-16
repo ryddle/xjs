@@ -73,7 +73,7 @@
                     xgridCol.get(xlo, "auto", { backgroundColor: "var(--bg-color-header)", borderBottom: "1px solid var(--bg-color)" }, "header"),
                 ),
                 xgridRow.get(xlo, "auto").addCols(
-                    xgridCol.get(xlo, "auto", { backgroundColor: "var(--bg-color)", color: "var(--fg-color)" }, "main")
+                    xgridCol.get(xlo, "auto", { backgroundColor: "var(--bg-color)", color: "var(--fg-color)", overflowY: "auto" }, "main")
                         .el()
                         .setProperty("innerText", xjs.loremipsum(10000))
                         .setStyles({ padding: "10px" })

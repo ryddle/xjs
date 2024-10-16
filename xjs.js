@@ -601,6 +601,11 @@ HTMLElement.prototype.bg = function () {
     })(this);
 };
 
+
+HTMLElement.prototype.hasScrollBar = function () {
+    return this.scrollHeight > this.offsetHeight;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 CSSStyleDeclaration.prototype.leftPos = function (_left) {

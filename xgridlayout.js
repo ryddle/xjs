@@ -25,6 +25,7 @@ class xgridlayout {
         this.gridcontainer = xjs.withnew("div", _id);
         this.gridcontainer.className = 'grid-container';
         document.body.appendChild(this.gridcontainer);
+
         this.rows = [];
 
         let _self = this;
@@ -43,6 +44,7 @@ class xgridlayout {
         };
 
         document.addEventListener('DOMContentLoaded', () => {
+            this.gridcontainer.setWidth((document.body.hasScrollBar()) ? 'calc(100vw - 17px)' : '100vw');
             this.resizeGrid();
         });
 
@@ -81,6 +83,9 @@ class xgridlayout {
         let autoHeightRows = [];
         this.rows.forEach((_row) => {
             const row = _row.el();
+            if(row.style.display === 'none') {
+                return;
+            }
             // calcular el alto de la fila en px
             if (row.classList.contains('auto-height')) {
                 autoHeightRows.push(row);
@@ -111,7 +116,7 @@ class xgridlayout {
                     cell.style.height = `${row.offsetHeight}px`;
                 });
 
-                const remainingWidth = this.gridcontainer.offsetWidth - totalWidth;
+                const remainingWidth = this.gridcontainer.offsetWidth - totalWidth;// - (document.body.hasScrollBar() ? 17 : 0);
                 const autoWidth = remainingWidth / autoWidthCells.length;
 
                 //console.log(remainingWidth, autoWidth, xjs.with('sidebar').getWidth(true));
@@ -152,6 +157,8 @@ class xgridRow {
         this.row.className = 'grid-row';
         if (height === 'auto') {
             this.row.classList.add('auto-height');
+        }else if (height === 'fit') {
+            this.row.classList.add('fit-height');
         }
         this.row.style.height = height;
         Object.assign(this.row.style, style);
@@ -283,9 +290,14 @@ class xgridCol {
         let autoHeightRows = [];
         this.rows.forEach(_row => {
             const row = _row.el();
+            if(row.style.display === 'none') {
+                return;
+            }
             // calcular el alto de la fila en px
             if (row.classList.contains('auto-height')) {
                 autoHeightRows.push(row);
+            } else if (row.classList.contains('fit-height')) {
+                totalHeight += row.offsetHeight;  
             } else if (row.style.height.endsWith('px')) {
                 totalHeight += parseInt(row.style.height);
             } else if (row.style.height.endsWith('%')) {
@@ -314,7 +326,7 @@ class xgridCol {
                 });
             }
 
-            const remainingWidth = row.offsetWidth - totalWidth;
+            const remainingWidth = row.offsetWidth - totalWidth;// - (document.body.hasScrollBar() ? 17 : 0);
             const autoWidth = remainingWidth / autoWidthCells.length;
 
             // console.log(remainingWidth, autoWidth, xjs.with('sidebar').getWidth(true));

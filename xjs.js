@@ -335,17 +335,6 @@ HTMLElement.prototype.getWidth = function (asNumber = false) {
     return this.style.getPropertyValue("width");
 };
 
-
-HTMLElement.prototype.innerHeight = function () {
-    let innerHeight = 0;
-    for (let i = 0; i < this.childNodes.length; i++) {
-        if (this.childNodes[i].nodeType == 1) {
-            innerHeight += this.childNodes[i].offsetHeight;
-        }
-    }
-    return innerHeight;
-};
-
 HTMLElement.prototype.setHeight = function (height) {
     return this.style.setProperty("height", (typeof height === "string" && isNaN(height)) ? height : (height) + "px");
 };

@@ -336,6 +336,16 @@ HTMLElement.prototype.getWidth = function (asNumber = false) {
 };
 
 
+HTMLElement.prototype.innerHeight = function () {
+    let innerHeight = 0;
+    for (let i = 0; i < this.childNodes.length; i++) {
+        if (this.childNodes[i].nodeType == 1) {
+            innerHeight += this.childNodes[i].offsetHeight;
+        }
+    }
+    return innerHeight;
+};
+
 HTMLElement.prototype.setHeight = function (height) {
     return this.style.setProperty("height", (typeof height === "string" && isNaN(height)) ? height : (height) + "px");
 };
@@ -601,9 +611,16 @@ HTMLElement.prototype.bg = function () {
     })(this);
 };
 
+HTMLElement.prototype.hasScrollBars = function () {
+    return this.hasScrollBarX() || this.hasScrollBarY();
+}
 
-HTMLElement.prototype.hasScrollBar = function () {
+HTMLElement.prototype.hasScrollBarY = function () {
     return this.scrollHeight > this.offsetHeight;
+}
+
+HTMLElement.prototype.hasScrollBarX = function () {
+    return this.scrollWidth > this.offsetWidth;
 }
 
 //////////////////////////////////////////////////////////////////////////////

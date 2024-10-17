@@ -1,3 +1,4 @@
+var counter = 0;
 class xgridlayout {
     #css = `
         .grid-container {
@@ -44,7 +45,7 @@ class xgridlayout {
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            this.gridcontainer.setWidth((document.body.hasScrollBar()) ? 'calc(100vw - 17px)' : '100vw');
+            this.gridcontainer.setWidth((document.body.hasScrollBarX() && document.body.hasScrollBarY()) ? 'calc(100vw - 17px)' : '100vw');
             this.resizeGrid();
         });
 
@@ -55,14 +56,6 @@ class xgridlayout {
         document.body.style.margin = '0';
     }
 
-    /* addRow(height = 'auto', style = '') {
-        const row = xgridRow.get(this, height, style);
-        this.gridcontainer.appendChild(row.el());
-        this.observer.observe(row.el(), this.observerConfig);
-        this.rows.push(row);
-        return row;
-    } */
-
     addRows(...rows_) {
         rows_.forEach(row => {
             if (row instanceof xgridRow) {
@@ -71,15 +64,11 @@ class xgridlayout {
                 this.rows.push(row);
             }
         });
-        /* const row = _row;
-        this.gridcontainer.appendChild(row.el());
-        this.observer.observe(row.el(), this.observerConfig);
-        this.rows.push(row); */
         return this;
     }
 
     resizeGrid(_element = undefined) {
-        let totalHeight = 0;
+        var totalHeight = 0;
         let autoHeightRows = [];
         this.rows.forEach((_row) => {
             const row = _row.el();
@@ -89,13 +78,14 @@ class xgridlayout {
             // calcular el alto de la fila en px
             if (row.classList.contains('auto-height')) {
                 autoHeightRows.push(row);
+            } else if (row.classList.contains('fit-height')) {
+                totalHeight += _row.height();
             } else if (row.style.height.endsWith('px')) {
                 totalHeight += parseInt(row.style.height);
             } else if (row.style.height.endsWith('%')) {
                 totalHeight += this.gridcontainer.offsetHeight * (parseInt(row.style.height) / 100);
             }
 
-            //const cells = row.children;
             const cols = _row.cols;
             let totalWidth = 0;
             let autoWidthCells = [];
@@ -113,13 +103,11 @@ class xgridlayout {
                         autoWidthCells.push(cell);
                     }
 
-                    cell.style.height = `${row.offsetHeight}px`;
+                    cell.style.height = (row.classList.contains('fit-height')?`${_row.height()}px`:`${row.offsetHeight}px`);
                 });
 
-                const remainingWidth = this.gridcontainer.offsetWidth - totalWidth;// - (document.body.hasScrollBar() ? 17 : 0);
+                const remainingWidth = this.gridcontainer.offsetWidth - totalWidth - (document.body.hasScrollBarX()?(document.body.hasScrollBarY() ? 17 : 0):0);
                 const autoWidth = remainingWidth / autoWidthCells.length;
-
-                //console.log(remainingWidth, autoWidth, xjs.with('sidebar').getWidth(true));
 
                 autoWidthCells.forEach(cell => {
                     cell.style.width = `${autoWidth}px`;
@@ -129,7 +117,7 @@ class xgridlayout {
                     if (col !== _element) {
                         col.resizeGrid();
                     } else {
-                        // console.log('Same element');
+                        console.log('Same element');
                     }
                 });
             }
@@ -194,6 +182,10 @@ class xgridRow {
         });
         return this;
     }
+
+    height() {
+        return Math.max(...this.cols.map(col => col.el().offsetHeight));
+    }
 }
 
 class xgridCol {
@@ -229,7 +221,6 @@ class xgridCol {
             mutations.forEach(function (mutation) {
                 if (mutation.attributeName === 'style') {
                     _self.grid.resizeGrid(_self);
-                    //_self.resizeGrid();
                 }
             });
         });
@@ -297,11 +288,11 @@ class xgridCol {
             if (row.classList.contains('auto-height')) {
                 autoHeightRows.push(row);
             } else if (row.classList.contains('fit-height')) {
-                totalHeight += row.offsetHeight;  
+                totalHeight += _row.height();
             } else if (row.style.height.endsWith('px')) {
                 totalHeight += parseInt(row.style.height);
             } else if (row.style.height.endsWith('%')) {
-                totalHeight += this.col.parentElement.offsetHeight * (parseFloat(row.style.height) / 100);
+                totalHeight += row.offsetHeight * (parseFloat(row.style.height) / 100);
             }
 
             //const cells = row.children;
@@ -322,14 +313,12 @@ class xgridCol {
                         autoWidthCells.push(cell);
                     }
 
-                    cell.style.height = `${row.offsetHeight}px`;
+                    cell.style.height = (row.classList.contains('fit-height')?`${_row.height()}px`:`${row.offsetHeight}px`);
                 });
             }
 
             const remainingWidth = row.offsetWidth - totalWidth;// - (document.body.hasScrollBar() ? 17 : 0);
             const autoWidth = remainingWidth / autoWidthCells.length;
-
-            // console.log(remainingWidth, autoWidth, xjs.with('sidebar').getWidth(true));
 
             autoWidthCells.forEach(cell => {
                 cell.style.width = `${autoWidth}px`;

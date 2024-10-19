@@ -24,28 +24,30 @@
 <script>
     var xlo = new xgridlayout("grid");
     xlo.addRows(
-        xgridRow.get(xlo, "80px").addCols(
-            xgridCol.get(xlo, "auto", {style:{ backgroundColor: "black" }, id:"header"}).add(
-                xjs.withnew(xjs.htmlElements.h1, "title")
-                    .setStyle({ textAlign: "center", color: "white" })
-                    .setHTML("Grid Layout 3")
-            )
-        ),
         xgridRow.get(xlo, "fit").addCols(
             xgridCol.get(xlo, "auto", {style:{backgroundColor: "#fff"}}),
             xgridCol.get(xlo, "1280px", {style:{backgroundColor: "#fff", borderLeft: "1px solid #ccc", borderRight: "1px solid #ccc"}})
-            /* .el()
-            .setStyles({overflowY: "auto"})
-            .parent() */
-            .add(
-                xjs.withnew(xjs.htmlElements.h2, "title")
-                    .setStyle({ textAlign: "center" })
-                    .setHTML("Lorem Ipsum")
-            )
-            .add(
-                xjs.withnew(xjs.htmlElements.p, "content")
-                    .setStyle({ textAlign: "left", padding: "10px" })
-                    .setHTML(xjs.loremipsum(20000))
+            .addRows(
+                xgridRow.get(xlo, "80px").addCols(
+                    xgridCol.get(xlo, "auto", {style:{ backgroundColor: "black" }, id:"header"}).add(
+                        xjs.withnew(xjs.htmlElements.h1, "title")
+                            .setStyle({ textAlign: "center", color: "white" })
+                            .setHTML("Grid Layout 3")
+                    )
+                ),
+                xgridRow.get(xlo, "fit").addCols(
+                    xgridCol.get(xlo, "auto", {style:{backgroundColor: "#fff"}})
+                    .add(
+                        xjs.withnew(xjs.htmlElements.h2, "title")
+                            .setStyle({ textAlign: "center" })
+                            .setHTML("Lorem Ipsum")
+                    )
+                    .add(
+                        xjs.withnew(xjs.htmlElements.p, "content")
+                            .setStyle({ textAlign: "left", padding: "10px" })
+                            .setHTML(xjs.loremipsum(20000))
+                    )
+                )
             ),
             xgridCol.get(xlo, "auto", {style:{backgroundColor: "#fff"}})
         ),

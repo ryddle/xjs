@@ -1,6 +1,17 @@
 /*
     xjs
 */
+//Window
+setMediaOptions = function (options) {
+    window.mediaOptions = { breakpoints: {} };
+    if (options) {
+        if (options.breakpoints) {
+            window.mediaOptions.breakpoints = options.breakpoints;
+        }
+    }
+};
+
+//Node
 Node.prototype.appendTo = function (node) {
     node.appendChild(this);
     return this;
@@ -11,6 +22,7 @@ Node.prototype.prependTo = function (node) {
     return this;
 };
 
+//Element
 //Element.prototype.__eh = {};
 
 Element.prototype.unbindEvent = function (evnt) {
@@ -602,15 +614,15 @@ HTMLElement.prototype.bg = function () {
 
 HTMLElement.prototype.hasScrollBars = function () {
     return this.hasScrollBarX() || this.hasScrollBarY();
-}
+};
 
 HTMLElement.prototype.hasScrollBarY = function () {
     return this.scrollHeight > this.offsetHeight;
-}
+};
 
 HTMLElement.prototype.hasScrollBarX = function () {
     return this.scrollWidth > this.offsetWidth;
-}
+};
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -975,7 +987,7 @@ class _xjs {
     }
 
     setCssVar(name, value, selector) {
-        if(!selector) selector = ':root';
+        if (!selector) selector = ':root';
         let r = document.querySelector(selector);
         r.style.setProperty(name, value);
     }
@@ -987,8 +999,8 @@ class _xjs {
 
     loremipsum(length) {
         let text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed id nunc non turpis ultrices aliquam. Sed id cursus velit. In hac habitasse platea dictumst. Nulla facilisi. Nulla facilisi. Nullam eget consectetur sem. Donec euismod, enim ac interdum malesuada, est nunc auctor nulla, et tincidunt nibh nisi non diam. In hac habitasse platea dictumst. Sed non metus vitae erat consectetur mattis. Etiam ut ante vel tortor ultrices condimentum. Sed bibendum, mauris id pulvinar vulputate, massa felis volutpat nunc, nec luctus nisl nibh in nunc. Sed semper, est in fermentum faucibus, mauris eros viverra nisl, nec posuere est nisi in nunc. Sed euismod, neque vel pulvinar lacinia, est nunc bibendum nisl, in ultricies nisl nunc in lacus. Sed luctus, ante ac tincidunt semper, nunc neque aliquam nulla, sed commodo nisl turpis vitae nisi. Nulla facilisi.";
-        if(length > text.length){
-            while(text.length < length){
+        if (length > text.length) {
+            while (text.length < length) {
                 text += ' ' + text;
             }
         }
@@ -1396,15 +1408,42 @@ class _xjs {
         }
     }
 
-    withnew(htmlelm, id, name, value) {
+    withnew(htmlelm, id, name, value, mediaOpts = undefined) {
         if (typeof htmlelm == "string") {
             let elm = (htmlelm.startsWith("xjs")) ? this.#xjselements[htmlelm]().cloneNode(true) : this.#htmlelements[htmlelm]().cloneNode(true);
             if (id) elm.setAttribute("id", id);
             if (name) elm.setAttribute("name", name);
             if (value) elm.setAttribute("value", value);
+            if (mediaOpts) {
+                elm.setAttribute("mediaOpts", mediaOpts);
+                xjs.registerResponsiveElement({ mediaOpts: mediaOpts, elm: elm });
+            }
             return elm;
         }
         return null;
+    }
+
+    #responsiveElements = [];
+
+    registerResponsiveElement(responsiveElm) {
+        this.#responsiveElements.push(responsiveElm);
+    }
+
+    checkMediaOptions() {
+        if (window.mediaOptions!==undefined) {
+            let breakpoints = mediaOptions.breakpoints;
+            let breakpoint = (breakpoints) ? Object.keys(breakpoints).reduce((prev, current) => (breakpoints[prev] < breakpoints[current] && breakpoints[current] <= window.innerWidth) ? current : prev) : undefined;
+            if (breakpoint) {
+                this.#responsiveElements.forEach(relm => {
+                    if (relm.mediaOpts && relm.mediaOpts[breakpoint]) {
+                        let elmMediaOpt = relm.mediaOpts[breakpoint];
+                        if (elmMediaOpt.display !== undefined) {
+                            relm.elm.style.display = elmMediaOpt.display;
+                        }
+                    }
+                });
+            }
+        }
     }
 
     #components = {};
@@ -1462,3 +1501,11 @@ class _xjs {
 }
 
 const xjs = new _xjs();
+
+window.addEventListener("resize", () => {
+    xjs.checkMediaOptions();
+});
+
+window.addEventListener("load", () => {
+    xjs.checkMediaOptions();
+});

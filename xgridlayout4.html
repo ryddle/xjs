@@ -25,15 +25,15 @@
     var xlo = new xgridlayout("grid");
     xlo.addRows(
         xgridRow.get(xlo, "80px").addCols(
-            xgridCol.get(xlo, "auto", { backgroundColor: "black" }, "header").add(
+            xgridCol.get(xlo, "auto", {style:{ backgroundColor: "black" }, id:"header"}).add(
                 xjs.withnew(xjs.htmlElements.h1, "title")
                     .setStyle({ textAlign: "center", color: "white" })
                     .setHTML("Grid Layout 4")
             )
         ),
         xgridRow.get(xlo, "auto").addCols(
-            xgridCol.get(xlo, "auto", {backgroundColor: "#353535"}),
-            xgridCol.get(xlo, "300px", { backgroundColor: "#202124" }, "sidebar").add(
+            xgridCol.get(xlo, "auto", {style:{backgroundColor: "#353535"}}),
+            xgridCol.get(xlo, "300px", {style:{ backgroundColor: "#202124" }, id:"sidebar"}).add(
                 xjs.withnew(xjs.htmlElements.button, "sidebar_toggle_btn")
                     .setSize(30, 30)
                     .setStyle({ float: "righleftt", margin: "5px", cursor: "pointer" })
@@ -54,7 +54,7 @@
             )
         ),
         xgridRow.get(xlo, "80px").addCols(
-            xgridCol.get(xlo, "auto", { backgroundColor: "black" }, "footer"),
+            xgridCol.get(xlo, "auto", {style:{ backgroundColor: "black" }, id:"footer"}),
         )
     ).resizeGrid();
 </script>

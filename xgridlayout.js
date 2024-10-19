@@ -21,7 +21,8 @@ class xgridlayout {
             box-sizing: border-box;
         }`;
     #grid = [];
-    constructor(_id) {
+    constructor(_id, _config) {
+        this.config = _config;
         xjs.withcss(this.#css);
         this.gridcontainer = xjs.withnew("div", _id);
         this.gridcontainer.className = 'grid-container';
@@ -68,11 +69,17 @@ class xgridlayout {
     }
 
     resizeGrid(_element = undefined) {
-        var totalHeight = 0;
+        let totalHeight = 0;
         let autoHeightRows = [];
+        const breakpoint = this.getBreakpoint();
         this.rows.forEach((_row) => {
             const row = _row.el();
-            if(row.style.display === 'none') {
+
+            if (_row.options.mediaOpts !== undefined) {
+
+            }
+
+            if (row.style.display === 'none') {
                 return;
             }
             // calcular el alto de la fila en px
@@ -93,6 +100,22 @@ class xgridlayout {
             if (cols !== undefined) {
                 cols.forEach(col => {
                     const cell = col.el();
+                    if (breakpoint !== undefined && col.options.mediaOpts !== undefined) {
+                        let colMediaOpt = col.options.mediaOpts[breakpoint];
+                        if (colMediaOpt !== undefined) {
+                            if (colMediaOpt.width !== undefined) {
+                                cell.setWidth(colMediaOpt.width);
+                            }
+                            if (colMediaOpt.display !== undefined) {
+                                cell.style.display = colMediaOpt.display;
+                            }
+                        }
+                    }
+
+                    if (cell.style.display === 'none') {
+                        //return;
+                    }
+
                     if (cell.classList.contains('auto-width')) {
                         autoWidthCells.push(cell);
                     } else if (cell.style.width.endsWith('px')) {
@@ -103,10 +126,10 @@ class xgridlayout {
                         autoWidthCells.push(cell);
                     }
 
-                    cell.style.height = (row.classList.contains('fit-height')?`${_row.height()}px`:`${row.offsetHeight}px`);
+                    cell.style.height = (row.classList.contains('fit-height') ? `${_row.height()}px` : `${row.offsetHeight}px`);
                 });
 
-                const remainingWidth = this.gridcontainer.offsetWidth - totalWidth - (document.body.hasScrollBarX()?(document.body.hasScrollBarY() ? 17 : 0):0);
+                const remainingWidth = this.gridcontainer.offsetWidth - totalWidth - (document.body.hasScrollBarX() ? (document.body.hasScrollBarY() ? 17 : 0) : 0);
                 const autoWidth = remainingWidth / autoWidthCells.length;
 
                 autoWidthCells.forEach(cell => {
@@ -131,10 +154,16 @@ class xgridlayout {
         });
 
     }
+
+    getBreakpoint() {
+        return (this.config && this.config.breakpoints) ? Object.keys(this.config.breakpoints).reduce((prev, current) => (this.config.breakpoints[prev] < this.config.breakpoints[current] && this.config.breakpoints[current] <= window.innerWidth) ? current : prev) : undefined;
+    }
 }
 
 class xgridRow {
-    constructor(grid, height = 'auto', style = {}, id) {
+    constructor(grid, height = 'auto', options = {}) {
+        this.options = {style: {}, id: undefined, mediaOpts: undefined};
+        Object.assign(this.options, options);
         if (grid instanceof xgridlayout) {
             this.grid = grid;
         } else {
@@ -145,14 +174,14 @@ class xgridRow {
         this.row.className = 'grid-row';
         if (height === 'auto') {
             this.row.classList.add('auto-height');
-        }else if (height === 'fit') {
+        } else if (height === 'fit') {
             this.row.classList.add('fit-height');
         }
         this.row.style.height = height;
-        Object.assign(this.row.style, style);
+        Object.assign(this.row.style, this.options.style);
 
-        if (id) {
-            this.row.id = id;
+        if (this.options.id) {
+            this.row.id = this.options.id;
         }
 
         return this;
@@ -190,7 +219,8 @@ class xgridRow {
 
 class xgridCol {
     #has_elements = false;
-    constructor(grid, width = 'auto', style = {}, id) {
+    constructor(grid, width = 'auto', options = {}) {
+        this.options = options;
         if (grid instanceof xgridlayout) {
             this.grid = grid;
         } else {
@@ -205,10 +235,10 @@ class xgridCol {
             this.col.classList.add('auto-width');
         }
         this.col.style.width = width;
-        Object.assign(this.col.style, style);
+        Object.assign(this.col.style, this.options.style);
 
-        if (id) {
-            this.col.id = id;
+        if (this.options.id) {
+            this.col.id = this.options.id;
         }
 
         let _self = this;
@@ -281,7 +311,7 @@ class xgridCol {
         let autoHeightRows = [];
         this.rows.forEach(_row => {
             const row = _row.el();
-            if(row.style.display === 'none') {
+            if (row.style.display === 'none') {
                 return;
             }
             // calcular el alto de la fila en px
@@ -313,7 +343,7 @@ class xgridCol {
                         autoWidthCells.push(cell);
                     }
 
-                    cell.style.height = (row.classList.contains('fit-height')?`${_row.height()}px`:`${row.offsetHeight}px`);
+                    cell.style.height = (row.classList.contains('fit-height') ? `${_row.height()}px` : `${row.offsetHeight}px`);
                 });
             }
 

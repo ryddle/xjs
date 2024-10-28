@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediaPlayer Layout</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="xjs.js" type="text/javascript"></script>
+    <script src="xgridlayout.js" type="text/javascript"></script>
+    <script src="xutils/xutils.js" type="text/javascript"></script>
+    <script src="xhtmlColors.js" type="text/javascript"></script>
+    <script src="xcolor.js" type="text/javascript"></script>
+    <style>
+        :root {
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+
+<script>
+    setMediaOptions({
+        breakpoints: {
+            sm: 640, // value for small screens
+            md: 900, // value for medium screens
+            lg: 1450, // value for large screens
+            xl: 1920 // value for extra large screens
+        }
+    });
+
+    medialayout = "audio";
+
+    xjs.withcss(`
+        :root {
+            font-family: sans-serif;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    `);
+
+    xjs.setCssVar("--bg-color", "#202124");
+    xjs.setCssVar("--fg-color", "#ffffff");
+    xjs.setCssVar("--button-bg-color", "#333333");
+
+
+    const gridConfig = {
+        breakpoints: getMediaOptions().breakpoints
+    };
+
+    var xlo = new xgridlayout("grid", gridConfig);
+    xlo.addRows(
+        xgridRow.get(xlo, "40px", {
+            mediaOpts: {
+                sm: { display: "" },
+                md: { display: "" },
+                lg: { display: "none" },
+                xl: { display: "none" }
+            }
+        }).addCols(
+            xgridCol.get(xlo, "auto", {
+                style: { backgroundColor: "var(--bg-color)" },
+                id: "header"
+            }).add(
+                xjs.withnew(xjs.htmlElements.button, "menu_toggle_btn")
+                    .setStyle({ backgroundColor: "var(--button-bg-color)", float: "right", margin: "5px 5px 5px 5px", height: "30px", width: "30px", color: "var(--fg-color)", border: "none", cursor: "pointer" })
+                    .setHTML(`<i class="fa-solid fa-bars"></i>`)
+            )
+        ),
+        xgridRow.get(xlo, "auto").addCols(
+            xgridCol.get(xlo, "auto", {
+                style: { backgroundColor: "var(--bg-color)" },
+                mediaOpts: {
+                    sm: { display: () => window["medialayout"] == "video" ? "" : "none" },
+                    md: { display: () => window["medialayout"] == "video" ? "" : "none" },
+                    lg: { display: () => "" },
+                    xl: { display: () => "" }
+                },
+                id: "viewer"
+            }).add(
+                xjs.withnew(xjs.htmlElements.panel, "viewer_panel")
+                    .pos(0, 0)
+                    .setStyle({ position: "relative", width: "calc(100% - 11px)", height: "calc(100% - 10px)", padding: "5px", borderRight: "1px solid #cccccc", backgroundColor: "#33355b" })
+                    .append(xjs.withnew(xjs.htmlElements.span, "msg").setStyle({ color: "var(--fg-color)" }).setText(window.innerWidth + "px"))
+                    .append(
+                        xjs.withnew(xjs.htmlElements.button, "videolayout_toggle_btn")
+                            .setStyle({ backgroundColor: "var(--button-bg-color)", float: "right", height: "30px", width: "30px", color: "var(--fg-color)", cursor: "pointer" })
+                            .setHTML("<i class=\"fa-solid fa-video\"></i>")
+                            .setProperty("state", 0)
+                            .setAttribute("title", "Toggle Video Layout")
+                            .bindEvent("click", function () {
+                                xlo.rows[1].orderCols([1, 0, 2, 3]);
+                                if (this.state === 0) {
+                                    this.getChild(0).setClass("fa-solid fa-music");
+                                    xlo.rows[1].cols[2].el().setProperty("displayStatus", "locked").setStyle({ display: "none" });
+                                    xjs.with("info_toggle_btn").setProperty("displayStatus", "locked").setStyle({ display: "" });
+                                    this.state = 1;
+                                    this.setAttribute("title", "Toggle Audio Layout");
+                                    window["medialayout"] = "video";
+                                } else {
+                                    this.getChild(0).setClass("fa-solid fa-video");
+                                    xlo.rows[1].cols[2].el().setProperty("displayStatus", "").setStyle({ display: "" });
+                                    xjs.with("info_toggle_btn").setProperty("displayStatus", "").setStyle({ display: "none" });
+                                    this.state = 0;
+                                    this.setAttribute("title", "Toggle Video Layout");
+                                    window["medialayout"] = "audio";
+                                }
+                            })
+                    )
+            ),
+            xgridCol.get(xlo, "635px", {
+                style: { backgroundColor: "var(--bg-color)" }, id: "playlist",
+                mediaOpts: {
+                    sm: { display: () => window["medialayout"] == "video" ? "none" : "", width: "auto" },
+                    md: { display: () => window["medialayout"] == "video" ? "none" : "", width: "auto" },
+                    lg: { display: "", width: "635px" },
+                    xl: { display: "", width: "635px" }
+                }
+            }).add(
+                xjs.withnew(xjs.htmlElements.panel, "playlist_panel")
+                    .pos(0, 0)
+                    .setStyle({ position: "relative", width: "calc(100% - 11px)", height: "calc(100% - 10px)", padding: "5px", borderRight: "1px solid #cccccc", backgroundColor: "#53553b" })
+                    .append(xjs.withnew(xjs.htmlElements.span, "msg").setStyle({ color: "var(--fg-color)" }).setText(window.innerWidth + "px"))
+            ),
+            xgridCol.get(xlo, "635px", {
+                style: { backgroundColor: "var(--bg-color)", borderRight: "1px solid #ccc" }, id: "info",
+                mediaOpts: {
+                    sm: { display: "none" },
+                    md: { display: "none" },
+                    lg: { display: "none" },
+                    xl: { display: function () { return xjs.with("info").getProperty("displayStatus") == "locked" ? xjs.with("info").getStyleProperty("display") : ""; } }
+                }
+            }),
+            xgridCol.get(xlo, "40px", {
+                style: { backgroundColor: "var(--bg-color)", position: "inherit", zIndex: 2 },
+                mediaOpts: {
+                    sm: { display: "none" },
+                    md: { display: "none" },
+                    lg: { display: "" },
+                    xl: { display: "" }
+                },
+                id: "sidebar"
+            }).add(
+                xjs.withnew(xjs.htmlElements.button, "config_toggle_btn").setStyle({ backgroundColor: "var(--button-bg-color)", height: "30px", width: "30px", color: "var(--fg-color)", cursor: "pointer", margin: "5px 0px 0px 6px" })
+                    .setHTML("<i class=\"fa-solid fa-gear\"></i>")
+                    .bindEvent("click", function () {
+                        info_sidebar_panel.hide();
+                        playlist_sidebar_panel.hide();
+                        conf_sidebar_panel.toggle();
+                    })
+            ).add(
+                xjs.withnew(xjs.htmlElements.button, "info_toggle_btn", "", null, {
+                    sm: { display: "" },
+                    md: { display: "" },
+                    lg: { display: "" },
+                    xl: { display: () => window["medialayout"] == "video" ? "" : "none"}
+                }).setStyle({ backgroundColor: "var(--button-bg-color)", height: "30px", width: "30px", color: "var(--fg-color)", cursor: "pointer", margin: "5px 0px 0px 6px" })
+                    .setHTML("<i class=\"fa-solid fa-info\"></i>")
+                    .bindEvent("click", function () {
+                        conf_sidebar_panel.hide();
+                        playlist_sidebar_panel.hide();
+                        info_sidebar_panel.toggle();
+                    })
+            ).add(
+                xjs.withnew(xjs.htmlElements.button, "playlist_toggle_btn", "", null, {
+                    sm: { display: "" },
+                    md: { display: "" },
+                    lg: { display: "none" },
+                    xl: { display: "none" }
+                }).setStyle({ backgroundColor: "var(--button-bg-color)", height: "30px", width: "30px", color: "var(--fg-color)", cursor: "pointer", margin: "5px 0px 0px 6px" })
+                    .setHTML("<i class=\"fa-solid fa-list\"></i>")
+                    .bindEvent("click", function () {
+                        conf_sidebar_panel.hide();
+                        info_sidebar_panel.hide();
+                        playlist_sidebar_panel.toggle();
+                    })
+            )
+        )
+    ).resizeGrid();
+
+    window.addEventListener("resize", function () {
+        xjs.with("msg").setText(window.innerWidth + "px");
+    });
+
+    const sidebarPanel = class {
+        constructor(id, options = {}) {
+            this.options = {
+                bgColor: "var(--bg-color)",
+                width: "300px",
+                speed: 100,
+                mediaOpts: {
+                    sm: { display: "none" },
+                    md: { display: "none" },
+                    lg: { display: "" },
+                    xl: { display: "" }
+                }
+            };
+            Object.assign(this.options, options);
+            this.maxright = -1 * parseInt(this.options.width);
+            this.elm = xjs.withnew(xjs.htmlElements.div, id)//, "", null, this.options.mediaOpts)
+                .setStyle({ backgroundColor: this.options.bgColor, border: "1px solid #ccc", height: "calc(100vh - 2px)", width: this.options.width, position: "absolute", top: "0px", right: this.maxright + "px", zIndex: "1" });
+            document.body.appendChild(this.elm);
+            return this;
+        }
+
+        toggle() {
+            if (this.elm.getStyleProperty("right", "number") === -1) {
+                xjs.animate([this.elm], [{ right: { start: -1, end: this.maxright, ease: xjs.easeTypes.linear } }], this.options.speed);
+            } else {
+                xjs.animate([this.elm], [{ right: { start: this.maxright, end: -1, ease: xjs.easeTypes.linear } }], this.options.speed);
+            }
+        }
+
+        show() {
+            if (this.elm.getStyleProperty("right", "number") === this.maxright) {
+                xjs.animate([this.elm], [{ right: { start: this.maxright, end: -1, ease: xjs.easeTypes.linear } }], this.options.speed);
+            }
+        }
+
+        hide() {
+            if (this.elm.getStyleProperty("right", "number") === -1) {
+                xjs.animate([this.elm], [{ right: { start: -1, end: this.maxright, ease: xjs.easeTypes.linear } }], this.options.speed);
+            }
+        }
+    };
+
+    const conf_sidebar_panel = new sidebarPanel("conf_sidebar_panel", { bgColor: "#f00", width: "400px", speed: 200 });
+    const info_sidebar_panel = new sidebarPanel("info_sidebar_panel", { bgColor: "#0f0", width: "650px" });
+    const playlist_sidebar_panel = new sidebarPanel("playlist_sidebar_panel", { bgColor: "#00f", width: "650px" });
+
+</script>

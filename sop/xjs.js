@@ -2,10 +2,6 @@
     xjs
 */
 
-if (typeof module !== 'undefined' && module.exports) {
-    require("./xcolor.js");
-}
-
 //Window
 setMediaOptions = function (options) {
     window.mediaOptions = { breakpoints: {} };
@@ -88,6 +84,42 @@ HTMLElement.prototype._cv = function (value) {
         }
     }
     return value;
+};
+
+HTMLElement.prototype._csc = function (property, value) {
+    let computedStyle = getComputedStyle(this)[property];
+    if (value != computedStyle) {
+        let data = {
+            element: this,
+            property: property,
+            oldvalue: computedStyle,
+            newvalue: value
+        };
+        // emit event with change information
+        /* this.dispatchEvent(new CustomEvent("stylepropertychange", {
+            detail: data
+        })); */
+        this.styleobserver.callback(data);
+    }
+};
+
+HTMLElement.prototype.styleObserver = function (callback, properties=[]) {
+    this.styleobserver = {};
+    this.styleobserver.callback = callback;
+    this.styleobserver.properties = properties;
+    this.styleobserver.styleobserverState = true;
+};
+
+HTMLElement.prototype.disconnectStyleObserver = function () {
+    this.styleobserver.styleobserverState = false;
+};
+
+HTMLElement.prototype.connectStyleObserver = function () {
+    this.styleobserver.styleobserverState = true;
+};
+
+HTMLElement.prototype.removeStyleObserver = function () {
+    this.styleobserver.styleobserver = undefined;
 };
 
 HTMLElement.prototype.insert = function (elm, name) {
@@ -231,6 +263,7 @@ HTMLElement.prototype.setStyle = function (...args) {
                 if (value.match(/#[0-9A-Fa-f]{8}/)) {
                     value = value.replace(/#[0-9A-Fa-f]{8}/, xcolor.hexa2rgba(value.match(/#[0-9A-Fa-f]{8}/)[0]));
                 }
+                if (this.styleobserver !== undefined && this.styleobserver.properties.includes(property)) this._csc(property, value);
                 this.style[property] = value;
             }
         } else if (typeof _style == "string") {// expected "property:value" format
@@ -245,6 +278,7 @@ HTMLElement.prototype.setStyle = function (...args) {
             if (value.match(/#[0-9A-Fa-f]{8}/)) {
                 value = value.replace(/#[0-9A-Fa-f]{8}/, xcolor.hexa2rgba(value.match(/#[0-9A-Fa-f]{8}/)[0]).replaceAll(",", ", "));
             }
+            if (this.styleobserver !== undefined && this.styleobserver.properties.includes(property)) this._csc(property, value);
             this.style[property] = value;
         } else if (typeof _style == "array") {
             let property = _style[0];
@@ -257,6 +291,7 @@ HTMLElement.prototype.setStyle = function (...args) {
             if (value.match(/#[0-9A-Fa-f]{8}/)) {
                 value = value.replace(/#[0-9A-Fa-f]{8}/, xcolor.hexa2rgba(value.match(/#[0-9A-Fa-f]{8}/)[0]).replaceAll(",", ", "));
             }
+            if (this.styleobserver !== undefined && this.styleobserver.properties.includes(property)) this._csc(property, value);
             let priority = (_style.length == 3) ? _style[2] : "";
             this.style[property] = value;
         }
@@ -271,6 +306,7 @@ HTMLElement.prototype.setStyle = function (...args) {
         if (value.match(/#[0-9A-Fa-f]{8}/)) {
             value = value.replace(/#[0-9A-Fa-f]{8}/, xcolor.hexa2rgba(value.match(/#[0-9A-Fa-f]{8}/)[0]).replaceAll(",", ", "));
         }
+        if (this.styleobserver !== undefined && this.styleobserver.properties.includes(property)) this._csc(property, value);
         let priority = (args.length == 3) ? args[2] : "";
         this.style[property] = value;
     }

@@ -88,6 +88,19 @@ class xgridlayout {
         rows_.forEach(row => {
             if (row instanceof xgridRow) {
                 this.gridcontainer.appendChild(row.el());
+
+                /*** */
+                let _self = row.el();
+                _self.styleObserver(function (data) {
+                    if (_self.locked) {
+                        _self.locked = false;
+                        return;
+                    }
+                    console.log(JSON.stringify(data, null, 2));
+                    //_self.grid.resizeGrid(_self);
+                }, ["display", "width", "height"]);
+                /*** */
+
                 this.observer.observe(row.el(), this.observerConfig);
                 this.rows.push(row);
                 if (row.options.id !== undefined && row.options.id !== '') {
@@ -99,6 +112,7 @@ class xgridlayout {
     }
 
     resizeGrid(_element = undefined) {
+        console.time('resizeGrid');
         let totalHeight = 0;
         let autoHeightRows = [];
         const breakpoint = this.getBreakpoint();
@@ -194,6 +208,8 @@ class xgridlayout {
         autoHeightRows.forEach(row => {
             row.style.height = `${autoHeight}px`;
         });
+
+        console.timeEnd('resizeGrid');
     }
 
     getBreakpoint() {
@@ -241,6 +257,17 @@ class xgridRow {
     addCol(width = 'auto', style = {}, id) {
         const _col = xgridCol.get(width, style, id);
         this.row.appendChild(_col.el());
+        /*** */
+        let _self = col.el();
+        _self.styleObserver(function (data) {
+            if (_self.locked) {
+                _self.locked = false;
+                return;
+            }
+            console.log(JSON.stringify(data, null, 2));
+            //_self.grid.resizeGrid(_self);
+        }, ["display", "width", "height"]);
+        /*** */
         this.cols.push(_col);
         if (id !== undefined && id !== '') {
             this.grid.setColById(id, _col);
@@ -256,6 +283,17 @@ class xgridRow {
                     this.grid.setColById(col.options.id, col);
                 }
                 this.row.appendChild(col.el());
+                /*** */
+                let _self = col.el();
+                _self.styleObserver(function (data) {
+                    if (_self.locked) {
+                        _self.locked = false;
+                        return;
+                    }
+                    console.log(JSON.stringify(data, null, 2));
+                    //_self.grid.resizeGrid(_self);
+                }, ["display", "width", "height"]);
+                /*** */
             }
         });
         return this;

@@ -24,11 +24,13 @@
 <script>
     setMediaOptions({
         breakpoints: {
-            sm: 600, // valor para pantallas pequeñas
-            md: 900, // valor para pantallas medianas
-            lg: 1200 // valor para pantallas grandes
+            sm: 600, // value for small screens
+            md: 900, // value for medium screens
+            lg: 1200 // value for large screens
         }
     });
+
+    var selMenuIndex = 0;
 
     xjs.withcss(`
         :root {
@@ -53,9 +55,9 @@
 
     const gridConfig = {
         breakpoints: {
-            sm: 600, // valor para pantallas pequeñas
-            md: 900, // valor para pantallas medianas
-            lg: 1200 // valor para pantallas grandes
+            sm: 600, // value for small screens
+            md: 900, // value for medium screens
+            lg: 1200 // value for large screens
         }
     };
 
@@ -69,8 +71,8 @@
             xgridCol.get(xlo, "300px", {
                 mediaOpts: {
                     sm: { display: "none" },
-                    md: { display: ""},
-                    lg: { display: ""}
+                    md: { display: "" },
+                    lg: { display: "" }
                 },
                 style: { backgroundColor: "var(--bg-color-sidebar)", borderRight: "1px solid var(--bg-color)" },
                 id: "sidebar"
@@ -160,7 +162,7 @@
         listStyle: "none", padding: "5px", paddingLeft: "12px", cursor: "pointer", height: "30px",
         display: "flex",
         alignItems: "center"
-    }).setClass("menu_option").setAttribute("title", "${menuStr}")
+    }).setClass("menu_option").setAttribute("title", "${menuStr}").setProperty("index", "${menuIndex}")
         .append(
             xjs.withnew(xjs.htmlElements.i).setStyle({ color: "white", marginRight: "10px", width: "16px", textAlign: "center" }).setClass("${menuIcon}")
         ).append(
@@ -181,6 +183,8 @@
             this.bgColor("var(--bg-color-selected)");
             this.setProperty("selected", true);
 
+            window.selMenuIndex = this.getProperty("index");
+
             xjs.with("main").setText("").append(
                 xjs.withnew(xjs.htmlElements.iframe).setStyles({ border: "0px" }).setSize("100%", "100%").setAttribute("src", this.getVariable("menuUrl"))
             );
@@ -190,16 +194,16 @@
     xjs.with("sidebar").append(xjs.withnew(xjs.htmlElements.panel, "sidebar_content").pos(0, 80).setSize(300, 300).append(
         //add menu options
         xjs.withnew(xjs.htmlElements.ul, "menu").setStyles({ padding: "0px", margin: "0px" })
-            .append(xjs.getComponent("menu_option", true, { "menuStr": "Home", "menuIcon": "fas fa-home" }).bgColor("var(--bg-color-selected)").setProperty("selected", true)
+            .append(xjs.getComponent("menu_option", true, { "menuStr": "Home", "menuIcon": "fas fa-home", "menuIndex": 0 }).bgColor("var(--bg-color-selected)").setProperty("selected", true)
                 .bindEvent("click", function () {
                     xjs.with("main").clear().setText(xjs.loremipsum(10000));
                 }))
-            .append(xjs.getComponent("menu_option", true, { "menuStr": "XJS Showcase", "menuIcon": "fas fa-images", "menuUrl": "./xjs.html" }))
-            .append(xjs.getComponent("menu_option", true, { "menuStr": "GridLayout 2", "menuIcon": "fas fa-table", "menuUrl": "./xgridlayout2.html" }))
-            .append(xjs.getComponent("menu_option", true, { "menuStr": "GridLayout 3", "menuIcon": "fas fa-table-columns", "menuUrl": "./xgridlayout3.html" }))
-            .append(xjs.getComponent("menu_option", true, { "menuStr": "GridLayout 4", "menuIcon": "fas fa-table", "menuUrl": "./xgridlayout4.html" }))
-            .append(xjs.getComponent("menu_option", true, { "menuStr": "GridLayout 5", "menuIcon": "fas fa-table-columns", "menuUrl": "./xgridlayout5.html" }))
-            .append(xjs.getComponent("menu_option", false, { "menuStr": "Option 6", "menuIcon": "fas fa-ellipsis-v" })
+            .append(xjs.getComponent("menu_option", true, { "menuStr": "XJS Showcase", "menuIcon": "fas fa-images", "menuUrl": "./xjs.html", "menuIndex": 1 }))
+            .append(xjs.getComponent("menu_option", true, { "menuStr": "GridLayout 2", "menuIcon": "fas fa-table", "menuUrl": "./xgridlayout2.html", "menuIndex": 2 }))
+            .append(xjs.getComponent("menu_option", true, { "menuStr": "GridLayout 3", "menuIcon": "fas fa-table-columns", "menuUrl": "./xgridlayout3.html", "menuIndex": 3 }))
+            .append(xjs.getComponent("menu_option", true, { "menuStr": "GridLayout 4", "menuIcon": "fas fa-table", "menuUrl": "./xgridlayout4.html", "menuIndex": 4 }))
+            .append(xjs.getComponent("menu_option", true, { "menuStr": "GridLayout 5", "menuIcon": "fas fa-table-columns", "menuUrl": "./xgridlayout5.html", "menuIndex": 5 }))
+            .append(xjs.getComponent("menu_option", false, { "menuStr": "Option 6", "menuIcon": "fas fa-ellipsis-v", "menuIndex": 6 })
                 .bindEvent("mouseover", function () {
                     this.bgColor("#aaaaaa");
                 }).bindEvent("mouseout", function () {
@@ -310,17 +314,17 @@
     xjs.with("header").append(
         xjs.withnew(xjs.htmlElements.h1).setText("XJS / XGridLayout - Showcase").setStyles({ color: "#ffffff", textAlign: "center", fontFamily: "monospace" })
     ).append(
-        xjs.withnew(xjs.htmlElements.button, "sm_right_sidebar_toggle_btn", "sm_right_sidebar_toggle_btn", null, 
+        xjs.withnew(xjs.htmlElements.button, "sm_right_sidebar_toggle_btn", "sm_right_sidebar_toggle_btn", null,
             {
                 sm: { display: "block" },
                 md: { display: "none" },
                 lg: { display: "none" }
             })
             .setSize(40, 40)
-            .setStyles({ position: "absolute", right: "0px", top: "0px", margin: "15px", cursor: "pointer" })
-            .bgColor("var(--bg-color)")
+            .setStyles({ position: "absolute", right: "0px", top: "0px", margin: "15px", cursor: "pointer", border: "0px" })
+            .bgColor("var(--bg-color-header)")
             .append(
-                xjs.withnew(xjs.htmlElements.i).setStyle({ color: "white" }).setClass("fas fa-bars")
+                xjs.withnew(xjs.htmlElements.i).setStyle({ color: "white", fontSize: "20px" }).setClass("fas fa-bars")
             )
             .bindEvent("mouseup", function () {
                 let rsidebar = xjs.with("right_sidebar");
@@ -493,4 +497,30 @@
                         )
                 )
         ).appendTo(document.body);
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        if (xjs.with("sidebar").style.display != "none") {
+            xjs.with("menu").getChild(window.selMenuIndex).setProperty("selected", true).bgColor("var(--bg-color-selected)");
+        }
+
+        if (xjs.with("right_sidebar").style.display != "none") {
+            xjs.with("r_menu").getChild(window.selMenuIndex).setProperty("selected", true).bgColor("var(--bg-color-selected)");
+        }
+    });
+
+    document.addEventListener("click", function (e) {
+        if (xjs.with("right_sidebar").style.display != "none" && !xjs.with("right_sidebar").contains(e.target)) {
+            let rsidebar = xjs.with("right_sidebar");
+            if (rsidebar.right() == -1) {
+                xjs.animate([xjs.with("r_config_panel")], [{ opacity: { start: "1", end: "0", ease: xjs.easeTypes.easeInOut }, }], 100, function () {
+                    xjs.with("r_config_panel").right(-300).bgColor("var(--bg-color-sidebar)");
+                    xjs.with("r_config_toggle_btn").getChild(0).setClass("fas fa-cog");
+                });
+                xjs.animate([rsidebar], [{ right: { start: -1, end: -300, ease: xjs.easeTypes.easeInOut }, }], 100);
+                xjs.with("right_sidebar_toggle_btn").getChild(0).setClass("fas fa-bars");
+            }
+        }
+    });
+
 </script>

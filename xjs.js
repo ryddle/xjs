@@ -79,8 +79,6 @@ Document.prototype.bindEvent = function (evnt, method, scope, ...args) {
 };
 
 HTMLElement.prototype._cv = function (value) {
-    //let caller = new Error().stack.split('\n')[3].trim().split(" ")[1];
-    //if (!caller.startsWith("HTMLElement")) return this;
     if (this.variables !== undefined && typeof value == "string" && value.match(/^\$\{.*\}$/)) {
         value = value.replace(/^\$\{(.*)\}$/, '$1');
         if (this.getVariable(value) !== undefined) {
@@ -258,68 +256,6 @@ HTMLElement.prototype.setStyle = function (...args) {
     return this;
 };
 
-/*
-HTMLElement.prototype.setStyle = function (...args) {
-    if (args.length == 1) {
-        let _style = args[0];
-        if (typeof _style == "object") {
-            for (const property in _style) {
-                let value = _style[property];
-                value = (typeof value == "string") ? this._cv(value) : value;
-                //if value matches the pattern #RRGGBB or #RRGGBBAA then replace it with rgb(a)
-                if (value.match(/#[0-9A-Fa-f]{6}/)) {
-                    value = value.replace(/#[0-9A-Fa-f]{6}/, xcolor.hex2rgb(value.match(/#[0-9A-Fa-f]{6}/)[0]));
-                }
-                if (value.match(/#[0-9A-Fa-f]{8}/)) {
-                    value = value.replace(/#[0-9A-Fa-f]{8}/, xcolor.hexa2rgba(value.match(/#[0-9A-Fa-f]{8}/)[0]));
-                }
-                this.style[property] = value;
-            }
-        } else if (typeof _style == "string") {// expected "property:value" format
-            _style = _style.split(":");
-            let property = _style[0].trim();
-            let value = _style[1].trim();
-            value = (typeof value == "string") ? this._cv(value) : value;
-            //if value matches the pattern #RRGGBB or #RRGGBBAA then replace it with rgb(a)
-            if (value.match(/#[0-9A-Fa-f]{6}/)) {
-                value = value.replace(/#[0-9A-Fa-f]{6}/, xcolor.hex2rgb(value.match(/#[0-9A-Fa-f]{6}/)[0]).replaceAll(",", ", ")   );
-            }
-            if (value.match(/#[0-9A-Fa-f]{8}/)) {
-                value = value.replace(/#[0-9A-Fa-f]{8}/, xcolor.hexa2rgba(value.match(/#[0-9A-Fa-f]{8}/)[0]).replaceAll(",", ", "));
-            }
-            this.style[property] = value;
-        } else if (typeof _style == "array") {
-            let property = _style[0];
-            let value = _style[1];
-            value = (typeof value == "string") ? this._cv(_style[1]) : value;
-            //if value matches the pattern #RRGGBB or #RRGGBBAA then replace it with rgb(a)
-            if (value.match(/#[0-9A-Fa-f]{6}/)) {
-                value = value.replace(/#[0-9A-Fa-f]{6}/, xcolor.hex2rgb(value.match(/#[0-9A-Fa-f]{6}/)[0]).replaceAll(",", ", "));
-            }
-            if (value.match(/#[0-9A-Fa-f]{8}/)) {
-                value = value.replace(/#[0-9A-Fa-f]{8}/, xcolor.hexa2rgba(value.match(/#[0-9A-Fa-f]{8}/)[0]).replaceAll(",", ", "));
-            }
-            let priority = (_style.length == 3) ? _style[2] : "";
-            this.style[property] = value;
-        }
-    } else if (args.length > 1) {
-        let property = args[0];
-        let value = args[1];
-        value = (typeof value == "string") ? this._cv(value) : value;
-        //if value matches the pattern #RRGGBB or #RRGGBBAA then replace it with rgb(a)
-        if (value.match(/#[0-9A-Fa-f]{6}/)) {
-            value = value.replace(/#[0-9A-Fa-f]{6}/, xcolor.hex2rgb(value.match(/#[0-9A-Fa-f]{6}/)[0]).replaceAll(",", ", "));
-        }
-        if (value.match(/#[0-9A-Fa-f]{8}/)) {
-            value = value.replace(/#[0-9A-Fa-f]{8}/, xcolor.hexa2rgba(value.match(/#[0-9A-Fa-f]{8}/)[0]).replaceAll(",", ", "));
-        }
-        let priority = (args.length == 3) ? args[2] : "";
-        this.style[property] = value;
-    }
-    return this;
-};
-*/
-
 HTMLElement.prototype.setStyleProperty = function (property, value, priority = "") {
     value = this._cv(value);
     this.style.setProperty(property, value, priority);
@@ -329,14 +265,9 @@ HTMLElement.prototype.setStyleProperty = function (property, value, priority = "
 /*
  * set multiple styles at once
  * @param styles an object with style properties
+ * @deprecated use setStyle
  */
 HTMLElement.prototype.setStyles = function (_styles) {
-    /* if (typeof styles == "object") {
-        for (const key in styles) {
-            this.style[key] = styles[key];
-        }
-    }
-    return this; */
     return this.setStyle(_styles);
 };
 

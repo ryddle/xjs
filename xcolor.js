@@ -80,11 +80,17 @@ class xcolor {
             this.#parseHsba(xcolor.rgba2hsba(colorCode));
             this.#parseHsla(xcolor.rgba2hsla(colorCode));
         } else if (matches = colorCode.match(xcolor.#hexRegex)) {
+            if (colorCode.length === 4) {
+                colorCode = '#' + colorCode.slice(1).split('').map(c => c + c).join('');
+            }
             this.#parseHex(colorCode);
             this.#parseRgb(xcolor.hex2rgb(colorCode));
             this.#parseHsb(xcolor.hex2hsb(colorCode));
             this.#parseHsl(xcolor.hex2hsl(colorCode));
         } else if (matches = colorCode.match(xcolor.#hexaRegex)) {
+            if (colorCode.length === 5) {
+                colorCode = '#' + colorCode.slice(1).split('').map(c => c + c).join('');
+            }
             this.#parseHexa(colorCode);
             this.#parseRgba(xcolor.hexa2rgba(colorCode));
             this.#parseHsba(xcolor.hexa2hsba(colorCode));
@@ -545,8 +551,8 @@ class xcolor {
      * @return {string} The RGBA color code.
      */
     static hex2rgba(color) {
-        let [r, g, b, a] = color.match(/\w\w/g).map(x => +`0x${x}`);
-        return `rgba(${r},${g},${b},${a})`;
+        let [r, g, b, a] = (color.length === 4) ? color.match(/\w/g).map(x => +`0x${x+x}`) : color.match(/\w\w/g).map(x => +`0x${x}`);
+        return `rgba(${r},${g},${b},1)`;
     }
     /**
      * Converts a hexadecimal color code to an RGB color code.
@@ -555,7 +561,7 @@ class xcolor {
      * @return {string} The RGB color code equivalent to the input hexadecimal color code.
      */
     static hex2rgb(color) {
-        let [r, g, b] = color.match(/\w\w/g).map(x => +`0x${x}`);
+        let [r, g, b] = (color.length === 4) ? color.match(/\w/g).map(x => +`0x${x+x}`) : color.match(/\w\w/g).map(x => +`0x${x}`);
         return `rgb(${r},${g},${b})`;
     }
     /**
@@ -565,18 +571,8 @@ class xcolor {
      * @return {string} the rgba formatted color
      */
     static hexa2rgba(color) {
-        let [r, g, b, a] = color.match(/\w\w/g).map(x => +`0x${x}`);
+        let [r, g, b, a] = (color.length === 5) ? color.match(/\w/g).map(x => +`0x${x+x}`) : color.match(/\w\w/g).map(x => +`0x${x}`);
         return `rgba(${r},${g},${b},${Math.round((a / 255) * 10) / 10})`;
-    }
-    /**
-     * Converts a hexadecimal color code to an RGB color code.
-     *
-     * @param {string} color - The hexadecimal color code to convert.
-     * @return {string} The RGB color code equivalent to the input hexadecimal color code.
-     */
-    static hex2rgb(color) {
-        let [r, g, b] = color.match(/\w\w/g).map(x => +`0x${x}`);
-        return `rgb(${r},${g},${b})`;
     }
     /**
      * Converts a hexadecimal color code to its corresponding hue, saturation, and brightness values.

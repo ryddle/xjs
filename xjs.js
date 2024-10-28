@@ -218,6 +218,48 @@ HTMLElement.prototype.setVariables = function (variables) {
 
 
 HTMLElement.prototype.setStyle = function (...args) {
+    const hex = /^#?([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/; 
+    const hexa = /^#?([a-fA-F0-9]{8}|[a-fA-F0-9]{4})$/;
+    const isColor = (value) => typeof value === 'string' && value.match(hex|hexa);
+    const convertColor = (value) => {
+        if (typeof value !== 'string') return value;
+        if (value.match(hex)) {
+            return value.replace(hex, xcolor.hex2rgb(value.match(hex)[0]));
+        }
+        if (value.match(hexa)) {
+            return value.replace(hexa, xcolor.hexa2rgba(value.match(hexa)[0]));
+        }
+        return value;
+    };
+    const camelToHyphen = (str) => {
+        return str.replace(/([A-Z])/g, '-$1').toLowerCase();
+    };
+    const setStyle = (property, value, priority = "") => {
+        value = this._cv(value);
+        this.style.setProperty(camelToHyphen(property), isColor(value) ? convertColor(value) : value, priority);
+        //this.style[property] = value;
+    };
+
+    if (args.length === 1) {
+        let _style = args[0];
+        if (typeof _style === 'object') {
+            for (const property in _style) {
+                setStyle(property, _style[property]);
+            }
+        } else if (typeof _style === 'string') {
+            let [property, value] = _style.split(':').map(str => str.trim());
+            setStyle(property, value);
+        } else if (Array.isArray(_style)) {
+            setStyle(_style[0], _style[1], _style[2] || "");
+        }
+    } else if (args.length > 1) {
+        setStyle(args[0], args[1], args[2] || "");
+    }
+    return this;
+};
+
+/*
+HTMLElement.prototype.setStyle = function (...args) {
     if (args.length == 1) {
         let _style = args[0];
         if (typeof _style == "object") {
@@ -274,11 +316,9 @@ HTMLElement.prototype.setStyle = function (...args) {
         let priority = (args.length == 3) ? args[2] : "";
         this.style[property] = value;
     }
-    if (this.styleobserver !== undefined) {
-        getComputedStyle(this);
-    }
     return this;
 };
+*/
 
 HTMLElement.prototype.setStyleProperty = function (property, value, priority = "") {
     value = this._cv(value);

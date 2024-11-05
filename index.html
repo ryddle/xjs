@@ -203,7 +203,8 @@
             .append(xjs.getComponent("menu_option", true, { "menuStr": "GridLayout 3", "menuIcon": "fas fa-table-columns", "menuUrl": "./xgridlayout3.html", "menuIndex": 3 }))
             .append(xjs.getComponent("menu_option", true, { "menuStr": "GridLayout 4", "menuIcon": "fas fa-table", "menuUrl": "./xgridlayout4.html", "menuIndex": 4 }))
             .append(xjs.getComponent("menu_option", true, { "menuStr": "GridLayout 5", "menuIcon": "fas fa-table-columns", "menuUrl": "./xgridlayout5.html", "menuIndex": 5 }))
-            .append(xjs.getComponent("menu_option", false, { "menuStr": "Option 6", "menuIcon": "fas fa-ellipsis-v", "menuIndex": 6 })
+            .append(xjs.getComponent("menu_option", true, { "menuStr": "Media Player", "menuIcon": "fas fa-music", "menuUrl": "./mediaplayer.html", "menuIndex": 6 }))
+            .append(xjs.getComponent("menu_option", false, { "menuStr": "Option 7", "menuIcon": "fas fa-ellipsis-v", "menuIndex": 7 })
                 .bindEvent("mouseover", function () {
                     this.bgColor("#aaaaaa");
                 }).bindEvent("mouseout", function () {
@@ -391,6 +392,8 @@
                     .append(xjs.getComponent("menu_option", true, { "menuStr": "GridLayout 2", "menuIcon": "fas fa-table", "menuUrl": "./xgridlayout2.html" }))
                     .append(xjs.getComponent("menu_option", true, { "menuStr": "GridLayout 3", "menuIcon": "fas fa-table-columns", "menuUrl": "./xgridlayout3.html" }))
                     .append(xjs.getComponent("menu_option", true, { "menuStr": "GridLayout 4", "menuIcon": "fas fa-table", "menuUrl": "./xgridlayout4.html" }))
+                    .append(xjs.getComponent("menu_option", true, { "menuStr": "GridLayout 5", "menuIcon": "fas fa-table-columns", "menuUrl": "./xgridlayout5.html" }))
+                    .append(xjs.getComponent("menu_option", true, { "menuStr": "Media Player", "menuIcon": "fas fa-music", "menuUrl": "./mediaplayer.html" }))
                     .append(xjs.getComponent("menu_option", false, { "menuStr": "Option 5", "menuIcon": "fas fa-ellipsis-v" })
                         .bindEvent("mouseover", function () {
                             this.bgColor("#aaaaaa");

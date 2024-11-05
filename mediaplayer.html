@@ -47,8 +47,10 @@
         }
     `);
 
-    xjs.setCssVar("--bg-color", "#202124");
+    xjs.setCssVar("--bg-color", "#000000");
     xjs.setCssVar("--fg-color", "#ffffff");
+    xjs.setCssVar("--panel-bg-color", "#202124");
+    xjs.setCssVar("--primary-color", "#d98348");
     xjs.setCssVar("--button-bg-color", "#333333");
 
 
@@ -71,8 +73,12 @@
                 id: "header"
             }).add(
                 xjs.withnew(xjs.htmlElements.button, "menu_toggle_btn")
-                    .setStyle({ backgroundColor: "var(--button-bg-color)", float: "right", margin: "5px 5px 5px 5px", height: "30px", width: "30px", color: "var(--fg-color)", border: "none", cursor: "pointer" })
+                    .setStyle({ backgroundColor: "var(--button-bg-color)", float: "right", margin: "0px 0px 0px 0px", height: "40px", width: "40px", fontSize: "18px", color: "var(--fg-color)", border: "none", cursor: "pointer" })
                     .setHTML(`<i class="fa-solid fa-bars"></i>`)
+                    .bindEvent("click", function () {
+                        xjs.with("sm_menu_panel").setStyle({ display: "" });
+                        xjs.animate([sm_menu_panel], [{ opacity: { start: 0, end: 1, ease: xjs.easeTypes.linear } }], 100);
+                    })
             )
         ),
         xgridRow.get(xlo, "auto").addCols(
@@ -85,35 +91,55 @@
                     xl: { display: () => "" }
                 },
                 id: "viewer"
-            }).add(
-                xjs.withnew(xjs.htmlElements.panel, "viewer_panel")
-                    .pos(0, 0)
-                    .setStyle({ position: "relative", width: "calc(100% - 11px)", height: "calc(100% - 10px)", padding: "5px", borderRight: "1px solid #cccccc", backgroundColor: "#33355b" })
-                    .append(xjs.withnew(xjs.htmlElements.span, "msg").setStyle({ color: "var(--fg-color)" }).setText(window.innerWidth + "px"))
-                    .append(
-                        xjs.withnew(xjs.htmlElements.button, "videolayout_toggle_btn")
-                            .setStyle({ backgroundColor: "var(--button-bg-color)", float: "right", height: "30px", width: "30px", color: "var(--fg-color)", cursor: "pointer" })
-                            .setHTML("<i class=\"fa-solid fa-video\"></i>")
-                            .setProperty("state", 0)
-                            .setAttribute("title", "Toggle Video Layout")
-                            .bindEvent("click", function () {
-                                xlo.rows[1].orderCols([1, 0, 2, 3]);
-                                if (this.state === 0) {
-                                    this.getChild(0).setClass("fa-solid fa-music");
-                                    xlo.rows[1].cols[2].el().setProperty("displayStatus", "locked").setStyle({ display: "none" });
-                                    xjs.with("info_toggle_btn").setProperty("displayStatus", "locked").setStyle({ display: "" });
-                                    this.state = 1;
-                                    this.setAttribute("title", "Toggle Audio Layout");
-                                    window["medialayout"] = "video";
-                                } else {
-                                    this.getChild(0).setClass("fa-solid fa-video");
-                                    xlo.rows[1].cols[2].el().setProperty("displayStatus", "").setStyle({ display: "" });
-                                    xjs.with("info_toggle_btn").setProperty("displayStatus", "").setStyle({ display: "none" });
-                                    this.state = 0;
-                                    this.setAttribute("title", "Toggle Video Layout");
-                                    window["medialayout"] = "audio";
-                                }
-                            })
+            }).addRows(
+                xgridRow.get(xlo, "auto")
+                    .addCols(
+                        xgridCol.get(xlo, "auto", {
+                            style: { backgroundColor: "var(--bg-color)" },
+                            id: "viewer_col"
+                        }).add(
+                            xjs.withnew(xjs.htmlElements.panel, "viewer_panel")
+                                .pos(0, 0)
+                                .setStyle({ position: "relative", width: "calc(100% - 11px)", height: "calc(100% - 10px)", margin: "5px", backgroundColor: "var(--panel-bg-color)" })
+                                .append(xjs.withnew(xjs.htmlElements.span, "msg").setStyle({ color: "var(--fg-color)" }).setText(window.innerWidth + "px"))
+                                .append(
+                                    xjs.withnew(xjs.htmlElements.button, "videolayout_toggle_btn")
+                                        .setStyle({ backgroundColor: "var(--button-bg-color)", float: "right", height: "30px", width: "30px", color: "var(--fg-color)", cursor: "pointer" })
+                                        .setHTML("<i class=\"fa-solid fa-video\"></i>")
+                                        .setProperty("state", 0)
+                                        .setAttribute("title", "Toggle Video Layout")
+                                        .bindEvent("click", function () {
+                                            xlo.rows[1].orderCols([1, 0, 2, 3]);
+                                            if (this.state === 0) {
+                                                this.getChild(0).setClass("fa-solid fa-music");
+                                                xlo.rows[1].cols[2].el().setProperty("displayStatus", "locked").setStyle({ display: "none" });
+                                                xjs.with("info_toggle_btn").setProperty("displayStatus", "locked").setStyle({ display: "" });
+                                                this.state = 1;
+                                                this.setAttribute("title", "Toggle Audio Layout");
+                                                window["medialayout"] = "video";
+                                            } else {
+                                                this.getChild(0).setClass("fa-solid fa-video");
+                                                xlo.rows[1].cols[2].el().setProperty("displayStatus", "").setStyle({ display: "" });
+                                                xjs.with("info_toggle_btn").setProperty("displayStatus", "").setStyle({ display: "none" });
+                                                this.state = 0;
+                                                this.setAttribute("title", "Toggle Video Layout");
+                                                window["medialayout"] = "audio";
+                                            }
+                                        })
+                                )
+                        )
+                    )
+                ,
+                xgridRow.get(xlo, "160px")
+                    .addCols(
+                        xgridCol.get(xlo, "auto", {
+                            style: { backgroundColor: "var(--bg-color)"},
+                            id: "equalizer_col"
+                        }).add(
+                            xjs.withnew(xjs.htmlElements.panel, "equalizer_panel")
+                                .pos(0, 0)
+                                .setStyle({ position: "relative", width: "calc(100% - 11px)", height: "calc(100% - 10px)", margin: "5px", backgroundColor: "var(--panel-bg-color)" })
+                        )
                     )
             ),
             xgridCol.get(xlo, "635px", {
@@ -127,11 +153,11 @@
             }).add(
                 xjs.withnew(xjs.htmlElements.panel, "playlist_panel")
                     .pos(0, 0)
-                    .setStyle({ position: "relative", width: "calc(100% - 11px)", height: "calc(100% - 10px)", padding: "5px", borderRight: "1px solid #cccccc", backgroundColor: "#53553b" })
+                    .setStyle({ position: "relative", width: "calc(100% - 20px)", height: "calc(100% - 22px)", padding: "5px", margin: "5px", border: "1px solid var(--primary-color)", backgroundColor: "var(--panel-bg-color)" })
                     .append(xjs.withnew(xjs.htmlElements.span, "msg").setStyle({ color: "var(--fg-color)" }).setText(window.innerWidth + "px"))
             ),
             xgridCol.get(xlo, "635px", {
-                style: { backgroundColor: "var(--bg-color)", borderRight: "1px solid #ccc" }, id: "info",
+                style: { backgroundColor: "var(--bg-color)"}, id: "info",
                 mediaOpts: {
                     sm: { display: "none" },
                     md: { display: "none" },
@@ -161,7 +187,7 @@
                     sm: { display: "" },
                     md: { display: "" },
                     lg: { display: "" },
-                    xl: { display: () => window["medialayout"] == "video" ? "" : "none"}
+                    xl: { display: () => window["medialayout"] == "video" ? "" : "none" }
                 }).setStyle({ backgroundColor: "var(--button-bg-color)", height: "30px", width: "30px", color: "var(--fg-color)", cursor: "pointer", margin: "5px 0px 0px 6px" })
                     .setHTML("<i class=\"fa-solid fa-info\"></i>")
                     .bindEvent("click", function () {
@@ -205,8 +231,10 @@
             };
             Object.assign(this.options, options);
             this.maxright = -1 * parseInt(this.options.width);
-            this.elm = xjs.withnew(xjs.htmlElements.div, id)//, "", null, this.options.mediaOpts)
-                .setStyle({ backgroundColor: this.options.bgColor, border: "1px solid #ccc", height: "calc(100vh - 2px)", width: this.options.width, position: "absolute", top: "0px", right: this.maxright + "px", zIndex: "1" });
+            this.elm = xjs.withnew(xjs.htmlElements.div, id, "", null, this.options.mediaOpts)
+                .setStyle({ backgroundColor: this.options.bgColor, border: "1px solid var(--primary-color)", height: "calc(100vh - 12px)", width: this.options.width, 
+                    position: "absolute", top: "5px", right: this.maxright + "px", zIndex: "1" 
+                });
             document.body.appendChild(this.elm);
             return this;
         }
@@ -232,8 +260,157 @@
         }
     };
 
-    const conf_sidebar_panel = new sidebarPanel("conf_sidebar_panel", { bgColor: "#f00", width: "400px", speed: 200 });
-    const info_sidebar_panel = new sidebarPanel("info_sidebar_panel", { bgColor: "#0f0", width: "650px" });
-    const playlist_sidebar_panel = new sidebarPanel("playlist_sidebar_panel", { bgColor: "#00f", width: "650px" });
+    const conf_sidebar_panel = new sidebarPanel("conf_sidebar_panel", { bgColor: "var(--panel-bg-color)", width: "400px", speed: 200 });
+    const info_sidebar_panel = new sidebarPanel("info_sidebar_panel", { bgColor: "var(--panel-bg-color)", width: "650px" });
+    const playlist_sidebar_panel = new sidebarPanel("playlist_sidebar_panel", { bgColor: "var(--panel-bg-color)", width: "650px" });
+
+    const sm_menu_panel = xjs.withnew(xjs.htmlElements.panel, "sm_menu_panel")
+        .setStyle({ backgroundColor: "var(--bg-color)", height: "calc(100vh - 0px)", width: "100%", top: "0px", left: "0px", zIndex: "1", display: "none" })
+        .append(
+            xjs.withnew(xjs.htmlElements.button, "sm_menu_btn").setStyle({ backgroundColor: "var(--button-bg-color)", float: "right", height: "40px", width: "40px", fontSize: "20px", color: "var(--fg-color)", border: "none", cursor: "pointer", margin: "0px 0px 0px 0px" })
+                .setHTML("<i class=\"fa-solid fa-close\"></i>")
+                .bindEvent("click", function () {
+                    xjs.animate([sm_menu_panel], [{ opacity: { start: 1, end: 0, ease: xjs.easeTypes.linear } }], 100, function () {
+                        xjs.with("sm_menu_panel").setStyle({ display: "none" });
+                    });
+                })
+        );
+    document.body.appendChild(sm_menu_panel);
+
+    const xTabs = class {
+
+        options = {
+            tabBgColor: "var(--bg-color)",
+            tabHoverBgColor: "var(--fg-color)",
+            tabActiveBgColor: "var(--primary-color)",
+            tabTextColor: "var(--primary-color)",
+            tabHoverTextColor: "var(--bg-color)",
+            tabActiveTextColor: "var(--bg-color)",
+
+            containerBgColor: "var(--panel-bg-color)",
+
+            type: "linear",
+
+            width: "100%",
+            height: "100%",
+            left: "0px",
+            top: "0px",
+        };
+
+        tabOptions = {
+            containerBgColor: "var(--panel-bg-color)",
+            containerTextColor: "var(--primary-color)",
+            constainerScroll: "y"/* x, y, both */
+        };
+
+        constructor(options = {}) {
+            Object.assign(this.options, options);
+            this.container = xjs.withnew(xjs.htmlElements.panel, "xTabs").setStyle({
+                overflow: "hidden",
+                height: this.options.height,
+                width: this.options.width,
+                position: "relative",
+                left: this.options.left,
+                top: this.options.top,
+                backgroundColor: this.options.containerBgColor,
+            });
+            this.tabs = [];
+            this.containers = [];
+
+            return this;
+        }
+
+        addTab(name, options = {}) {
+            this.#create(name, options);
+
+            return this;
+        }
+
+        #create(name, options = {}) {
+            const self = this;
+
+            let tabOptions = Object.assign({}, this.tabOptions, options);
+
+            const tab = xjs.withnew(xjs.htmlElements.button, name + "_tab").setHTML(name).setStyle({
+                lineHeight: "20px", fontWeight: "bold", marginLeft: (this.tabs.length > 0 ? "10px" : "20px"), width: "50px",
+                border: "1px solid var(--primary-color)", borderBottom: "none", borderTopLeftRadius: "4px", borderTopRightRadius: "4px",
+                backgroundColor: this.options.tabActiveBgColor, color: this.options.tabActiveTextColor,
+                cursor: "pointer"
+            });
+            if (this.tabs.length > 0) {
+                tab.setStyles({
+                    backgroundColor: this.options.tabBgColor,
+                    color: this.options.tabTextColor
+                });
+            }
+
+            tab.bindEvent("click", function () {
+                self.selectTab(self.tabs.indexOf(tab));
+            });
+
+            const container = xjs.withnew(xjs.htmlElements.panel, name + "_container")
+                .setStyles({
+                    width: "100%", height: "100%", padding: "10px",
+                    backgroundColor: tabOptions.containerBgColor, color: tabOptions.containerTextColor,
+                    borderTop: "1px solid var(--primary-color)"
+                });
+            if (tabOptions.constainerScroll == "y") {
+                container.setStyles({ overflowY: "auto" });
+            } else if (tabOptions.constainerScroll == "x") {
+                container.setStyles({ overflowX: "auto" });
+            } else if (tabOptions.constainerScroll == "both") {
+                container.setStyles({ overflow: "auto" });
+            }
+
+            if (this.tabs.length > 0) {
+                container.setStyle({ display: "none" });
+            }
+
+            this.container.append(tab);
+            this.container.append(container);
+
+            this.tabs.push(tab);
+            this.containers.push(container);
+        }
+
+        selectTab(index) {
+            if (index < 0 || index >= this.tabs.length) {
+                return;
+            }
+
+            this.tabs.forEach((tab, i) => {
+                if (i == index) {
+                    tab.bgColor(this.options.tabActiveBgColor).setStyle({ color: this.options.tabActiveTextColor });
+                    xjs.with(this.containers[i]).setStyle({ display: "" });
+                } else {
+                    tab.bgColor(this.options.tabBgColor).setStyle({ color: this.options.tabTextColor });
+                    xjs.with(this.containers[i]).setStyle({ display: "none" });
+                }
+            });
+        }
+    };
+
+    const xtabs = new xTabs({
+        width: "623px",
+        height: "calc(100vh - 52px)"
+    })
+        .addTab("Lyrics", { constainerScroll: "y", containerBgColor: "var(--panel-bg-color)" })
+        .addTab("Info", { constainerScroll: "y", containerBgColor: "var(--panel-bg-color)" });
+
+    xjs.with("info")
+        .append(xjs.withnew(xjs.htmlElements.div, "info_panel").setStyle({
+            height: "calc(100% - 12px)",
+            margin: "5px",
+            border: "1px solid var(--primary-color)",
+            backgroundColor: "var(--panel-bg-color)"
+            }).append(xjs.withnew(xjs.htmlElements.div, "info_toolbar").setStyle({
+                width: "100%",
+                height: "40px",
+                backgroundColor: "var(--bg-color-header)",
+                borderBottom: "1px solid var(--fg-color-header)",
+            })
+        )
+        .append(xtabs.container)
+    )
 
 </script>

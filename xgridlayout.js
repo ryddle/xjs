@@ -181,9 +181,9 @@ class xgridlayout {
                 cols.forEach(col => {
                     if (col !== _element) {
                         col.resizeGrid();
-                    } else {
+                    } /* else {
                         console.log('Same element');
-                    }
+                    } */
                 });
             }
         });
@@ -281,8 +281,15 @@ class xgridRow {
 
 class xgridCol {
     #has_elements = false;
+    options = {
+        style: {},
+        id: undefined,
+        mediaOpts: undefined,
+        maxWidth: undefined,
+        minWidth: undefined
+    };
     constructor(grid, width = 'auto', options = {}) {
-        this.options = options;
+        Object.assign(this.options, options);
         if (grid instanceof xgridlayout) {
             this.grid = grid;
         } else {
@@ -435,10 +442,18 @@ class xgridCol {
             }
 
             const remainingWidth = row.offsetWidth - totalWidth;
-            const autoWidth = remainingWidth / autoWidthCells.length;
+            let autoWidth = remainingWidth / autoWidthCells.length;
 
             autoWidthCells.forEach(cell => {
-                cell.style.width = `${autoWidth}px`;
+                if (cell.options && cell.options.maxWidth !== undefined && cell.autoWidth > cell.options.maxWidth) {
+                    cell.style.width = `${cell.options.maxWidth}px`;
+                    autoWidth = (remainingWidth - cell.options.maxWidth) / (autoWidthCells.length - 1);
+                } else if (cell.options && cell.options.minWidth !== undefined && cell.autoWidth < cell.options.minWidth) {
+                    cell.style.width = `${cell.options.minWidth}px`;
+                    autoWidth = (remainingWidth - cell.options.minWidth) / (autoWidthCells.length - 1);
+                } else {
+                    cell.style.width = `${autoWidth}px`;
+                }
             });
 
             if (cols !== undefined) {

@@ -32,7 +32,6 @@ Node.prototype.prependTo = function (node) {
 };
 
 //Element
-//Element.prototype.__eh = {};
 
 Element.prototype.unbindEvent = function (evnt) {
     this.removeEventListener(evnt, this.__eh[evnt]);
@@ -94,8 +93,10 @@ HTMLElement.prototype.insert = function (elm, name) {
     return this;
 };
 
-HTMLElement.prototype.append = function (elm) {
-    this.appendChild(elm);
+HTMLElement.prototype.append = function (...elm) {
+    for (let i = 0; i < elm.length; i++) {
+        this.appendChild(elm[i]);
+    }
     return this;
 };
 
@@ -834,6 +835,28 @@ class _xjs {
         BORDER_BOX: 'border-box',
         PADDING_BOX: 'padding-box',
         CONTENT_BOX: 'content-box'
+    };
+
+    //// Var Store ////
+    #store = {};
+
+    createStore = function (id) {
+        if (_xjs.#store[id] === undefined) {
+            _xjs.#store[id] = {};
+        }
+        return _xjs.#store[id];
+    }
+
+    getStoreValue = function (id, key) {
+        return _xjs.#store[id][key];
+    };
+
+    setStoreValue = function (id, key, value) {
+        _xjs.#store[id][key] = value;
+    };
+
+    removeStoreValue = function (id, key) {
+        delete _xjs.#store[id][key];
     };
 
     //// Query ////

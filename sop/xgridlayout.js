@@ -279,8 +279,8 @@ class xgridRow {
         cols_.forEach(col => {
             if (col instanceof xgridCol) {
                 this.cols.push(col);
-                if (col.options.id !== undefined && col.options.id !== '') {
-                    this.grid.setColById(col.options.id, col);
+                if (col.#options.id !== undefined && col.#options.id !== '') {
+                    this.grid.setColById(col.#options.id, col);
                 }
                 this.row.appendChild(col.el());
                 /*** */

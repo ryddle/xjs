@@ -133,7 +133,7 @@
                 xgridRow.get(xlo, "160px")
                     .addCols(
                         xgridCol.get(xlo, "auto", {
-                            style: { backgroundColor: "var(--bg-color)"},
+                            style: { backgroundColor: "var(--bg-color)" },
                             id: "equalizer_col"
                         }).add(
                             xjs.withnew(xjs.htmlElements.panel, "equalizer_panel")
@@ -157,7 +157,7 @@
                     .append(xjs.withnew(xjs.htmlElements.span, "msg").setStyle({ color: "var(--fg-color)" }).setText(window.innerWidth + "px"))
             ),
             xgridCol.get(xlo, "635px", {
-                style: { backgroundColor: "var(--bg-color)"}, id: "info",
+                style: { backgroundColor: "var(--bg-color)" }, id: "info",
                 mediaOpts: {
                     sm: { display: "none" },
                     md: { display: "none" },
@@ -232,8 +232,9 @@
             Object.assign(this.options, options);
             this.maxright = -1 * parseInt(this.options.width);
             this.elm = xjs.withnew(xjs.htmlElements.div, id, "", null, this.options.mediaOpts)
-                .setStyle({ backgroundColor: this.options.bgColor, border: "1px solid var(--primary-color)", height: "calc(100vh - 12px)", width: this.options.width, 
-                    position: "absolute", top: "5px", right: this.maxright + "px", zIndex: "1" 
+                .setStyle({
+                    backgroundColor: this.options.bgColor, border: "1px solid var(--primary-color)", height: "calc(100vh - 12px)", width: this.options.width,
+                    position: "absolute", top: "5px", right: this.maxright + "px", zIndex: "1"
                 });
             document.body.appendChild(this.elm);
             return this;
@@ -261,6 +262,67 @@
     };
 
     const conf_sidebar_panel = new sidebarPanel("conf_sidebar_panel", { bgColor: "var(--panel-bg-color)", width: "400px", speed: 200 });
+    conf_sidebar_panel.elm.append(
+        xjs.withnew(xjs.htmlElements.div, "r_config_panel_content").setStyles({ padding: "10px", width: "100%", height: "100%", overflow: "auto", marginLeft: "10px" })
+            .append(
+                xjs.withnew(xjs.htmlElements.ul).setStyles({ padding: "0px", margin: "0px" })
+                    .append(xjs.withnew(xjs.htmlElements.li).setStyles({ padding: "5px", height: "30px", display: "flex", alignItems: "center", width: "200px", justifyContent: "space-between" })
+                        .append(
+                            xjs.withnew(xjs.htmlElements.span).setStyle({ color: "var(--fg-color)" }).setText("bgColor")
+                        )
+                        .append(
+                            xjs.withnew(xjs.htmlElements.input.color, "colorPicker", "colorPicker", xjs.getCssVar("--bg-color"))
+                                .bindEvent("change", function () {
+                                    xjs.setCssVar("--bg-color", this.getProperty("value"));
+                                })
+                        )
+                    )
+                    .append(xjs.withnew(xjs.htmlElements.li).setStyles({ padding: "5px", height: "30px", display: "flex", alignItems: "center", width: "200px", justifyContent: "space-between" })
+                        .append(
+                            xjs.withnew(xjs.htmlElements.span).setStyle({ color: "var(--fg-color)" }).setText("fgColor")
+                        )
+                        .append(
+                            xjs.withnew(xjs.htmlElements.input.color, "colorPicker", "colorPicker", xjs.getCssVar("--fg-color"))
+                                .bindEvent("change", function () {
+                                    xjs.setCssVar("--fg-color", this.getProperty("value"));
+                                })
+                        )
+                    )
+                    .append(xjs.withnew(xjs.htmlElements.li).setStyles({ padding: "5px", height: "30px", display: "flex", alignItems: "center", width: "200px", justifyContent: "space-between" })
+                        .append(
+                            xjs.withnew(xjs.htmlElements.span).setStyle({ color: "var(--fg-color)" }).setText("panelBgColor")
+                        )
+                        .append(
+                            xjs.withnew(xjs.htmlElements.input.color, "colorPicker", "colorPicker", xjs.getCssVar("--panel-bg-color"))
+                                .bindEvent("change", function () {
+                                    xjs.setCssVar("--panel-bg-color", this.getProperty("value"));
+                                })
+                        )
+                    )
+                    .append(xjs.withnew(xjs.htmlElements.li).setStyles({ padding: "5px", height: "30px", display: "flex", alignItems: "center", width: "200px", justifyContent: "space-between" })
+                        .append(
+                            xjs.withnew(xjs.htmlElements.span).setStyle({ color: "var(--fg-color)" }).setText("primaryColor")
+                        )
+                        .append(
+                            xjs.withnew(xjs.htmlElements.input.color, "colorPicker", "colorPicker", xjs.getCssVar("--primary-color"))
+                                .bindEvent("change", function () {
+                                    xjs.setCssVar("--primary-color", this.getProperty("value"));
+                                })
+                        )
+                    )
+                    .append(xjs.withnew(xjs.htmlElements.li).setStyles({ padding: "5px", height: "30px", display: "flex", alignItems: "center", width: "200px", justifyContent: "space-between" })
+                        .append(
+                            xjs.withnew(xjs.htmlElements.span).setStyle({ color: "var(--fg-color)" }).setText("buttonBgColor")
+                        )
+                        .append(
+                            xjs.withnew(xjs.htmlElements.input.color, "colorPicker", "colorPicker", xjs.getCssVar("--button-bg-color"))
+                                .bindEvent("change", function () {
+                                    xjs.setCssVar("--button-bg-color", this.getProperty("value"));
+                                })
+                        )
+                    )
+            )
+    );
     const info_sidebar_panel = new sidebarPanel("info_sidebar_panel", { bgColor: "var(--panel-bg-color)", width: "650px" });
     const playlist_sidebar_panel = new sidebarPanel("playlist_sidebar_panel", { bgColor: "var(--panel-bg-color)", width: "650px" });
 
@@ -403,14 +465,14 @@
             margin: "5px",
             border: "1px solid var(--primary-color)",
             backgroundColor: "var(--panel-bg-color)"
-            }).append(xjs.withnew(xjs.htmlElements.div, "info_toolbar").setStyle({
-                width: "100%",
-                height: "40px",
-                backgroundColor: "var(--bg-color-header)",
-                borderBottom: "1px solid var(--fg-color-header)",
-            })
+        }).append(xjs.withnew(xjs.htmlElements.div, "info_toolbar").setStyle({
+            width: "100%",
+            height: "40px",
+            backgroundColor: "var(--bg-color-header)",
+            borderBottom: "1px solid var(--fg-color-header)",
+        })
         )
-        .append(xtabs.container)
-    )
+            .append(xtabs.container)
+        )
 
 </script>

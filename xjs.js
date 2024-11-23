@@ -87,6 +87,14 @@ HTMLElement.prototype._cv = function (value) {
     return value;
 };
 
+HTMLElement.prototype.assignTo = function (variable, obj) {
+    if (variable !== undefined) {
+        if (obj === undefined || obj === null) obj = window;
+        obj[variable] = this;
+    }
+    return this;
+};
+
 HTMLElement.prototype.insert = function (elm, name) {
     this[name] = elm;
     this.appendChild(elm);
@@ -94,6 +102,7 @@ HTMLElement.prototype.insert = function (elm, name) {
 };
 
 HTMLElement.prototype.append = function (...elm) {
+    if (elm[0] instanceof Array) elm = elm[0];
     for (let i = 0; i < elm.length; i++) {
         this.appendChild(elm[i]);
     }
@@ -217,9 +226,9 @@ HTMLElement.prototype.setVariables = function (variables) {
 
 
 HTMLElement.prototype.setStyle = function (...args) {
-    const hex = /^#?([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/; 
+    const hex = /^#?([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/;
     const hexa = /^#?([a-fA-F0-9]{8}|[a-fA-F0-9]{4})$/;
-    const isColor = (value) => typeof value === 'string' && value.match(hex|hexa);
+    const isColor = (value) => typeof value === 'string' && value.match(hex | hexa);
     const convertColor = (value) => {
         if (typeof value !== 'string') return value;
         if (value.match(hex)) {
@@ -405,11 +414,37 @@ HTMLElement.prototype.getHeight = function (asNumber = false) {
     return this.style.getPropertyValue("height");
 };
 
-HTMLElement.prototype.setClass = function (classes) {
+HTMLElement.prototype.setClass = function (...classes) {
+    if (classes.length == 0) return this;
+
+    if (Array.isArray(classes[0])) {
+        classes = classes[0].join(" ");
+    }
+
+    if (Array.isArray(classes) && classes.length > 1) {
+        classes = classes.join(" ");
+    }
     classes = this._cv(classes);
     this.className = classes;
     return this;
 };
+
+HTMLElement.prototype.addClass = function (...classes) {
+    if (classes.length == 0) return this;
+
+    if (Array.isArray(classes[0])) {
+        classes = classes[0].join(" ");
+    }
+
+    if (Array.isArray(classes) && classes.length > 1) {
+        classes = classes.join(" ");
+    }
+    classes = this._cv(classes);
+    this.className += classes;
+    return this;
+};
+
+
 
 HTMLElement.prototype.setText = function (text) {
     text = this._cv(text);
@@ -845,7 +880,7 @@ class _xjs {
             _xjs.#store[id] = {};
         }
         return _xjs.#store[id];
-    }
+    };
 
     getStoreValue = function (id, key) {
         return _xjs.#store[id][key];
@@ -1086,16 +1121,104 @@ class _xjs {
         return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
     }
 
+    mapFloat = function (value, x1, y1, x2, y2) {
+        const nv = (value - x1) * (y2 - x2) / (y1 - x1) + x2;
+        return (x2 > y2) ? Math.min(Math.max(nv, y2), x2) : Math.max(Math.min(nv, y2), x2);
+    }
+
     clamp(value, min, max) {
         return Math.min(Math.max(value, min), max);
+    }
+
+    clamp01 = function (value) {
+        return clamp(value, 0, 1);
     }
 
     lerp(a, b, n) {
         return (1 - n) * a + n * b;
     }
 
+    lerp01 = function (a, b) {
+        return lerp(a, b, 0.5);
+    }
+
     invlerp(x, y, a) {
         this.clamp((a - x) / (y - x));
+    }
+
+    inverseLerp01 = function (a, b, value) {
+        return clamp01(inverseLerp(a, b, value));
+    }
+
+    range(x1, y1, x2, y2, a) {
+        this.lerp(x2, y2, this.invlerp(x1, y1, a));
+    }
+
+    distance(x1, y1, x2, y2) {
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    }
+
+    distance2(x1, y1, x2, y2) {
+        return Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2);
+    }
+
+    angle(x1, y1, x2, y2) {
+        return Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+    }
+
+    angle2(x1, y1, x2, y2) {
+        return Math.atan2(y2 - y1, x2 - x1);
+    }
+
+    angleAndModule = function (x1, y1, x2, y2) {
+        var x = x2 - x1,
+            y = y2 - y1,
+            mod = Math.hypot(x, y);
+        return { angle: Math.round((Math.atan2(y, x) * 180 / Math.PI + 360)%360), module: mod };
+    }
+
+    mod = function (x1, y1, x2, y2) {
+        var x = x2 - x1,
+            y = y2 - y1;
+        return Math.hypot(x, y);
+    }
+
+    truncFloat = function (value, digits) {
+        return Math.trunc(value * 10**digits) / 10**digits;
+    }
+
+    random(min, max) {
+        if (!max) { max = min; min = 0; }
+        return Math.random() * (max - min) + min;
+    }
+
+    randomInt(min, max) {
+        if (!max) { max = min; min = 0; }
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    randomRange = function (min, max) {
+        return Math.random() * (max - min) + min;
+    }
+    
+    randomRangeInt = function (min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+    
+    randomSign = function () {
+        return Math.random() < 0.5 ? -1 : 1;
+    }
+    
+    randomBool = function () {
+        return Math.random() < 0.5;
+    }
+
+    randomChoice(array) {
+        return array[Math.floor(Math.random() * array.length)];
+    }
+
+    randomArray = function (array) {
+        return array[Math.floor(Math.random() * array.length)];
     }
 
     easeLinear(t, b, c, d) {
@@ -1197,40 +1320,6 @@ class _xjs {
         return start + (end - start) * this.sigmoid((x - start) / (end - start));
     }
 
-    range(x1, y1, x2, y2, a) {
-        this.lerp(x2, y2, this.invlerp(x1, y1, a));
-    }
-
-    distance(x1, y1, x2, y2) {
-        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-    }
-
-    distance2(x1, y1, x2, y2) {
-        return Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2);
-    }
-
-    angle(x1, y1, x2, y2) {
-        return Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-    }
-
-    angle2(x1, y1, x2, y2) {
-        return Math.atan2(y2 - y1, x2 - x1);
-    }
-
-    random(min, max) {
-        if (!max) { max = min; min = 0; }
-        return Math.random() * (max - min) + min;
-    }
-
-    randomInt(min, max) {
-        if (!max) { max = min; min = 0; }
-        return Math.floor(Math.random() * (max - min + 1) + min);
-    }
-
-    randomChoice(array) {
-        return array[Math.floor(Math.random() * array.length)];
-    }
-
     median(values) {
         if (values.length === 0) {
             throw new Error('Input array is empty');
@@ -1305,6 +1394,7 @@ class _xjs {
                 radio: "inputRadio",
                 file: "inputFile",
                 color: "inputColor",
+                range: "inputRange"
             },
             button: "button",
             submit: "submit",
@@ -1393,6 +1483,7 @@ class _xjs {
         inputRadio: this.lazy(() => document.createElement("input").setProperty("type", "radio")),
         inputFile: this.lazy(() => document.createElement("input").setProperty("type", "file")),
         inputColor: this.lazy(() => document.createElement("input").setProperty("type", "color")),
+        inputRange: this.lazy(() => document.createElement("input").setProperty("type", "range")),
         button: this.lazy(() => document.createElement("button").setAttribute("type", "button")),
         submit: this.lazy(() => document.createElement("button").setAttribute("type", "submit")),
         label: this.lazy(() => document.createElement("label")),
@@ -1478,7 +1569,7 @@ class _xjs {
 
     withnew(htmlelm, id, name, value, mediaOpts = undefined) {
         if (typeof htmlelm == "string") {
-            let elm = (htmlelm.startsWith("xjs")) ? this.#xjselements[htmlelm]().cloneNode(true) : this.#htmlelements[htmlelm]().cloneNode(true);
+            let elm = (htmlelm.startsWith("xjs")) ? this.#xjselements[htmlelm]().cloneNode(true) : (this.#htmlelements[htmlelm] ? this.#htmlelements[htmlelm]().cloneNode(true) : document.createElement(htmlelm));
             if (id) elm.setAttribute("id", id);
             if (name) elm.setAttribute("name", name);
             if (value) elm.setAttribute("value", value);
@@ -1541,7 +1632,11 @@ class _xjs {
         if (variables) {
             newvars = {};
             Object.keys(variables).forEach(variable => {
-                strcomp = strcomp.replaceAll('${' + variable + '}', variables[variable]);
+                if (typeof variables[variable] === "number") {
+                    strcomp = strcomp.replaceAll('"${' + variable + '}"', variables[variable]);
+                } else {
+                    strcomp = strcomp.replaceAll('${' + variable + '}', variables[variable]);
+                }
                 newvars[variable] = variables[variable];
             });
         }

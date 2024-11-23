@@ -1,0 +1,27 @@
+:root {
+    --xvld-primary-color: 255, 0, 0;
+    --lineheight: 5px;
+}
+
+.matrix {
+    width: 625px;
+    height: 60px;
+    background-color: black;
+    border: 5px solid black;
+}
+
+.led {
+    position: relative;
+    z-index: 6;
+    cursor: pointer;
+    display: inline-block;
+    margin: 1px;
+    margin-bottom: 0px;
+    border-radius: 50%;
+    background-color: rgb(var(--primary-color-rgb, var(--xvld-primary-color, rgb(255, 0, 0))));
+}
+
+.off {
+    z-index: 5;
+    background-color: #222222;
+}

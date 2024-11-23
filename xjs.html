@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <script src="xjs.js" type="text/javascript"></script>
-    <script src="xutils/xutils.js" type="text/javascript"></script>
-    <script src="xhtmlColors.js" type="text/javascript"></script>
-    <script src="xcolor.js" type="text/javascript"></script>
-    <script src="xjsSelect.js" type="text/javascript"></script>
-    <script src="xcolorPickerButton.js" type="text/javascript"></script>
-    <script src="xcolorPicker.js" type="text/javascript"></script>
+    <script src="assets/js/xutils/xutils.js" type="text/javascript"></script>
+    <script src="assets/js/xhtmlColors.js" type="text/javascript"></script>
+    <script src="assets/js/xcolor.js" type="text/javascript"></script>
+    <script src="assets/js/xjsSelect.js" type="text/javascript"></script>
+    <script src="assets/js/xcolorPickerButton.js" type="text/javascript"></script>
+    <script src="assets/js/xcolorPicker.js" type="text/javascript"></script>
     <title>Document</title>
 </head>
 
@@ -47,6 +47,7 @@
             case 0:
                 document.getElm("output").innerHTML = document.getElm("app").style.leftPos();
                 //setProperty("output", "innerHTML", getStyle("app", "left"));
+                xjs.with("app2").setText("Hello World!").setStyle({fontSize: "14px", color:"#ffffff"});
                 index++;
                 break;
             case 1:
@@ -71,6 +72,16 @@
                 ).then(() => {
                     xjs.with("app").bg().gradient().clear().bgColor("#ff0000");
                 });
+
+                xjs.animate(
+                    [xjs.with("app2")],
+                    [
+                        {
+                            fontSize: {start: 14, end: 32}
+                        }
+                    ],
+                    1000
+                )
 
                 setProperty("output", "innerHTML", getStyleProperty("app", "left"));
                 /* three ways to set attributes */
@@ -120,6 +131,7 @@
                         top: { start: 100, end: 250, ease: xjs.easeTypes.easeOutElastic }, 
                         left: { start: 200, end: 900, ease: xjs.easeTypes.easeOutElastic }, 
                         width: { start: 100, end: 200, ease: xjs.easeTypes.easeInOut },
+                        height: { start: 100, end: 400, ease: xjs.easeTypes.easeInOut },
                         backgroundColor: { start: '#ff0000', end: '#00ffff', ease: xjs.easeTypes.easeOut } 
                         }, 
                         {
@@ -155,6 +167,7 @@
                     top: { start: 250, end: 160, ease: xjs.easeTypes.easeInOut }, 
                     left: { start: 900, end: 100, ease: xjs.easeTypes.easeInOut },
                     width: { start: 200, end: 100, ease: xjs.easeTypes.easeInOut },
+                    height: { start: 400, end: 100, ease: xjs.easeTypes.easeInOut },
                     backgroundColor: { start: '#00ffff', end: '#ff0000', ease: xjs.easeTypes.easeIn } }], 1000)
                 .then(() => {
                     xjs.with("output").setProperty("innerHTML", getStyleProperty("app", "left"));

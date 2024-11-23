@@ -6,14 +6,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MediaPlayer Layout</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/xvirtualleddisplay.css">
     <script src="xjs.js" type="text/javascript"></script>
     <script src="xgridlayout.js" type="text/javascript"></script>
-    <script src="xutils/xutils.js" type="text/javascript"></script>
-    <script src="xhtmlColors.js" type="text/javascript"></script>
-    <script src="xcolor.js" type="text/javascript"></script>
+    <script src="assets/js/xutils.js" type="text/javascript"></script>
+    <script src="assets/js/xhtmlColors.js" type="text/javascript"></script>
+    <script src="assets/js/xcolor.js" type="text/javascript"></script>
+    <script src="assets/js/xvertical-slider.js" type="text/javascript"></script>
+    <script src="assets/js/xvirtualleddisplay.js" type="text/javascript"></script>
+    <script src="assets/js/audioMotion-analyzer.js" type="text/javascript"></script>
+    <script src="assets/js/equalizer.js" type="text/javascript"></script>
+    <script src="assets/js/xtabs.js" type="text/javascript"></script>
+    <script src="assets/js/mediaplayer_playlist.js" type="text/javascript"></script>
     <style>
         :root {
             font-family: sans-serif;
+        }
+
+        ::selection {
+            color: var(--primary-color);
+            background: var(--bg-comp-color);
+        }
+
+        form::selection {
+            color: var(--primary-color);
+            background: var(--bg-comp-color);
+        }
+
+        button.controls {
+            width: 30px;
+            height: 30px;
+        }
+
+        button.controls:hover {
+            text-shadow: 0px 0px 15px var(--primary-color);
+            box-shadow: 0 0 16px 6px var(--primary-color);
         }
     </style>
 </head>
@@ -41,17 +68,116 @@
             font-family: sans-serif;
         }
 
+        html,
         body {
             margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: sans-serif;
             overflow: hidden;
+        }
+        html {
+            box-sizing: border-box;
+        }
+
+        *,
+        *:before,
+        *:after {
+            box-sizing: inherit;
+        }
+
+        /** Input range **/
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            margin-top: -4px;
+            background-color: var(--primary-color);
+            height: 1rem;
+            width: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            background: white;
+            height: 0.5rem;
+            border-radius: 0.5rem;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            cursor: pointer;
+            width: 15rem;
+            /*box-shadow: 0px 0px 5px 1px #ccc;*//*var(--bg-comp-color);*/
+        }
+
+
+
+        /*Scrollbars*/
+        /* Firefox (uncomment to work in Firefox, although other properties will not work!)  */
+        /** {
+         scrollbar-width: thin;
+         scrollbar-color: #D2691E #333333;
+        }*/
+
+        /* Chrome, Edge and Safari */
+        select.sized::-webkit-scrollbar {
+            width: 0px;
+        }
+
+        *::-webkit-scrollbar {
+            height: 10px;
+            width: 10px;
+        }
+
+        *::-webkit-scrollbar-track {
+            border-radius: 5px;
+            background-color: #333333;
+        }
+
+        *::-webkit-scrollbar-track:hover {
+            background-color: #333333;
+        }
+
+        *::-webkit-scrollbar-track:active {
+            background-color: #333333;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            border-radius: 5px;
+            background-color: var(--primary-color);
+        }
+
+        *::-webkit-scrollbar-thumb:hover {
+            background-color: var(--primary-color);
+        }
+
+        *::-webkit-scrollbar-thumb:active {
+            background-color: var(--primary-color);
         }
     `);
 
     xjs.setCssVar("--bg-color", "#000000");
     xjs.setCssVar("--fg-color", "#ffffff");
-    xjs.setCssVar("--panel-bg-color", "#202124");
-    xjs.setCssVar("--primary-color", "#ce2267");
+    xjs.setCssVar("--panel-bg-color", "#1a1a1a");
     xjs.setCssVar("--button-bg-color", "#333333");
+    xjs.setCssVar("--primary-color", "#ce2267");
+    xjs.setCssVar("--primary-color-rgb", xcolor.getXcolor("#ce2267").getRgbArray().join());
+
+    var primary_color = xjs.getCssVar("--primary-color");
+
+    /*--primary-color: #d2691e;
+      --primary-color-rgb: 210, 105, 30;
+    
+      --secondary-color: #d28d5a;
+      --secondary-color-rgb: 210, 141, 90;
+    
+      --bg-color: #000000;
+      --bg-color-rgb: 0, 0, 0;
+    
+      --bg-comp-color: #111111;
+      --bg-comp-color-rgb: 17, 17, 17; */
 
 
     const gridConfig = {
@@ -100,11 +226,13 @@
                         }).add(
                             xjs.withnew(xjs.htmlElements.panel, "viewer_panel")
                                 .pos(0, 0)
-                                .setStyle({ position: "relative", width: "calc(100% - 11px)", height: "calc(100% - 10px)", margin: "5px", backgroundColor: "var(--panel-bg-color)" })
-                                .append(xjs.withnew(xjs.htmlElements.span, "msg").setStyle({ color: "var(--fg-color)" }).setText(window.innerWidth + "px"))
+                                .setStyle({ position: "relative", width: "calc(100% - 11px)", height: "calc(100% - 10px)", margin: "5px", backgroundColor: "var(--bg-color)" })
+                                //.append(xjs.withnew(xjs.htmlElements.span, "msg").setStyle({ color: "var(--fg-color)" }).setText(window.innerWidth + "px"))
+                                //.append(xjs.withnew(xjs.htmlElements.div, "audio-container"))
                                 .append(
                                     xjs.withnew(xjs.htmlElements.button, "videolayout_toggle_btn")
-                                        .setStyle({ backgroundColor: "var(--button-bg-color)", float: "right", height: "30px", width: "30px", color: "var(--fg-color)", cursor: "pointer" })
+                                        .setClass("controls")
+                                        .setStyle({ backgroundColor: "var(--button-bg-color)", zIndex: 10, position: "relative", top: "0px", left: "calc(100% - 50px)", color: "var(--fg-color)", cursor: "pointer" })
                                         .setHTML("<i class=\"fa-solid fa-video\"></i>")
                                         .setProperty("state", 0)
                                         .setAttribute("title", "Toggle Video Layout")
@@ -130,7 +258,7 @@
                         )
                     )
                 ,
-                xgridRow.get(xlo, "160px")
+                xgridRow.get(xlo, "226px")
                     .addCols(
                         xgridCol.get(xlo, "auto", {
                             style: { backgroundColor: "var(--bg-color)" },
@@ -138,7 +266,7 @@
                         }).add(
                             xjs.withnew(xjs.htmlElements.panel, "equalizer_panel")
                                 .pos(0, 0)
-                                .setStyle({ position: "relative", width: "calc(100% - 11px)", height: "calc(100% - 10px)", margin: "5px", backgroundColor: "var(--panel-bg-color)" })
+                                .setStyle({ position: "relative", width: "calc(100% - 11px)", height: "calc(100% - 10px)", margin: "5px", backgroundColor: "var(--bg-color)" })
                         )
                     )
             ),
@@ -153,8 +281,7 @@
             }).add(
                 xjs.withnew(xjs.htmlElements.panel, "playlist_panel")
                     .pos(0, 0)
-                    .setStyle({ position: "relative", width: "calc(100% - 20px)", height: "calc(100% - 22px)", padding: "5px", margin: "5px", border: "1px solid var(--primary-color)", backgroundColor: "var(--panel-bg-color)" })
-                    .append(xjs.withnew(xjs.htmlElements.span, "msg").setStyle({ color: "var(--fg-color)" }).setText(window.innerWidth + "px"))
+                    .setStyle({ position: "relative", width: "calc(100% - 8px)", height: "calc(100% - 12px)", padding: "5px", margin: "0px", backgroundColor: "var(--bg-color)" })
             ),
             xgridCol.get(xlo, "635px", {
                 style: { backgroundColor: "var(--bg-color)" }, id: "info",
@@ -175,7 +302,9 @@
                 },
                 id: "sidebar"
             }).add(
-                xjs.withnew(xjs.htmlElements.button, "config_toggle_btn").setStyle({ backgroundColor: "var(--button-bg-color)", height: "30px", width: "30px", color: "var(--fg-color)", cursor: "pointer", margin: "5px 0px 0px 6px" })
+                xjs.withnew(xjs.htmlElements.button, "config_toggle_btn")
+                    .setClass("controls")
+                    .setStyle({ backgroundColor: "var(--button-bg-color)", height: "30px", width: "30px", color: "var(--fg-color)", cursor: "pointer", margin: "5px 0px 0px 6px", padding: "6px" })
                     .setHTML("<i class=\"fa-solid fa-gear\"></i>")
                     .bindEvent("click", function () {
                         info_sidebar_panel.hide();
@@ -307,6 +436,7 @@
                             xjs.withnew(xjs.htmlElements.input.color, "colorPicker", "colorPicker", xjs.getCssVar("--primary-color"))
                                 .bindEvent("change", function () {
                                     xjs.setCssVar("--primary-color", this.getProperty("value"));
+                                    xjs.setCssVar("--primary-color-rgb", xcolor.getXcolor(this.getProperty("value")).getRgbArray().join());
                                 })
                         )
                     )
@@ -339,132 +469,22 @@
         );
     document.body.appendChild(sm_menu_panel);
 
-    const xTabs = class {
 
-        options = {
-            tabBgColor: "var(--bg-color)",
-            tabHoverBgColor: "var(--fg-color)",
-            tabActiveBgColor: "var(--primary-color)",
-            tabTextColor: "var(--primary-color)",
-            tabHoverTextColor: "var(--bg-color)",
-            tabActiveTextColor: "var(--bg-color)",
-
-            containerBgColor: "var(--panel-bg-color)",
-
-            type: "linear",
-
-            width: "100%",
-            height: "100%",
-            left: "0px",
-            top: "0px",
-        };
-
-        tabOptions = {
-            containerBgColor: "var(--panel-bg-color)",
-            containerTextColor: "var(--primary-color)",
-            constainerScroll: "y"/* x, y, both */
-        };
-
-        constructor(options = {}) {
-            Object.assign(this.options, options);
-            this.container = xjs.withnew(xjs.htmlElements.panel, "xTabs").setStyle({
-                overflow: "hidden",
-                height: this.options.height,
-                width: this.options.width,
-                position: "relative",
-                left: this.options.left,
-                top: this.options.top,
-                backgroundColor: this.options.containerBgColor,
-            });
-            this.tabs = [];
-            this.containers = [];
-
-            return this;
-        }
-
-        addTab(name, options = {}) {
-            this.#create(name, options);
-
-            return this;
-        }
-
-        #create(name, options = {}) {
-            const self = this;
-
-            let tabOptions = Object.assign({}, this.tabOptions, options);
-
-            const tab = xjs.withnew(xjs.htmlElements.button, name + "_tab").setHTML(name).setStyle({
-                lineHeight: "20px", fontWeight: "bold", marginLeft: (this.tabs.length > 0 ? "10px" : "20px"), width: "50px",
-                border: "1px solid var(--primary-color)", borderBottom: "none", borderTopLeftRadius: "4px", borderTopRightRadius: "4px",
-                backgroundColor: this.options.tabActiveBgColor, color: this.options.tabActiveTextColor,
-                cursor: "pointer"
-            });
-            if (this.tabs.length > 0) {
-                tab.setStyles({
-                    backgroundColor: this.options.tabBgColor,
-                    color: this.options.tabTextColor
-                });
-            }
-
-            tab.bindEvent("click", function () {
-                self.selectTab(self.tabs.indexOf(tab));
-            });
-
-            const container = xjs.withnew(xjs.htmlElements.panel, name + "_container")
-                .setStyles({
-                    width: "100%", height: "100%", padding: "10px",
-                    backgroundColor: tabOptions.containerBgColor, color: tabOptions.containerTextColor,
-                    borderTop: "1px solid var(--primary-color)"
-                });
-            if (tabOptions.constainerScroll == "y") {
-                container.setStyles({ overflowY: "auto" });
-            } else if (tabOptions.constainerScroll == "x") {
-                container.setStyles({ overflowX: "auto" });
-            } else if (tabOptions.constainerScroll == "both") {
-                container.setStyles({ overflow: "auto" });
-            }
-
-            if (this.tabs.length > 0) {
-                container.setStyle({ display: "none" });
-            }
-
-            this.container.append(tab);
-            this.container.append(container);
-
-            this.tabs.push(tab);
-            this.containers.push(container);
-        }
-
-        selectTab(index) {
-            if (index < 0 || index >= this.tabs.length) {
-                return;
-            }
-
-            this.tabs.forEach((tab, i) => {
-                if (i == index) {
-                    tab.bgColor(this.options.tabActiveBgColor).setStyle({ color: this.options.tabActiveTextColor });
-                    xjs.with(this.containers[i]).setStyle({ display: "" });
-                } else {
-                    tab.bgColor(this.options.tabBgColor).setStyle({ color: this.options.tabTextColor });
-                    xjs.with(this.containers[i]).setStyle({ display: "none" });
-                }
-            });
-        }
-    };
+    // Info Panel
 
     const xtabs = new xTabs({
-        width: "623px",
-        height: "calc(100vh - 52px)"
+        width: "621px",
+        height: "calc(100vh - 56px)"
     })
-        .addTab("Lyrics", { constainerScroll: "y", containerBgColor: "var(--panel-bg-color)" })
-        .addTab("Info", { constainerScroll: "y", containerBgColor: "var(--panel-bg-color)" });
+        .addTab("Lyrics", { constainerScroll: "y", containerBgColor: "var(--bg-color)" })
+        .addTab("Info", { constainerScroll: "y", containerBgColor: "var(--bg-color)" });
 
     xjs.with("info")
         .append(xjs.withnew(xjs.htmlElements.div, "info_panel").setStyle({
             height: "calc(100% - 12px)",
             margin: "5px",
-            border: "1px solid var(--primary-color)",
-            backgroundColor: "var(--panel-bg-color)"
+            border: "2px solid var(--primary-color)",
+            backgroundColor: "var(--bg-color)"
         }).append(xjs.withnew(xjs.htmlElements.div, "info_toolbar").setStyle({
             width: "100%",
             height: "40px",
@@ -473,6 +493,579 @@
         })
         )
             .append(xtabs.container)
-        )
+        );
+
+
+    // Player
+    class MenuManager {
+        constructor() {
+        
+        }
+
+        openFiles(player) {
+            this.inputFile = xjs.withnew(xjs.htmlElements.input.file).setAttributes({type: "file", accept: "audio/*, video/*", multiple: "multiple"}).setStyle({ display: "none" });
+            this.inputFile.bindEvent("change", function () {
+                let sources = [];
+                for (let i = 0; i < this.files.length; i++) {
+                    let source = {sources:[]};
+                    source.sources.push({src:URL.createObjectURL(this.files[i]), type: this.files[i].type, name: this.files[i].name});
+
+                    sources.push(source);
+                }
+                player.setMediaList(sources);
+            });
+            this.inputFile.click();
+        }
+
+        /*
+        document.getElementById("file").addEventListener("input", function () {
+        if (this.files && this.files[0]) {
+            for (let i = 0; i < this.files.length; i++) {
+                tracks.push(URL.createObjectURL(this.files[i]));
+            }
+
+            document.getElementById("audio").src = tracks[currentTrack];
+            document.getElementById("audio").load();
+
+            timeMode = 1;
+
+            document.getElementById("timeMode").setAttribute("state", 1);
+
+            togglePlay();
+
+            createPlaylist(this.files);
+
+            document.getElementById("control-buttons").querySelectorAll("button").forEach(function (button) {
+                button.classList.add("active");
+            });
+            document.getElementById("control-buttons").style.display = "block";
+            document.getElementById("timeMode").style.visibility = "visible";
+        } else {
+            document.getElementById("control-buttons").querySelectorAll("button").forEach(function (button) {
+                button.classList.remove("active");
+            });
+            document.getElementById("control-buttons").style.display = "none";
+        }
+    });
+        */
+
+        saveFiles() {
+
+        }
+    }
+
+    class Player {
+        constructor(container, mediaList, menuManager) {
+            xjs.withcss(`
+                .controls {
+                    display: flex;
+                    background-color: var(--bg-comp-color);
+                    justify-content: center;
+                    padding: 5px 25px;
+                }
+
+                .controls.disabled {
+                    color: #999 !important;
+                }
+
+                #playlist_controls button {
+                    margin: 10px 0px 15px 0px;
+                }
+                .playlist-controls {
+                    display: flex;
+                    justify-content: space-between;
+                    max-width: 625px;
+                }
+
+                .playlist-controls button i {
+                    color: var(--primary-color);
+                }
+
+                .playlist-controls button.controls.disabled i {
+                    color: #999 !important;
+                }
+
+                #playlist_ul li.active {
+                    background-color: var(--primary-color);
+                    color: var(--fg-color);
+                }
+            `);
+
+            this.container = container;
+            if(menuManager && menuManager instanceof MenuManager) {
+                this.menuManager = menuManager;
+            }else{
+                this.menuManager = new MenuManager();
+            }
+            this.mediaList = mediaList;
+            this.mediaElement = new MediaElement(xjs.with("viewer_panel"));
+            this.playlistManager = PlaylistManager.from(mediaList, this.mediaElement);
+
+            this.playlistMenuPanel = this.#createMenuButtons();
+
+            this.playlistUl = this.#updatePlaylist();
+
+            this.playlistContainer = xjs.withnew(xjs.htmlElements.div)
+                .setStyle({ 
+                    overflow: "hidden", 
+                    backgroundColor: 'var(--bg-comp-color)',
+                    border: '2px solid var(--primary-color)',
+                    height: 'calc(100vh - 250px)' 
+            });
+
+            this.playlistContainer.append(this.playlistMenuPanel, this.playlistUl);
+
+            this.container.append(this.playlistContainer);
+
+            this.playerControls = this.#createPlayerControls();
+
+            this.time_mode = "demo";
+
+            this.playlistManager.addEventListener("playlistitemloaded", (event) => {
+                let index = this.playlistManager.getCurrentIndex();
+                this.playlistUl.querySelectorAll("li").forEach((li, i) => {
+                    if (i === index) {
+                        li.classList.add("active");
+                    } else {
+                        li.classList.remove("active");
+                    }
+                });
+            })
+
+            document.addEventListener("timeupdate", (event) => {
+                this.#updateProgress();
+            });
+
+            window.addEventListener("resize", () => {
+                let newLedWidth = this.container.offsetWidth - 10;
+                this.vledDisplay.stop();
+                this.vledDisplay.resizeMatrix(newLedWidth,65);
+                this.#vledSetClockAndRibbon();
+            });
+        }
+
+        #createMenuButtons() {
+            let self = this;
+            let menuPanel = xjs.withnew(xjs.htmlElements.div).setStyle({ width: "100%", height: "52px", marginTop: "4px" })
+                .append(
+                    xjs.withnew(xjs.htmlElements.div).setStyle({ height: "18px", display: "inline" })
+                        .append(
+                            xjs.withnew(xjs.htmlElements.button, "set_playlist_btn").setClass("btn btn-secondary controls").setStyle({ width: "30px", height: "30px", padding: "5px", marginRight: "4px", float: "right", color: "var(--primary-color)", fontSize: "14px" })
+                                .setHTML("<i class=\"fa fa-solid fa-plus\"></i>")
+                                .bindEvent("click", this.menuManager.openFiles, this.menuManager, this)
+                        ).append(
+                            xjs.withnew(xjs.htmlElements.button, "save_playlist_btn").setClass("btn btn-secondary controls").setStyle({ width: "30px", height: "30px", padding: "5px", marginRight: "4px", float: "right", color: "var(--primary-color)", fontSize: "14px" })
+                                .setHTML("<i class=\"fa fa-save\"></i>")
+                                .bindEvent("click", function () {
+                                    // TODO: DoThings
+                                    this.vledDisplay.stop();
+                                    this.vledDisplay.resizeMatrix(1200,65);
+                                    this.#vledSetClockAndRibbon();
+                                }, this)
+                        )
+                );
+            return menuPanel;
+        }
+
+        #updatePlaylist() {
+            let self = this;
+            if (!this.play_list_ul) {
+                this.play_list_ul = xjs.withnew("ul", "playlist_ul")
+                    .setStyle({
+                        height: 'calc(100vh - 302px)',
+                        overflowY: 'auto',
+                        color: 'var(--primary-color)',
+                        marginBottom: '12px',
+                        marginTop: "0px",
+                        padding: '5px'
+                    });
+
+                let liObj = xjs.withnew("li")
+                    .setStyle({
+                        listStyle: "decimal",
+                        listStylePosition: 'inside',
+                        cursor: "pointer",
+                        padding: "3px",
+                        fontSize: "14px",
+                        marginBottom: "3px"
+                    });
+
+                let aObj = xjs.withnew("a")
+                    .setAttribute("href", "javascript:void(0)")
+                    .setAttribute("type", "${fileType}")
+                    .setAttribute("index", "${index}")
+                    .setText("${fileName}")
+                    .setStyle({
+                        color: "inherit",
+                        fontWeight: '700',
+                        textDecoration: 'none',
+                        cursor: "pointer",
+                        fontSize: "14px"
+                    });
+
+                liObj.appendChild(aObj);
+
+                xjs.registerComponent("playlist_item", liObj);
+
+            } else {
+                this.play_list_ul.clear();
+            }
+
+            plfor: for (let index = 0; index < this.playlistManager.getItems().length; index++) {
+                const file = this.playlistManager.getIndex(index);
+
+                let vars = {
+                    "index": index,
+                    "fileName": file.sources[0].name.replaceAll("_", " "),
+                    "fileType": file.sources[0].type
+                };
+
+                let _liObj = xjs.getComponent("playlist_item", true, vars).assignTo("liobj");
+                _liObj.bindEvent("click", this.#playListItemClicked, this, _liObj);
+
+                if (index == 0) {
+                    _liObj.setStyle({
+                        "bgColor": "var(--primary-color)",
+                        "fgColor": "var(--bg-comp-color)",
+                        "fontWeight": '700'
+                    });
+                } else {
+                    _liObj.setStyle({
+                        "bgColor": "transparent",
+                        "fgColor": "var(--primary-color)",
+                        "fontWeight": 'normal'
+                    });
+                }
+
+                this.play_list_ul.appendChild(_liObj);
+            }
+
+            return this.play_list_ul;
+        }
+
+        #createPlayerControls() {
+            let self = this;
+
+            let playerControls0 = xjs.withnew(xjs.htmlElements.div, "player_controls_0").setClass("btn-group mr-2 playlist-controls").setStyle({
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "20px",
+                marginTop: "15px"
+            }).append(
+                xjs.withnew(xjs.htmlElements.input.range, "player_progress").setAttributes({ min: "0", max: "180", step: "1", value: "0" }).setStyle({ width: "calc(100% - 160px)" }),
+                xjs.withnew(xjs.htmlElements.span, "player_timer").setStyle({ color: "var(--primary-color)", fontSize: "medium", cursor: "pointer" })
+                    .setText("00:00/00:00")
+                    .bindEvent('click', this.#toggleTimeMode, this),
+                xjs.withnew(xjs.htmlElements.button, "player_mute").setAttributes({ type: "button", id: "repeat-btn" }).setClass("btn btn-secondary controls").setStyle({
+                    width: "30px",
+                    paddingLeft: "10px",
+                    paddingRight: "10px",
+                    marginRight: "0px",
+                    marginTop: "10px"
+                }).append(
+                    xjs.withnew(xjs.htmlElements.i, "player_mute_icon").setClass("fa fa-volume-up")
+                )
+            );
+
+            let playerControls1 = xjs.withnew(xjs.htmlElements.div, "playlist_controls").setClass("btn-group mr-2 playlist-controls").setAttributes({ role: "group", "aria-label": "playlist commands" })
+                .append(
+                    xjs.withnew(xjs.htmlElements.button, "shuffle-btn").setAttributes({ type: "button" }).setClass("btn btn-secondary controls").append(
+                        xjs.withnew(xjs.htmlElements.i).setClass("fa fa-random")
+                    )
+                        .bindEvent("click", self.playlistManager.toggleShuffle, self.playlistManager)
+                    ,
+                    xjs.withnew(xjs.htmlElements.button, "prev-track-btn").setAttributes({ type: "button" }).setClass("btn btn-secondary controls").append(
+                        xjs.withnew(xjs.htmlElements.i).setClass("fa fa-solid fa-step-backward")
+                    )
+                        .bindEvent("click", () => {
+                            this.playlistManager.prevTrack();
+                            this.#updateDisplay();
+                            this.#updateTitle();
+                        }, this)
+                    ,
+                    xjs.withnew(xjs.htmlElements.button, "backward-btn").setAttributes({ type: "button" }).setClass("btn btn-secondary controls").append(
+                        xjs.withnew(xjs.htmlElements.i).setClass("fa fa-solid fa-backward")
+                    )
+                        .bindEvent("click", () => {
+                            this.playlistManager.mediaElement.activeMediaElement.currentTime = Math.max(0, this.playlistManager.mediaElement.activeMediaElement.currentTime - 5)
+                        }, this)
+                    ,
+                    xjs.withnew(xjs.htmlElements.button, "play-track-btn").assignTo("playBtn", this).setAttributes({ type: "button" }).setClass("btn btn-secondary controls").append(
+                        xjs.withnew(xjs.htmlElements.i).setClass("fa fa-solid fa-play")
+                    )
+                        .bindEvent("click", () => {
+                            if(this.time_mode == "paused" || this.time_mode == "demo"){
+                                this.time_mode = "playing";
+                                this.playBtn.getChild(0).setClass("fa fa-solid fa-pause");
+                            }else if(this.time_mode == "playing" || this.time_mode == "remaining"){
+                                this.time_mode = "paused";
+                                this.playBtn.getChild(0).setClass("fa fa-solid fa-play");
+                            }
+                            this.playlistManager.togglePlay();
+                            this.#updateDisplay();
+                            this.#updateTitle();
+                        }, this)
+                    ,
+                    xjs.withnew(xjs.htmlElements.button, "forward-btn").setAttributes({ type: "button" }).setClass("btn btn-secondary controls").append(
+                        xjs.withnew(xjs.htmlElements.i).setClass("fa fa-solid fa-forward")
+                    )
+                        .bindEvent("click", () => {
+                            this.playlistManager.mediaElement.activeMediaElement.currentTime = Math.min(this.playlistManager.mediaElement.activeMediaElement.duration, this.playlistManager.mediaElement.activeMediaElement.currentTime + 5)
+                        }, this)
+                    ,
+                    xjs.withnew(xjs.htmlElements.button, "next-track-btn").setAttributes({ type: "button" }).setClass("btn btn-secondary controls").append(
+                        xjs.withnew(xjs.htmlElements.i).setClass("fa fa-solid fa-step-forward")
+                    )
+                        .bindEvent("click", () => {
+                            this.playlistManager.nextTrack();
+                            this.#updateDisplay();
+                            this.#updateTitle();
+                        }, this)
+                    ,
+                    xjs.withnew(xjs.htmlElements.button, "repeat-btn").assignTo("repeatBtn", this).setAttributes({ type: "button" }).setClass("btn btn-secondary controls").append(
+                        xjs.withnew(xjs.htmlElements.i).setClass("fa fa-repeat")
+                    )
+                        .bindEvent("click", () => {
+                            this.playlistManager.toggleRepeat();
+                            if (this.playlistManager.getRepeatStatus() === 'off') {
+                                this.repeatBtn.className = "btn btn-secondary controls disabled";
+                                this.repeatBtn.setHTML('<i class="fa fa-solid fa-repeat"></i>');
+                            } else if (this.playlistManager.getRepeatStatus() === 'one') {
+                                this.repeatBtn.className = "btn btn-secondary controls";
+                                this.repeatBtn.setHTML('<i class="fa fa-solid fa-repeat"></i>');
+                            } else if (this.playlistManager.getRepeatStatus() === 'all') {
+                                this.repeatBtn.className = "btn btn-secondary controls";
+                                this.repeatBtn.setHTML('<i class="fa fa-solid fa-redo"></i>');
+                            }
+                        }, this)
+                );
+
+            
+            this.container.append(playerControls0, playerControls1);//, this.playerLcdDisplay, this.playerLedDisplayMatrix);
+
+            this.playerLcdDisplay = xjs.withnew(xjs.htmlElements.div, "ledDisplayBack")
+                .setStyles({ height: "60px", "background-color": "var(--bg-color)", "font-family": "Digital7", "font-size": "56px", "text-indent": "5px", color: "rgb(136, 136, 136)", display: "none" })
+                .setText("888888888888888888888888")
+                .append(
+                    xjs.withnew(xjs.htmlElements.div, "ledDisplayFront")
+                        .setStyle({ position: "relative", height: "60px", backgroundColor: "rgba(34, 34, 34, 0.82)", boxShadow: "inset 0px 0px 8px 1px var(--primary-color)", top: "-57px", left: "1px", fontFamily: "Digital7", fontSize: "56px", color: "var(--primary-color)", cursor: "pointer" })
+                );
+            
+            this.container.append(this.playerLcdDisplay);
+
+            /* this.playerLedDisplayMatrix = xjs.withnew(xjs.htmlElements.div, "matrix")
+                .setClass("matrix")
+                .setStyle({ display: "block", width: "623px" })
+                .bindEvent('click', this.#toggleTimeMode, this); */
+
+            this.vledDisplayTimer = 0;
+            this.vledDisplay = new XVirtualLedDisplay(this.container, {width:620, height: 65, rotationSpeed: 100});
+
+            // Update LED display 2
+            this.vledDisplay.clearM();
+            //this.vledDisplay.drawText("00:00", 0, -1);
+            //this.vledDisplay.drawText("DEMO VIRTUAL LED DISPLAY", 30, -1);
+            //this.vledDisplay.drawText(source_title, 30, -1);
+            
+            //this.vledDisplay.rotate('left', 30);
+
+            //this.vledDisplay.setClockAndRibbon("DEMO VIRTUAL LED DISPLAY");
+            this.#vledSetClockAndRibbon();
+
+            this.currentDisplay = "LED";
+        }
+
+        #toggleTimeMode() {
+            if(this.time_mode=="playing"){
+                this.time_mode = "remaining";
+            }else if(this.time_mode=="remaining"){
+                this.time_mode = "playing";
+            }
+        }
+
+        #updateTitle() {
+            let source_title = this.playlistManager.getCurrentTitle().replaceAll("_", " ");
+            document.title = "Media Player - " + source_title;
+            window.title = "Media Player - " + source_title;
+        }
+
+        #updateDisplay() {
+            let source_title = this.playlistManager.getCurrentTitle().replaceAll("_", " ");
+            
+            if(this.currentDisplay=="LED"){
+                clearInterval(this.vledDisplayTimer);
+
+                this.vledDisplay.stop();
+                this.vledDisplay.clearM();
+
+                clearInterval(this.vledDisplayTimer);
+
+                this.vledDisplay.drawText(source_title, 30, -1);
+
+                this.vledDisplay.rotate('left', 30);
+
+                this.vledDisplayTimer = setInterval(this.#vledDisplayTimer.bind(this), 300);
+            }
+        }
+
+        #vledSetClockAndRibbon() {
+            this.vledDisplay.stop();
+            this.vledDisplay.clearM();
+            clearInterval(this.vledDisplayTimer);
+            this.vledDisplay.drawText(xjs.formatDate("hh:mm"), 0, -1);
+            this.vledDisplay.drawText("Media Player LED Display ♥", 30, -1);
+            this.vledDisplay.rotate('left', 30);
+            this.vledDisplayTimer = setInterval(this.#vledDisplayClockAndRibbonTimer.bind(this), 1000);
+        }
+
+        #vledDisplayClockAndRibbonTimer() {
+            this.vledDisplay.drawText(xjs.formatDate("hh:mm"), 0, 30);
+        }
+
+        #vledDisplayTimer() {
+            let currentTime = this.playlistManager.mediaElement.activeMediaElement.currentTime;
+            let duration = this.playlistManager.mediaElement.activeMediaElement.duration;
+            if (this.time_mode == "playing") {
+                this.vledDisplay.drawText(xjs.secondsToHHMMSS(currentTime), 0, 30);
+            } else if (this.time_mode == "remaining") {
+                this.vledDisplay.drawText(xjs.secondsToHHMMSS(duration - currentTime), 0, 30);
+            } else if (this.time_mode == "paused"){
+                this.vledDisplay.drawText(xjs.formatDate("hh:mm"), 0, 30);
+            }
+        }
+
+        #updateProgress() {
+            let currentTime = this.playlistManager.mediaElement.activeMediaElement.currentTime;
+            let duration = this.playlistManager.mediaElement.activeMediaElement.duration;
+            
+            xjs.with('player_progress').value = currentTime;
+            if (this.time_mode == "playing") {
+                xjs.with('player_timer').innerText = xjs.secondsToHHMMSS(currentTime) + '/' + xjs.secondsToHHMMSS(duration);
+            } else if (this.time_mode == "remaining") {
+                xjs.with('player_timer').setText(xjs.secondsToHHMMSS(duration - currentTime) + '/' + xjs.secondsToHHMMSS(duration));
+            }
+        }
+
+        #playListItemClicked(item) {
+            //load playlist
+            this.playlistManager.loadPlaylistItem(parseInt(item.getChild(0).getAttribute("index")));
+            xjs.with('play-track-btn').setHTML('<i class="fa fa-solid fa-pause"></i>');
+            var liObjs = Array.from(xjs.with("playlist_ul").getElementsByTagName('li'));
+            liObjs.forEach(element => {
+                element.style.backgroundColor = 'transparent';
+                element.style.fontWeight = 'normal';
+                element.style.color = "var(--primary-color)";
+            });
+
+            item.style.backgroundColor = "var(--primary-color)";
+            item.style.fontWeight = '700';
+            item.style.color = '#111111';
+
+            if(this.time_mode == "paused" || this.time_mode == "demo"){
+                this.time_mode = "playing";
+                this.playBtn.getChild(0).setClass("fa fa-solid fa-pause");
+            }
+
+            this.#updateDisplay();
+            this.#updateTitle();
+        }
+
+        #chageTimeMode() {
+            if (this.time_mode == "playing") {
+                this.time_mode = "remaining";
+            } else if (this.time_mode == "remaining") {
+                this.time_mode = "playing";
+            }
+        }
+
+        setMediaList(mediaList) {
+            this.mediaList = mediaList;
+            this.playlistManager.setItems(mediaList);
+            this.#updatePlaylist();
+        }
+        
+    }
+
+    // Media List
+    /*
+    var media_files_string = {{ media_files | tojson }};
+    var media_files = eval(media_files_string);
+    */
+    var mediaList = [];
+    /* 
+    var path = new URLSearchParams(location.search).get('path');
+    for (let index = 0; index < media_files.length; index++) {
+      const file = media_files[index];
+
+      var track = {};
+      var sources = [{ src: location.origin + "/" + ((path != null) ? path + "/" : "") + file.name, type: file.mimetype, filename: file.name }];
+      var poster = location.origin + '/assets/images/default_poster.png';
+      track.sources = sources;
+      track.poster = poster;
+      mediaList.push(track);
+    } */
+
+    // Player
+    var player = new Player(xjs.with("playlist_panel"), mediaList);
+
+
+    //Equalizer
+    const ctx = window.AudioContext || window.webkitAudioContext;
+    const context = new ctx();
+    const sourceNode = context.createMediaElementSource(player.mediaElement.audioElement);
+
+    const equalizer = new Equalizer(xjs.with("equalizer_panel"), context);
+
+    // connect the source audio node to the first filter
+    const filters = equalizer.getFilters();
+    sourceNode.connect(filters[0]);
+
+    // connect each filter to the next one
+    for (let i = 0; i < filters.length - 1; i++) {
+        filters[i].connect(filters[i + 1]);
+    }
+
+    // AudioMotion
+    const audioMotionConfigs = {
+        default: { alphaBars: false, ansiBands: false, barSpace: 0.1, bgAlpha: 0.7, channelLayout: "single", colorMode: "gradient", fftSize: 8192, fillAlpha: 1, frequencyScale: "log", gradient: primary_color, ledBars: false, linearAmplitude: false, linearBoost: 1, lineWidth: 0, loRes: false, lumiBars: false, maxDecibels: -25, maxFPS: 0, maxFreq: 22000, minDecibels: -85, minFreq: 20, mirror: 0, mode: 0, noteLabels: false, utlineBars: false, overlay: false, peakLine: false, radial: false, radialInvert: false, radius: 0.3, reflexAlpha: 0.15, reflexBright: 1, reflexFit: true, reflexRatio: 0, roundBars: false, showBgColor: true, showFPS: false, showPeaks: true, showScaleX: true, showScaleY: false, smoothing: 0.5, spinSpeed: 0, splitGradient: false, trueLeds: false, useCanvas: true, volume: 1, weightingFilter: "" },
+        bars: { mode: 6, barSpace: .4, frequencyScale: 'bark', gradient: 'rainbow', lumiBars: false, ledBars: true, linearAmplitude: true, linearBoost: 1.6, maxFreq: 20000, minFreq: 30, reflexRatio: .1, reflexAlpha: .25, weightingFilter: 'D' },
+        dual: { mode: 10, channelLayout: 'dual-combined', fillAlpha: .3, gradientLeft: 'steelblue', gradientRight: 'orangered', linearAmplitude: true, linearBoost: 1.2, lineWidth: 0, maxFreq: 16000, minFreq: 30, peakLine: true, showScaleX: false, showPeaks: true, weightingFilter: 'D' },
+        wall: { mode: 2, barSpace: .1, gradient: 'prism', lumiBars: true, minDecibels: -60, maxDecibels: -30, maxFreq: 16000, minFreq: 30, showBgColor: false, showPeaks: false, showScaleX: false, weightingFilter: 'D' },
+        mirror: { alphaBars: false, ansiBands: false, barSpace: 0.1, bgAlpha: 0.7, channelLayout: "single", colorMode: "gradient", fftSize: 8192, fillAlpha: 1, frequencyScale: "log", gradient: primary_color, ledBars: false, linearAmplitude: false, linearBoost: 1, lineWidth: 0, loRes: false, lumiBars: false, maxDecibels: -25, maxFPS: 0, maxFreq: 22000, minDecibels: -85, minFreq: 20, mirror: 0, mode: 0, noteLabels: false, outlineBars: false, overlay: false, peakLine: false, radial: false, radialInvert: false, radius: 0.3, reflexAlpha: 1, reflexBright: 1, reflexFit: true, reflexRatio: 0.5, roundBars: false, showBgColor: true, showFPS: false, showPeaks: true, showScaleX: true, showScaleY: false, smoothing: 0.5, spinSpeed: 0, splitGradient: false, trueLeds: false, useCanvas: true, volume: 1, weightingFilter: "" }
+    };
+
+    var audio_motion_preset = "default";
+
+    // instantiate the analyzer and connect the last filter to it
+    let audioMotionConfig = {
+        source: filters[filters.length - 1],
+        gradient: 'chocolate',
+    };
+
+    const audioMotion = new AudioMotionAnalyzer(
+        xjs.with('viewer_panel'), audioMotionConfig
+    );
+
+    Object.assign(audioMotionConfig, audioMotionConfigs[audio_motion_preset]);
+    if (!AudioMotionAnalyzer.GRADIENTS.includes(audioMotionConfig.gradient)) {
+        let _new_gradient_ = createGradient();
+        let _gradient_name = _new_gradient_[0];
+        let _gradient_options = _new_gradient_[1];
+        audioMotionConfig.gradient = _gradient_name;
+        if (undefined !== audioMotion) {
+            audioMotion.registerGradient(_gradient_name, _gradient_options);
+            audioMotion.gradient = _gradient_name;
+        }
+    }
+
+    function createGradient() {
+        let _name = primary_color.replace('(', '_').replace(')', '_').replaceAll(',', '_').replaceAll(' ', '');
+        let cap_name = _name.charAt(0).toUpperCase() + _name.slice(1);
+        return [_name, {
+            bgColor: '#000000',
+            colorStops: [primary_color]
+        }];
+    }
 
 </script>

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-c:\Users\Xemy\Pictures\ryddlefavicon.png
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -435,7 +434,7 @@ c:\Users\Xemy\Pictures\ryddlefavicon.png
                         )
                         .append(
                             xjs.withnew(xjs.htmlElements.input.color, "colorPicker", "colorPicker", xjs.getCssVar("--primary-color"))
-                                .bindEvent("change", function () {
+                                .bindEvent("input", function () {
                                     xjs.setCssVar("--primary-color", this.getProperty("value"));
                                     xjs.setCssVar("--primary-color-rgb", xcolor.getXcolor(this.getProperty("value")).getRgbArray().join());
                                 })

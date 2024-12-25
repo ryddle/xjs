@@ -401,7 +401,7 @@
                         )
                         .append(
                             xjs.withnew(xjs.htmlElements.input.color, "colorPicker", "colorPicker", xjs.getCssVar("--bg-color"))
-                                .bindEvent("change", function () {
+                                .bindEvent("input", function () {
                                     xjs.setCssVar("--bg-color", this.getProperty("value"));
                                 })
                         )
@@ -412,7 +412,7 @@
                         )
                         .append(
                             xjs.withnew(xjs.htmlElements.input.color, "colorPicker", "colorPicker", xjs.getCssVar("--fg-color"))
-                                .bindEvent("change", function () {
+                                .bindEvent("input", function () {
                                     xjs.setCssVar("--fg-color", this.getProperty("value"));
                                 })
                         )
@@ -423,7 +423,7 @@
                         )
                         .append(
                             xjs.withnew(xjs.htmlElements.input.color, "colorPicker", "colorPicker", xjs.getCssVar("--panel-bg-color"))
-                                .bindEvent("change", function () {
+                                .bindEvent("input", function () {
                                     xjs.setCssVar("--panel-bg-color", this.getProperty("value"));
                                 })
                         )
@@ -446,7 +446,7 @@
                         )
                         .append(
                             xjs.withnew(xjs.htmlElements.input.color, "colorPicker", "colorPicker", xjs.getCssVar("--button-bg-color"))
-                                .bindEvent("change", function () {
+                                .bindEvent("input", function () {
                                     xjs.setCssVar("--button-bg-color", this.getProperty("value"));
                                 })
                         )

@@ -237,21 +237,33 @@
                                         .setProperty("state", 0)
                                         .setAttribute("title", "Toggle Video Layout")
                                         .bindEvent("click", function () {
-                                            xlo.rows[1].orderCols([1, 0, 2, 3]);
+                                            //xlo.rows[1].orderCols([1, 0, 2, 3]);
                                             if (this.state === 0) {
-                                                this.getChild(0).setClass("fa-solid fa-music");
-                                                xlo.rows[1].cols[2].el().setProperty("displayStatus", "locked").setStyle({ display: "none" });
-                                                xjs.with("info_toggle_btn").setProperty("displayStatus", "locked").setStyle({ display: "" });
-                                                this.state = 1;
-                                                this.setAttribute("title", "Toggle Audio Layout");
-                                                window["medialayout"] = "video";
+                                                xjs.animate([xlo.rows[1].cols[1].el()], [{ width: { start: 635, end: 0, ease: xjs.easeTypes.linear } }], 100).then(() => {
+                                                    xlo.rows[1].orderCols([1, 0, 2, 3]);
+                                                    xjs.animate([xlo.rows[1].cols[0].el()], [{ width: { start: 0, end: 635, ease: xjs.easeTypes.linear } }], 100);
+                                                });
+                                                xjs.animate([xlo.rows[1].cols[2].el()], [{ width: { start: 635, end: 0, ease: xjs.easeTypes.linear } }], 200).then(() => {
+                                                    this.getChild(0).setClass("fa-solid fa-music");
+                                                    xlo.rows[1].cols[2].el().setProperty("displayStatus", "locked").setStyle({ display: "none" });
+                                                    xjs.with("info_toggle_btn").setProperty("displayStatus", "locked").setStyle({ display: "" });
+                                                    this.state = 1;
+                                                    this.setAttribute("title", "Toggle Audio Layout");
+                                                    window["medialayout"] = "video";
+                                                });
                                             } else {
-                                                this.getChild(0).setClass("fa-solid fa-video");
-                                                xlo.rows[1].cols[2].el().setProperty("displayStatus", "").setStyle({ display: "" });
-                                                xjs.with("info_toggle_btn").setProperty("displayStatus", "").setStyle({ display: "none" });
-                                                this.state = 0;
-                                                this.setAttribute("title", "Toggle Video Layout");
-                                                window["medialayout"] = "audio";
+                                                xjs.animate([xlo.rows[1].cols[0].el()], [{ width: { start: 635, end: 0, ease: xjs.easeTypes.linear } }], 100).then(() => {
+                                                    xlo.rows[1].orderCols([1, 0, 2, 3]);
+                                                    xjs.animate([xlo.rows[1].cols[1].el()], [{ width: { start: 0, end: 635, ease: xjs.easeTypes.linear } }], 100);
+                                                });                                                
+                                                xjs.animate([xlo.rows[1].cols[2].el()], [{ width: { start: 0, end: 635, ease: xjs.easeTypes.linear } }], 200).then(() => {
+                                                    this.getChild(0).setClass("fa-solid fa-video");
+                                                    xlo.rows[1].cols[2].el().setProperty("displayStatus", "").setStyle({ display: "" });
+                                                    xjs.with("info_toggle_btn").setProperty("displayStatus", "").setStyle({ display: "none" });
+                                                    this.state = 0;
+                                                    this.setAttribute("title", "Toggle Video Layout");
+                                                    window["medialayout"] = "audio";
+                                                });
                                             }
                                         })
                                 )
@@ -276,7 +288,7 @@
                     sm: { display: () => window["medialayout"] == "video" ? "none" : "", width: "auto" },
                     md: { display: () => window["medialayout"] == "video" ? "none" : "", width: "auto" },
                     lg: { display: "", width: "635px" },
-                    xl: { display: "", width: "635px" }
+                    xl: { display: ""}
                 }
             }).add(
                 xjs.withnew(xjs.htmlElements.panel, "playlist_panel")

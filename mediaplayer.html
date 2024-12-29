@@ -733,7 +733,7 @@
                 };
 
                 let _liObj = xjs.getComponent("playlist_item", true, vars).assignTo("liobj");
-                _liObj.bindEvent("click", this.#playListItemClicked, this, _liObj);
+                _liObj.bindEvent("click", this.#playListItemChanged, this, index);
 
                 if (index == 0) {
                     _liObj.setStyle({
@@ -765,7 +765,11 @@
                 marginBottom: "20px",
                 marginTop: "15px"
             }).append(
-                xjs.withnew(xjs.htmlElements.input.range, "player_progress").setAttributes({ min: "0", max: "180", step: "1", value: "0" }).setStyle({ width: "calc(100% - 160px)" }),
+                xjs.withnew(xjs.htmlElements.input.range, "player_progress").setAttributes({ min: "0", max: "180", step: "1", value: "0" }).setStyle({ width: "calc(100% - 160px)" })
+                    .assignTo("playerProgress", this)
+                    .bindEvent("input", ()=> { 
+                        this.playlistManager.mediaElement.activeMediaElement.currentTime = (this.playerProgress.value*this.playlistManager.mediaElement.activeMediaElement.duration/this.playerProgress.max);
+                    }, this),
                 xjs.withnew(xjs.htmlElements.span, "player_timer").setStyle({ color: "var(--primary-color)", fontSize: "medium", cursor: "pointer" })
                     .setText("00:00/00:00")
                     .bindEvent('click', this.#toggleTimeMode, this),
@@ -791,9 +795,14 @@
                         xjs.withnew(xjs.htmlElements.i).setClass("fa fa-solid fa-step-backward")
                     )
                         .bindEvent("click", () => {
+                            let index = this.playlistManager.getCurrentIndex();
                             this.playlistManager.prevTrack();
+                            this.#updateProgress();
                             this.#updateDisplay();
                             this.#updateTitle();
+                            if(index != this.playlistManager.getCurrentIndex()){
+                                this.#playListItemChanged(this.playlistManager.getCurrentIndex());
+                            }
                         }, this)
                     ,
                     xjs.withnew(xjs.htmlElements.button, "backward-btn").setAttributes({ type: "button" }).setClass("btn btn-secondary controls").append(
@@ -815,6 +824,7 @@
                                 this.playBtn.getChild(0).setClass("fa fa-solid fa-play");
                             }
                             this.playlistManager.togglePlay();
+                            this.#updateProgress();
                             this.#updateDisplay();
                             this.#updateTitle();
                         }, this)
@@ -830,9 +840,14 @@
                         xjs.withnew(xjs.htmlElements.i).setClass("fa fa-solid fa-step-forward")
                     )
                         .bindEvent("click", () => {
+                            let index = this.playlistManager.getCurrentIndex();
                             this.playlistManager.nextTrack();
+                            this.#updateProgress();
                             this.#updateDisplay();
                             this.#updateTitle();
+                            if(index != this.playlistManager.getCurrentIndex()){
+                                this.#playListItemChanged(this.playlistManager.getCurrentIndex());
+                            }
                         }, this)
                     ,
                     xjs.withnew(xjs.htmlElements.button, "repeat-btn").assignTo("repeatBtn", this).setAttributes({ type: "button" }).setClass("btn btn-secondary controls").append(
@@ -951,7 +966,7 @@
             let currentTime = this.playlistManager.mediaElement.activeMediaElement.currentTime;
             let duration = this.playlistManager.mediaElement.activeMediaElement.duration;
             
-            xjs.with('player_progress').value = currentTime;
+            this.playerProgress.value = (currentTime*this.playerProgress.max/duration);
             if (this.time_mode == "playing") {
                 xjs.with('player_timer').innerText = xjs.secondsToHHMMSS(currentTime) + '/' + xjs.secondsToHHMMSS(duration);
             } else if (this.time_mode == "remaining") {
@@ -959,9 +974,8 @@
             }
         }
 
-        #playListItemClicked(item) {
-            //load playlist
-            this.playlistManager.loadPlaylistItem(parseInt(item.getChild(0).getAttribute("index")));
+        #playListItemChanged(index) {
+            this.playlistManager.loadPlaylistItem(index);
             xjs.with('play-track-btn').setHTML('<i class="fa fa-solid fa-pause"></i>');
             var liObjs = Array.from(xjs.with("playlist_ul").getElementsByTagName('li'));
             liObjs.forEach(element => {
@@ -970,6 +984,7 @@
                 element.style.color = "var(--primary-color)";
             });
 
+            let item = xjs.with("playlist_ul").getChild(index);
             item.style.backgroundColor = "var(--primary-color)";
             item.style.fontWeight = '700';
             item.style.color = '#111111';

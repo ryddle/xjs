@@ -78,6 +78,15 @@
                 style: { backgroundColor: "var(--bg-color-sidebar)", borderRight: "1px solid var(--bg-color)" },
                 id: "sidebar"
             }).add(
+                xjs.withnew(xjs.htmlElements.img, "logo_top", "logo_top", null, {
+                    sm: { display: "none" },
+                    md: { display: "none" },
+                    lg: { display: "" }
+                })
+                    .setAttribute("src","favicon.png")
+                    .setSize(40, 40)
+                    .setStyles({ margin: "10px" })
+              ).add(
                 xjs.withnew(xjs.htmlElements.button, "sidebar_toggle_btn")
                     .setSize(30, 30)
                     .setStyles({ float: "right", margin: "5px", cursor: "pointer" })
@@ -88,7 +97,7 @@
                     .bindEvent("click", function () {
                         let sidebar = xjs.with("sidebar");
                         if (sidebar.getWidth(true) == 300) {
-                            //xjs.with("config_panel").setStyle({visibility:"hidden"});
+                            xjs.with("logo_top").setStyle({display:"none"});
                             xjs.animate([xjs.with("config_panel")], [{ opacity: { start: "1", end: "0", ease: xjs.easeTypes.easeInOut }, }], 100, function () {
                                 xjs.with("config_panel").left(-300).bgColor("var(--bg-color-sidebar)");
                                 xjs.with("config_toggle_btn").getChild(0).setClass("fas fa-cog");
@@ -97,7 +106,7 @@
                             xjs.animate([sidebar], [{ width: { start: 300, end: 40, ease: xjs.easeTypes.easeInOut }, }], 100);
                             xjs.with("sidebar_toggle_btn").getChild(0).setClass("fas fa-bars");
                         } else {
-                            //xjs.with("config_panel").setStyle({visibility:"visible"});
+                            xjs.with("logo_top").setStyle({display:""});
                             xjs.with("config_panel").left(-260);
                             xjs.animate([xjs.with("config_panel")], [{ opacity: { start: "0", end: "1", ease: xjs.easeTypes.easeInOut }, }], 100);
                             //sidebar.setWidth(300);

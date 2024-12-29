@@ -305,7 +305,7 @@
                 }
             }),
             xgridCol.get(xlo, "40px", {
-                style: { backgroundColor: "var(--bg-color)", position: "inherit", zIndex: 2 },
+                style: { backgroundColor: "var(--bg-color)", position: "inherit", zIndex: 20 },
                 mediaOpts: {
                     sm: { display: "none" },
                     md: { display: "none" },
@@ -375,7 +375,7 @@
             this.elm = xjs.withnew(xjs.htmlElements.div, id, "", null, this.options.mediaOpts)
                 .setStyle({
                     backgroundColor: this.options.bgColor, border: "1px solid var(--primary-color)", height: "calc(100vh - 12px)", width: this.options.width,
-                    position: "absolute", top: "5px", right: this.maxright + "px", zIndex: "1"
+                    position: "absolute", top: "5px", right: this.maxright + "px", zIndex: "11"
                 });
             document.body.appendChild(this.elm);
             return this;
@@ -469,7 +469,7 @@
     const playlist_sidebar_panel = new sidebarPanel("playlist_sidebar_panel", { bgColor: "var(--panel-bg-color)", width: "650px" });
 
     const sm_menu_panel = xjs.withnew(xjs.htmlElements.panel, "sm_menu_panel")
-        .setStyle({ backgroundColor: "var(--bg-color)", height: "calc(100vh - 0px)", width: "100%", top: "0px", left: "0px", zIndex: "1", display: "none" })
+        .setStyle({ backgroundColor: "var(--bg-color)", height: "calc(100vh - 0px)", width: "100%", top: "0px", left: "0px", zIndex: "11", display: "none" })
         .append(
             xjs.withnew(xjs.htmlElements.button, "sm_menu_btn").setStyle({ backgroundColor: "var(--button-bg-color)", float: "right", height: "40px", width: "40px", fontSize: "20px", color: "var(--fg-color)", border: "none", cursor: "pointer", margin: "0px 0px 0px 0px" })
                 .setHTML("<i class=\"fa-solid fa-close\"></i>")

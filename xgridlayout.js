@@ -145,7 +145,7 @@ class xgridlayout {
                     if (breakpoint !== undefined && col.options.mediaOpts !== undefined) {
                         let colMediaOpt = col.options.mediaOpts[breakpoint];
                         if (colMediaOpt !== undefined) {
-                            if (colMediaOpt.width !== undefined) {
+                            if (colMediaOpt.width !== undefined && !col.isLocked()) {
                                 col.setWidth(typeof colMediaOpt.width === 'function' ? colMediaOpt.width() : colMediaOpt.width);
                             }
                             if (colMediaOpt.display !== undefined) {
@@ -280,6 +280,7 @@ class xgridRow {
 }
 
 class xgridCol {
+    #locked = false;
     #has_elements = false;
     options = {
         style: {},
@@ -321,10 +322,10 @@ class xgridCol {
         this.observer = new MutationObserver(function (mutations) {
             mutations.forEach(function (mutation) {
                 if ((mutation.target.isGridRow || mutation.target.isGridCol) && mutation.attributeName === 'style') {
-                    if (_self.locked) {
-                        _self.locked = false;
+                    /* if (_self.#locked) {
+                        _self.#locked = false;
                         return;
-                    }
+                    } */
                     _self.grid.resizeGrid(_self);
                 }
             });
@@ -350,6 +351,21 @@ class xgridCol {
 
     el() {
         return this.col;
+    }
+
+    lock() {
+        this.#locked = true;
+        return this;
+    }
+
+    unlock() {
+        this.#locked = false;
+        //this.grid.resizeGrid(this);
+        return this;
+    }
+
+    isLocked() {
+        return this.#locked;
     }
 
     setWidth(width) {

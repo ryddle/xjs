@@ -238,10 +238,13 @@
                                         .setAttribute("title", "Toggle Video Layout")
                                         .bindEvent("click", function () {
                                             //xlo.rows[1].orderCols([1, 0, 2, 3]);
+                                            xlo.rows[1].cols[1].lock();
                                             if (this.state === 0) {
                                                 xjs.animate([xlo.rows[1].cols[1].el()], [{ width: { start: 635, end: 0, ease: xjs.easeTypes.linear } }], 100).then(() => {
                                                     xlo.rows[1].orderCols([1, 0, 2, 3]);
-                                                    xjs.animate([xlo.rows[1].cols[0].el()], [{ width: { start: 0, end: 635, ease: xjs.easeTypes.linear } }], 100);
+                                                    xjs.animate([xlo.rows[1].cols[0].el()], [{ width: { start: 0, end: 635, ease: xjs.easeTypes.linear } }], 100).then(() => {
+                                                        xlo.rows[1].cols[1].unlock();
+                                                    });
                                                 });
                                                 xjs.animate([xlo.rows[1].cols[2].el()], [{ width: { start: 635, end: 0, ease: xjs.easeTypes.linear } }], 200).then(() => {
                                                     this.getChild(0).setClass("fa-solid fa-music");
@@ -254,7 +257,9 @@
                                             } else {
                                                 xjs.animate([xlo.rows[1].cols[0].el()], [{ width: { start: 635, end: 0, ease: xjs.easeTypes.linear } }], 100).then(() => {
                                                     xlo.rows[1].orderCols([1, 0, 2, 3]);
-                                                    xjs.animate([xlo.rows[1].cols[1].el()], [{ width: { start: 0, end: 635, ease: xjs.easeTypes.linear } }], 100);
+                                                    xjs.animate([xlo.rows[1].cols[1].el()], [{ width: { start: 0, end: 635, ease: xjs.easeTypes.linear } }], 100).then(() => {
+                                                        xlo.rows[1].cols[1].unlock();
+                                                    });
                                                 });                                                
                                                 xjs.animate([xlo.rows[1].cols[2].el()], [{ width: { start: 0, end: 635, ease: xjs.easeTypes.linear } }], 200).then(() => {
                                                     this.getChild(0).setClass("fa-solid fa-video");
@@ -288,7 +293,7 @@
                     sm: { display: () => window["medialayout"] == "video" ? "none" : "", width: "auto" },
                     md: { display: () => window["medialayout"] == "video" ? "none" : "", width: "auto" },
                     lg: { display: "", width: "635px" },
-                    xl: { display: ""}
+                    xl: { display: "", width: "635px" }
                 }
             }).add(
                 xjs.withnew(xjs.htmlElements.panel, "playlist_panel")

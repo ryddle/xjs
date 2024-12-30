@@ -313,7 +313,9 @@
     // Header
     xjs.with("header")
     .append(
-        xjs.withnew(xjs.htmlElements.img, "logo_top", "logo_top", null).setAttribute("src","favicon.png").setSize(60, 60).setStyles({ margin: "10px", marginRight: "40px", verticalAlign: "middle" })
+        xjs.withnew(xjs.htmlElements.aLink, "logo_link").setAttributes({"href": "https://github.com/ryddle", "target": "_blank"}).setStyles({ display: "inline" }).append(
+            xjs.withnew(xjs.htmlElements.img, "logo", "logo", null).setAttribute("src","favicon.png").setSize(60, 60).setStyles({ margin: "10px", marginRight: "40px", verticalAlign: "middle" })
+        )
     ).append(
         xjs.withnew(xjs.htmlElements.h1).setText("XJS / XGridLayout - Showcase").setStyles({ color: "#ffffff", textAlign: "center", fontFamily: "monospace", display: "inline" })
     ).append(

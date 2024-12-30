@@ -1399,7 +1399,7 @@ class _xjs {
             button: "button",
             submit: "submit",
             label: "label",
-            alink: "alink",
+            aLink: "aLink",
             aButton: "aButton",
             img: "img",
             table: "table",
@@ -1487,7 +1487,7 @@ class _xjs {
         button: this.lazy(() => document.createElement("button").setAttribute("type", "button")),
         submit: this.lazy(() => document.createElement("button").setAttribute("type", "submit")),
         label: this.lazy(() => document.createElement("label")),
-        alink: this.lazy(() => document.createElement("a").setAttribute("href", "#")),
+        aLink: this.lazy(() => document.createElement("a").setAttribute("href", "#")),
         aButton: this.lazy(() => document.createElement("a").setAttribute("href", "javascript:void(0)")),
         img: this.lazy(() => document.createElement("img")),
         table: this.lazy(() => document.createElement("table")),
@@ -1534,7 +1534,7 @@ class _xjs {
             { value: "option1", textContent: "Option 1" },
             { value: "option2", textContent: "Option 2" },
             { value: "option3", textContent: "Option 3" }
-        ]))),
+        ])))
     };
 
     /**

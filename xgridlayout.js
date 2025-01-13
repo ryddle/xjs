@@ -130,9 +130,9 @@ class xgridlayout {
             } else if (row.classList.contains('fit-height')) {
                 totalHeight += _row.height();
             } else if (row.style.height.endsWith('px')) {
-                totalHeight += parseInt(row.style.height);
+                totalHeight += row.getHeight(true);
             } else if (row.style.height.endsWith('%')) {
-                totalHeight += this.gridcontainer.offsetHeight * (parseInt(row.style.height) / 100);
+                totalHeight += this.gridcontainer.offsetHeight * (row.getHeight(true) / 100);
             }
 
             const cols = _row.cols;
@@ -239,7 +239,8 @@ class xgridRow {
     }
 
     addCol(width = 'auto', style = {}, id) {
-        const _col = xgridCol.get(width, style, id);
+        const _col = xgridCol.get(grid, width, style, id);
+        _col.parentRow = this;
         this.row.appendChild(_col.el());
         this.cols.push(_col);
         if (id !== undefined && id !== '') {
@@ -251,6 +252,7 @@ class xgridRow {
     addCols(...cols_) {
         cols_.forEach(col => {
             if (col instanceof xgridCol) {
+                col.parentRow = this;
                 this.cols.push(col);
                 if (col.options.id !== undefined && col.options.id !== '') {
                     this.grid.setColById(col.options.id, col);
@@ -287,7 +289,8 @@ class xgridCol {
         id: undefined,
         mediaOpts: undefined,
         maxWidth: undefined,
-        minWidth: undefined
+        minWidth: undefined,
+        resizable: 'none'
     };
     constructor(grid, width = 'auto', options = {}) {
         Object.assign(this.options, options);
@@ -299,6 +302,98 @@ class xgridCol {
 
         this.rows = [];
 
+        xjs.withcss(`
+            .resizer {
+            /*
+            --dot-bg: #fff;
+            --dot-color: var(--primary-color);
+            --dot-size: 1px;
+            --dot-space: 3px;
+              background:
+                  linear-gradient(90deg, var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
+                  linear-gradient(var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
+                  var(--dot-color);
+            */
+
+            /*
+            --line-bg: #fff;
+            background-color: var(--line-bg);
+            opacity: 1;
+            background-image:  linear-gradient(135deg, var(--primary-color); 25%, transparent 25%), linear-gradient(225deg, var(--primary-color); 25%, transparent 25%), linear-gradient(45deg, var(--primary-color); 25%, transparent 25%), linear-gradient(315deg, var(--primary-color); 25%, var(--line-bg) 25%);
+            background-position:  4px 0, 4px 0, 0 0, 0 0;
+            background-size: 8px 8px;
+            background-repeat: repeat;
+            */
+
+            /*
+            --s: 5px;
+            --c1: #ffffff;
+            --c2: var(--primary-color);
+            
+            --_g: var(--c1) 90deg,#0000 90.5deg;
+            background:
+             conic-gradient(from 135deg,var(--_g)),
+             conic-gradient(from -45deg,var(--_g)) calc(var(--s)/2) 0,
+             var(--c2);
+            background-size: var(--s) var(--s)
+            */
+            
+            --bg-pattern: transparent;
+            background: 
+                linear-gradient(45deg, var(--primary-color) 25%, transparent 25%) 0 -50px,
+                linear-gradient(135deg, var(--primary-color) 25%, transparent 25%) 0  -50px,
+                linear-gradient(225deg, var(--primary-color) 25%, transparent 25%),
+                linear-gradient(315deg, var(--primary-color) 25%, transparent 25%);	
+            background-size: 12px 12px;
+            background-color: #fff;
+          }
+        `);
+
+        this.leftResizer = xjs.withnew(xjs.htmlElements.panel).setStyles({ opacity: 0, cursor: 'col-resize', zIndex: 10000 }).setSize('5px', '100%').pos(0, 0, 'left', 'top').setClass('resizer');
+        this.leftResizer.isResizer = true;
+        this.leftResizer.parentCol = this;
+        this.leftResizer.bindEvent('mouseover', function () {this.opacity(1)});
+        this.leftResizer.bindEvent('mouseout', function() {if(!this.isResizing)this.opacity(0)});
+        this.leftResizer.bindEvent('mousedown', function() {this.isResizing = true; this.px = event.clientX; this.ow = this.parentCol.el().offsetWidth; this.parentCol.lock()});
+
+        this.rightResizer = xjs.withnew(xjs.htmlElements.panel).setStyles({ opacity: 0, cursor: 'col-resize', zIndex: 10000 }).setSize('5px', '100%').pos(0, 0, 'right', 'top').setClass('resizer');
+        this.rightResizer.isResizer = true;
+        this.rightResizer.parentCol = this;
+        this.rightResizer.bindEvent('mouseover', function () {this.opacity(1)});
+        this.rightResizer.bindEvent('mouseout', function() {if(!this.isResizing)this.opacity(0)});
+        this.rightResizer.bindEvent('mousedown', function() {this.isResizing = true; this.px = event.clientX; this.ow = this.parentCol.el().offsetWidth; this.parentCol.lock()});
+        /* document.body.bindEvent('mousemove', function (e) {
+            if (this.isResizing) {
+                this.parentCol.setWidth(event.clientX+'px');
+            }
+        }, this.rightResizer);
+        document.body.bindEvent('mouseup', function (e) {
+            this.isResizing = false;
+            this.opacity(0);
+        }, this.rightResizer); */
+
+        document.body.bindEvent('mousemove', function (e) {
+            if (this.leftResizer.isResizing) {
+                this.leftResizer.parentCol.setWidth((this.leftResizer.px - e.clientX + this.leftResizer.ow) + 'px');
+                document.dispatchEvent(new CustomEvent('resizeColumn', { detail: this.leftResizer.parentCol }));
+            }
+            if (this.rightResizer.isResizing) {
+                this.rightResizer.parentCol.setWidth((e.clientX - this.rightResizer.px + this.rightResizer.ow) + 'px');
+                document.dispatchEvent(new CustomEvent('resizeColumn', { detail: this.leftResizer.parentCol }));
+            }
+        }, this);
+        document.body.bindEvent('mouseup', function (e) {
+            this.leftResizer.isResizing = false;
+            this.leftResizer.opacity(0);
+            this.leftResizer.parentCol.unlock();
+
+            this.rightResizer.isResizing = false;
+            this.rightResizer.opacity(0);
+            this.rightResizer.parentCol.unlock();
+
+            document.dispatchEvent(new CustomEvent('endResizeColumn'));
+        }, this);
+
         this.col = xjs.withnew(xjs.htmlElements.div);
         this.col.className = 'grid-col';
         if (width === 'auto') {
@@ -306,6 +401,7 @@ class xgridCol {
         }
         this.col.style.width = width;
         Object.assign(this.col.style, this.options.style);
+        this.col.style.position = 'relative';
 
         if (this.options.id) {
             this.col.id = this.options.id;
@@ -314,6 +410,7 @@ class xgridCol {
         this.col.isGridCol = true;
 
         let _self = this;
+        _self.initialized = false;
 
         this.col.parent = function () {
             return _self;
@@ -321,6 +418,10 @@ class xgridCol {
 
         this.observer = new MutationObserver(function (mutations) {
             mutations.forEach(function (mutation) {
+                if(mutation.target.isGridCol && mutation.target.parent().options.resizable!=='none' && mutation.target.parent().initialized===false){
+                    mutation.target.parent().setResizable(mutation.target.parent().options.resizable);
+                    mutation.target.parent().initialized = undefined;
+                }
                 if ((mutation.target.isGridRow || mutation.target.isGridCol) && mutation.attributeName === 'style') {
                     /* if (_self.#locked) {
                         _self.#locked = false;
@@ -373,14 +474,75 @@ class xgridCol {
             this.col.classList.add('auto-width');
         } else {
             this.col.classList.remove('auto-width');
+            
+            if(this.options.minWidth !== undefined && parseInt(width) < parseInt(this.options.minWidth)){
+                width = this.options.minWidth;
+            }
+            if(this.options.maxWidth !== undefined && parseInt(width) > parseInt(this.options.maxWidth)){
+                width = this.options.maxWidth;
+            }
+            let totalWidth = 0;
+            this.parentRow.cols.forEach(col => {
+                if(col.el()===this.el()) return;
+                totalWidth += (col.options.minWidth !== undefined ? parseInt(col.options.minWidth) : col.el().offsetWidth);
+            });
+            totalWidth += parseInt(width);
+            if (totalWidth > this.parentRow.el().offsetWidth){
+                width = this.parentRow.el().offsetWidth - totalWidth;
+            }
+            
             this.col.style.width = width;
         }
         return this;
     }
 
+    setResizable(resizable) {//left, right, both, none
+        if (this.parentRow.cols.length > 1 && ['left', 'right', 'both', 'none'].indexOf(resizable) !== -1) {
+            this.options.resizable = resizable;
+            if(resizable === 'left' || resizable === 'both') {
+                this.col.append(this.leftResizer);
+                this.leftResizer.display('block');
+                if(resizable === 'left') {
+                    this.rightResizer.display('none');
+                }
+            } else {
+                this.leftResizer.display('none');
+            }
+
+            if (resizable === 'right' || resizable === 'both') {
+                this.col.append(this.rightResizer);
+                this.rightResizer.display('block');
+                if(resizable === 'right') {
+                    this.leftResizer.display('none');
+                }
+            } else {
+                this.rightResizer.display('none');
+            }
+        }else{
+            throw new Error('this col can not be resizable');
+        }
+
+        return this;
+    }
+
     addRow(height = 'auto', style = {}, id) {
-        if (this.#has_elements || (this.col.children.length > 0 && this.rows.length == 0)) {
+        /* if (this.#has_elements || (this.col.children.length > 0 && this.rows.length == 0)) {
             throw new Error('xgridCol can only have xgridRow or Elements added to it, but not both');
+        } */
+        if (this.#has_elements) {// || (this.col.children.length > 0 && this.rows.length == 0)) {
+            throw new Error('xgridCol can only have xgridRow or Elements added to it, but not both');
+        } else if (this.col.children.length > 0) {
+            let allResizers = true;
+            for (let i = 0; i < this.col.children.length; i++) {
+                const element = this.col.children[i];
+                if (!element.isResizer) {
+                    allResizers = false;
+                    break;
+                }
+            }
+            if (!allResizers) {
+                throw new Error('xgridCol can only have xgridRow or Resizers added to it, but not both');
+            }
         }
         const _row = xgridRow.get(this.grid, height, style, id);
         this.col.appendChild(_row.el());
@@ -392,8 +554,20 @@ class xgridCol {
     }
 
     addRows(...rows_) {
-        if (this.#has_elements || (this.col.children.length > 0 && this.rows.length == 0)) {
+        if (this.#has_elements) {// || (this.col.children.length > 0 && this.rows.length == 0)) {
             throw new Error('xgridCol can only have xgridRow or Elements added to it, but not both');
+        } else if (this.col.children.length > 0) {
+            let allResizers = true;
+            for (let i = 0; i < this.col.children.length; i++) {
+                const element = this.col.children[i];
+                if (!element.isResizer) {
+                    allResizers = false;
+                    break;
+                }
+            }
+            if (!allResizers) {
+                throw new Error('xgridCol can only have xgridRow or Resizers added to it, but not both');
+            }
         }
         rows_.forEach(row => {
             if (row instanceof xgridRow) {

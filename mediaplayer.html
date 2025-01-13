@@ -33,6 +33,14 @@
             background: var(--bg-comp-color);
         }
 
+        input[type="checkbox"]:checked {
+        accent-color: var(--primary-color);
+        }
+
+        input[type="checkbox"]:hover {
+        accent-color: var(--primary-color);
+        }
+
         button.controls {
             width: 30px;
             height: 30px;
@@ -216,7 +224,8 @@
                     lg: { display: () => "" },
                     xl: { display: () => "" }
                 },
-                id: "viewer"
+                id: "viewer",
+                minWidth: "800px",
             }).addRows(
                 xgridRow.get(xlo, "auto")
                     .addCols(
@@ -238,15 +247,16 @@
                                         .setAttribute("title", "Toggle Video Layout")
                                         .bindEvent("click", function () {
                                             //xlo.rows[1].orderCols([1, 0, 2, 3]);
-                                            xlo.rows[1].cols[1].lock();
                                             if (this.state === 0) {
+                                                xlo.rows[1].cols[1].lock();
                                                 xjs.animate([xlo.rows[1].cols[1].el()], [{ width: { start: 635, end: 0, ease: xjs.easeTypes.linear } }], 100).then(() => {
                                                     xlo.rows[1].orderCols([1, 0, 2, 3]);
                                                     xjs.animate([xlo.rows[1].cols[0].el()], [{ width: { start: 0, end: 635, ease: xjs.easeTypes.linear } }], 100).then(() => {
                                                         xlo.rows[1].cols[1].unlock();
+                                                        xlo.rows[1].cols[0].setResizable('right');
                                                     });
                                                 });
-                                                xjs.animate([xlo.rows[1].cols[2].el()], [{ width: { start: 635, end: 0, ease: xjs.easeTypes.linear } }], 200).then(() => {
+                                                xjs.animate([xlo.rows[1].cols[2].el()], [{ width: { start: 635, end: 0, ease: xjs.easeTypes.linear } }], 100).then(() => {
                                                     this.getChild(0).setClass("fa-solid fa-music");
                                                     xlo.rows[1].cols[2].el().setProperty("displayStatus", "locked").setStyle({ display: "none" });
                                                     xjs.with("info_toggle_btn").setProperty("displayStatus", "locked").setStyle({ display: "" });
@@ -255,20 +265,24 @@
                                                     window["medialayout"] = "video";
                                                 });
                                             } else {
+                                                xlo.rows[1].cols[0].lock();
+                                                xlo.rows[1].cols[2].lock();
                                                 xjs.animate([xlo.rows[1].cols[0].el()], [{ width: { start: 635, end: 0, ease: xjs.easeTypes.linear } }], 100).then(() => {
                                                     xlo.rows[1].orderCols([1, 0, 2, 3]);
                                                     xjs.animate([xlo.rows[1].cols[1].el()], [{ width: { start: 0, end: 635, ease: xjs.easeTypes.linear } }], 100).then(() => {
                                                         xlo.rows[1].cols[1].unlock();
+                                                        xlo.rows[1].cols[1].setResizable('left');
+                                                    });
+                                                    xjs.animate([xlo.rows[1].cols[2].el()], [{ width: { start: 0, end: 635, ease: xjs.easeTypes.linear } }], 100).then(() => {
+                                                        this.getChild(0).setClass("fa-solid fa-video");
+                                                        xlo.rows[1].cols[2].el().setProperty("displayStatus", "").setStyle({ display: "" });
+                                                        xjs.with("info_toggle_btn").setProperty("displayStatus", "").setStyle({ display: "none" });
+                                                        this.state = 0;
+                                                        this.setAttribute("title", "Toggle Video Layout");
+                                                        window["medialayout"] = "audio";
                                                     });
                                                 });                                                
-                                                xjs.animate([xlo.rows[1].cols[2].el()], [{ width: { start: 0, end: 635, ease: xjs.easeTypes.linear } }], 200).then(() => {
-                                                    this.getChild(0).setClass("fa-solid fa-video");
-                                                    xlo.rows[1].cols[2].el().setProperty("displayStatus", "").setStyle({ display: "" });
-                                                    xjs.with("info_toggle_btn").setProperty("displayStatus", "").setStyle({ display: "none" });
-                                                    this.state = 0;
-                                                    this.setAttribute("title", "Toggle Video Layout");
-                                                    window["medialayout"] = "audio";
-                                                });
+                                               
                                             }
                                         })
                                 )
@@ -289,12 +303,14 @@
             ),
             xgridCol.get(xlo, "635px", {
                 style: { backgroundColor: "var(--bg-color)" }, id: "playlist",
+                minWidth: "635px",
                 mediaOpts: {
                     sm: { display: () => window["medialayout"] == "video" ? "none" : "", width: "auto" },
                     md: { display: () => window["medialayout"] == "video" ? "none" : "", width: "auto" },
                     lg: { display: "", width: "635px" },
                     xl: { display: "", width: "635px" }
-                }
+                },
+                resizable: 'none'
             }).add(
                 xjs.withnew(xjs.htmlElements.panel, "playlist_panel")
                     .pos(0, 0)
@@ -307,7 +323,8 @@
                     md: { display: "none" },
                     lg: { display: "none" },
                     xl: { display: function () { return xjs.with("info").getProperty("displayStatus") == "locked" ? xjs.with("info").getStyleProperty("display") : ""; } }
-                }
+                },
+                resizable: 'none'
             }),
             xgridCol.get(xlo, "40px", {
                 style: { backgroundColor: "var(--bg-color)", position: "inherit", zIndex: 20 },
@@ -468,6 +485,33 @@
                                 })
                         )
                     )
+                    .append(xjs.withnew(xjs.htmlElements.li).setStyles({ padding: "5px", height: "30px", display: "flex", alignItems: "center", width: "200px", justifyContent: "space-between" })
+                        .append(
+                            xjs.withnew(xjs.htmlElements.span)
+                        )
+                    )
+                    .append(xjs.withnew(xjs.htmlElements.li).setStyles({ padding: "5px", height: "30px", display: "flex", alignItems: "center", width: "200px", justifyContent: "space-between" })
+                        .append(
+                            xjs.withnew(xjs.htmlElements.span).setStyle({ color: "var(--fg-color)" }).setText("Resizable")
+                        )
+                        .append(
+                            xjs.withnew(xjs.htmlElements.input.checkbox, "resizable", "resizable", true).setProperty("checked", false)
+                                .bindEvent("change", function () {
+                                    if(this.checked) {
+                                        if( window["medialayout"] == "video") {
+                                            xjs.with("playlist").parent().setResizable("right");
+                                            xjs.with("info").parent().setResizable("none");
+                                        }else {
+                                            xjs.with("playlist").parent().setResizable("left");
+                                            xjs.with("info").parent().setResizable("left");                                            
+                                        }
+                                    }else {
+                                        xjs.with("playlist").parent().setResizable("none");
+                                        xjs.with("info").parent().setResizable("none");
+                                    }
+                                })
+                        )
+                    )
             )
     );
     const info_sidebar_panel = new sidebarPanel("info_sidebar_panel", { bgColor: "var(--panel-bg-color)", width: "650px" });
@@ -490,7 +534,7 @@
     // Info Panel
 
     const xtabs = new xTabs({
-        width: "621px",
+        width: "calc(100% - 0px)",
         height: "calc(100vh - 65px)"
     })
         .addTab("Lyrics", { constainerScroll: "y", containerBgColor: "var(--bg-color)" })
@@ -659,6 +703,13 @@
                 this.vledDisplay.resizeMatrix(newLedWidth,65);
                 this.#vledSetClockAndRibbon();
             });
+
+            document.addEventListener("resizeColumn", (e) => {
+                this.vledDisplay.stop();
+                this.vledDisplay.resizeMatrix(xjs.with("playlist").offsetWidth-10,65);
+                this.#vledSetClockAndRibbon();
+            });
+
         }
 
         #createMenuButtons() {
@@ -1099,5 +1150,7 @@
             colorStops: [primary_color]
         }];
     }
+
+
 
 </script>

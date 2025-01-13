@@ -137,7 +137,7 @@ class Equalizer {
                 zIndex: "10"
             });
 
-            let eqbandLabel = xjs.withnew('label').bgColor('var(--primary-color)')
+            let eqbandLabel = xjs.withnew('label').bgColor('var(--primary-color)').setStyle({userSelect: "none"})
                 .setHTML(`${freq < 1000 ? freq : freq / 1000 + 'k'}Hz`)
                 .appendTo(eqbandDiv);
 

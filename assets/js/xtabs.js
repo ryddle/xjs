@@ -58,7 +58,7 @@ const xTabs = class {
             lineHeight: "20px", fontWeight: "bold", marginLeft: (this.tabs.length > 0 ? "10px" : "20px"), width: "50px",
             border: "1px solid var(--primary-color)", borderBottom: "none", borderTopLeftRadius: "4px", borderTopRightRadius: "4px",
             backgroundColor: this.options.tabActiveBgColor, color: this.options.tabActiveTextColor,
-            cursor: "pointer"
+            cursor: "pointer", userSelect: "none"
         });
         if (this.tabs.length > 0) {
             tab.setStyles({

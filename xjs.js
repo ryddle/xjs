@@ -414,6 +414,26 @@ HTMLElement.prototype.getHeight = function (asNumber = false) {
     return this.style.getPropertyValue("height");
 };
 
+HTMLElement.prototype.display = function (display) {
+    this.style.setProperty("display", display);
+    return this;
+}
+
+HTMLElement.prototype.show = function () { 
+    this.style.setProperty("visibility", "visible"); 
+    return this; 
+};
+
+HTMLElement.prototype.hide = function () { 
+    this.style.setProperty("visibility", "hidden"); 
+    return this; 
+};
+
+HTMLElement.prototype.opacity = function (opacity) {
+    this.style.setProperty("opacity", opacity);
+    return this;
+}
+
 HTMLElement.prototype.setClass = function (...classes) {
     if (classes.length == 0) return this;
 

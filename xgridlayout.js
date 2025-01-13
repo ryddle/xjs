@@ -19,7 +19,8 @@ class xgridlayout {
             display: inline-block;
             vertical-align: top;
             box-sizing: border-box;
-        }`;
+        }
+    `;
     #grid = [];
     #colsmap = {};
     #rowsmap = {};
@@ -181,9 +182,7 @@ class xgridlayout {
                 cols.forEach(col => {
                     if (col !== _element) {
                         col.resizeGrid();
-                    } /* else {
-                        console.log('Same element');
-                    } */
+                    }
                 });
             }
         });
@@ -362,15 +361,6 @@ class xgridCol {
         this.rightResizer.bindEvent('mouseover', function () {this.opacity(1)});
         this.rightResizer.bindEvent('mouseout', function() {if(!this.isResizing)this.opacity(0)});
         this.rightResizer.bindEvent('mousedown', function() {this.isResizing = true; this.px = event.clientX; this.ow = this.parentCol.el().offsetWidth; this.parentCol.lock()});
-        /* document.body.bindEvent('mousemove', function (e) {
-            if (this.isResizing) {
-                this.parentCol.setWidth(event.clientX+'px');
-            }
-        }, this.rightResizer);
-        document.body.bindEvent('mouseup', function (e) {
-            this.isResizing = false;
-            this.opacity(0);
-        }, this.rightResizer); */
 
         document.body.bindEvent('mousemove', function (e) {
             if (this.leftResizer.isResizing) {
@@ -385,11 +375,11 @@ class xgridCol {
         document.body.bindEvent('mouseup', function (e) {
             this.leftResizer.isResizing = false;
             this.leftResizer.opacity(0);
-            this.leftResizer.parentCol.unlock();
+            //this.leftResizer.parentCol.unlock();
 
             this.rightResizer.isResizing = false;
             this.rightResizer.opacity(0);
-            this.rightResizer.parentCol.unlock();
+            //this.rightResizer.parentCol.unlock();
 
             document.dispatchEvent(new CustomEvent('endResizeColumn'));
         }, this);
@@ -418,15 +408,11 @@ class xgridCol {
 
         this.observer = new MutationObserver(function (mutations) {
             mutations.forEach(function (mutation) {
-                if(mutation.target.isGridCol && mutation.target.parent().options.resizable!=='none' && mutation.target.parent().initialized===false){
+                if(mutation.target.isGridCol && mutation.target.parent().options.resizable!=='none' && mutation.target.parent().initialized==false){
                     mutation.target.parent().setResizable(mutation.target.parent().options.resizable);
                     mutation.target.parent().initialized = undefined;
                 }
                 if ((mutation.target.isGridRow || mutation.target.isGridCol) && mutation.attributeName === 'style') {
-                    /* if (_self.#locked) {
-                        _self.#locked = false;
-                        return;
-                    } */
                     _self.grid.resizeGrid(_self);
                 }
             });

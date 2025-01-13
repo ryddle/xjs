@@ -381,7 +381,10 @@
     ).resizeGrid();
 
     window.addEventListener("resize", function () {
-        xjs.with("msg").setText(window.innerWidth + "px");
+        //xjs.with("msg").setText(window.innerWidth + "px");
+        xjs.with("resizable").checked = false;
+        xjs.with("resizable").dispatchEvent(new Event('change', { bubbles: true }));
+        xlo.resizeGrid();
     });
 
     const sidebarPanel = class {
@@ -511,8 +514,8 @@
                                             xjs.with("info").parent().setResizable("left");                                            
                                         }
                                     }else {
-                                        xjs.with("playlist").parent().setResizable("none");
-                                        xjs.with("info").parent().setResizable("none");
+                                        xjs.with("playlist").parent().setResizable("none").unlock();
+                                        xjs.with("info").parent().setResizable("none").unlock();
                                     }
                                 })
                         )
@@ -671,7 +674,12 @@
 
             this.playlistUl = this.#updatePlaylist();
 
-            this.playlistContainer = xjs.withnew(xjs.htmlElements.div)
+            this.playlistContainer = xjs.withnew(xjs.htmlElements.div, "playlist_container", "playlist_container", null, {
+                    sm: { height: "calc(100vh - 250px)" },
+                    md: { height: "calc(100vh - 250px)" },
+                    lg: { height: "calc(100vh - 222px)" },
+                    xl: { height: "calc(100vh - 222px)" }
+                })
                 .setStyle({ 
                     overflow: "hidden", 
                     backgroundColor: 'var(--bg-comp-color)',

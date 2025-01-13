@@ -1616,8 +1616,13 @@ class _xjs {
                 this.#responsiveElements.forEach(relm => {
                     if (relm.mediaOpts && relm.mediaOpts[breakpoint]) {
                         let elmMediaOpt = relm.mediaOpts[breakpoint];
-                        if (elmMediaOpt.display !== undefined) {
+                        /* if (elmMediaOpt.display !== undefined) {
                             relm.elm.style.display = typeof elmMediaOpt.display === 'function' ? elmMediaOpt.display() : elmMediaOpt.display;
+                        } */
+                        for (let key in elmMediaOpt) {
+                            if (elmMediaOpt.hasOwnProperty(key)) {
+                                relm.elm.style[key] = typeof elmMediaOpt[key] === 'function' ? elmMediaOpt[key]() : elmMediaOpt[key];
+                            }
                         }
                     }
                 });

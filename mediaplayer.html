@@ -253,7 +253,9 @@
                                                     xlo.rows[1].orderCols([1, 0, 2, 3]);
                                                     xjs.animate([xlo.rows[1].cols[0].el()], [{ width: { start: 0, end: 635, ease: xjs.easeTypes.linear } }], 100).then(() => {
                                                         xlo.rows[1].cols[1].unlock();
-                                                        xlo.rows[1].cols[0].setResizable('right');
+                                                        if(xjs.with("resizable").checked){
+                                                            xlo.rows[1].cols[0].setResizable('right');
+                                                        }
                                                     });
                                                 });
                                                 xjs.animate([xlo.rows[1].cols[2].el()], [{ width: { start: 635, end: 0, ease: xjs.easeTypes.linear } }], 100).then(() => {
@@ -271,7 +273,10 @@
                                                     xlo.rows[1].orderCols([1, 0, 2, 3]);
                                                     xjs.animate([xlo.rows[1].cols[1].el()], [{ width: { start: 0, end: 635, ease: xjs.easeTypes.linear } }], 100).then(() => {
                                                         xlo.rows[1].cols[1].unlock();
-                                                        xlo.rows[1].cols[1].setResizable('left');
+                                                        if(xjs.with("resizable").checked){
+                                                            xlo.rows[1].cols[1].setResizable('left');
+                                                            xlo.rows[1].cols[2].setResizable('left');
+                                                        }
                                                     });
                                                     xjs.animate([xlo.rows[1].cols[2].el()], [{ width: { start: 0, end: 635, ease: xjs.easeTypes.linear } }], 100).then(() => {
                                                         this.getChild(0).setClass("fa-solid fa-video");

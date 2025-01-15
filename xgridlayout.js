@@ -337,25 +337,27 @@ class xgridCol {
             background-size: var(--s) var(--s)
             */
             
-            --bg-pattern: transparent;
+            /* --bg-pattern: transparent;
             background: 
                 linear-gradient(45deg, var(--primary-color) 25%, transparent 25%) 0 -50px,
                 linear-gradient(135deg, var(--primary-color) 25%, transparent 25%) 0  -50px,
                 linear-gradient(225deg, var(--primary-color) 25%, transparent 25%),
                 linear-gradient(315deg, var(--primary-color) 25%, transparent 25%);	
             background-size: 12px 12px;
-            background-color: #fff;
+            background-color: #fff; */
+
+            backgroundColor: transparent;
           }
         `);
 
-        this.leftResizer = xjs.withnew(xjs.htmlElements.panel).setStyles({ opacity: 0, cursor: 'col-resize', zIndex: 10000 }).setSize('5px', '100%').pos(0, 0, 'left', 'top').setClass('resizer');
+        this.leftResizer = xjs.withnew(xjs.htmlElements.panel).setStyles({ opacity: 0, cursor: 'col-resize', zIndex: 10000, borderRight: '2px solid #fff' }).setSize('6px', '100%').pos(0, 0, 'left', 'top').setClass('resizer');
         this.leftResizer.isResizer = true;
         this.leftResizer.parentCol = this;
         this.leftResizer.bindEvent('mouseover', function () {this.opacity(1)});
         this.leftResizer.bindEvent('mouseout', function() {if(!this.isResizing)this.opacity(0)});
         this.leftResizer.bindEvent('mousedown', function() {this.isResizing = true; this.px = event.clientX; this.ow = this.parentCol.el().offsetWidth; this.parentCol.lock()});
 
-        this.rightResizer = xjs.withnew(xjs.htmlElements.panel).setStyles({ opacity: 0, cursor: 'col-resize', zIndex: 10000 }).setSize('5px', '100%').pos(0, 0, 'right', 'top').setClass('resizer');
+        this.rightResizer = xjs.withnew(xjs.htmlElements.panel).setStyles({ opacity: 0, cursor: 'col-resize', zIndex: 10000, borderLeft: '2px solid #fff' }).setSize('6px', '100%').pos(0, 0, 'right', 'top').setClass('resizer');
         this.rightResizer.isResizer = true;
         this.rightResizer.parentCol = this;
         this.rightResizer.bindEvent('mouseover', function () {this.opacity(1)});

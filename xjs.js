@@ -20,6 +20,11 @@ getMediaOptions = function () {
     return window.mediaOptions;
 };
 
+
+map = function(value, start1, stop1, start2, stop2) {
+    return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
+};
+
 //Node
 Node.prototype.appendTo = function (node) {
     node.appendChild(this);

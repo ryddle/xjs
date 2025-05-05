@@ -878,7 +878,7 @@ class xcolor {
         let [_h, _s, _b] = colorCode.match(/\d+/g).map(Number);
         let h = _h, s = _s / 100, b = _b / 100;
         let f = (n, k = (n + h / 60) % 6) => b - b * s * Math.max(Math.min(k, 4 - k, 1), 0);
-        return `rgb(${map(f(5), 0, 1, 0, 255)},${map(f(3), 0, 1, 0, 255)},${map(f(1), 0, 1, 0, 255)})`;
+        return `rgb(${Math.round(map(f(5), 0, 1, 0, 255))},${Math.round(map(f(3), 0, 1, 0, 255))},${Math.round(map(f(1), 0, 1, 0, 255))})`;
     }
     /**
      * Converts a color code in HSBA format to RGBA format.

@@ -90,7 +90,7 @@ class XJSSelect extends HTMLElement {
             }
 
             .arrow:has(+ select[size^="1"], + select:not([size])) {
-                position: fixed;
+                position: absolute;
                 margin-right: 0.5rem;
                 content: "";
                 justify-self: end;

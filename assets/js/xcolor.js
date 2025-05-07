@@ -894,7 +894,7 @@ class xcolor {
         s = s / 100;
         b = b / 100;
         let f = (n, k = (n + h / 60) % 6) => b - b * s * Math.max(Math.min(k, 4 - k, 1), 0);
-        return `rgba(${map(f(5), 0, 1, 0, 255)},${map(f(3), 0, 1, 0, 255)},${map(f(1), 0, 1, 0, 255)},${a})`;
+        return `rgba(${Math.round(map(f(5), 0, 1, 0, 255))},${Math.round(map(f(3), 0, 1, 0, 255))},${Math.round(map(f(1), 0, 1, 0, 255))},${a})`;
     }
     /**
      * Converts an RGB color code to an HSB color code.

@@ -14,12 +14,12 @@ class xcolorPicker {
         this.tabcontentStyle = {
             display: 'none',
             padding: '6px 6px',
-            border: '1px solid #ccc',
+            //border: '1px solid rgb(41, 41, 41)',
             borderTop: 'none'
         };
 
         this.tabActiveStyle = {
-            backgroundColor: '#eee',
+            backgroundColor: '#ffffff',
             float: 'left',
             border: 'none',
             outline: 'none',
@@ -32,7 +32,7 @@ class xcolorPicker {
             marginTop: '30px',
             borderTopLeftRadius: '5px',
             borderTopRightRadius: '5px',
-            border: '1px solid #ccc'
+            border: '1px solid #fff',
         };
 
 
@@ -45,11 +45,11 @@ class xcolorPicker {
             transition: 'all 0.3s ease 0s',
             fontSize: '12px',
             fontWeight: 'bold',
-            color: 'rgb(68, 68, 68)',
+            color: 'rgb(255, 255, 255)',
             height: '20px',
             marginTop: '32px',
-            borderTop: '1px solid #eee',
-            borderRight: '1px solid #eee'
+            borderTop: '1px solid rgb(41, 41, 41)',
+            borderRight: '1px solid rgb(41, 41, 41)'
         };
 
         this.#createColorForms();
@@ -78,7 +78,8 @@ class xcolorPicker {
                 fontFamily: 'monospace',
                 fontSize: '1.2em',
                 marginBottom: '10px',
-                textAlign: 'right'
+                textAlign: 'right',
+                borderRadius: '4px'
             };
 
             let inputColorElmForm = xjs.withnew(xjs.htmlElements.div)
@@ -157,7 +158,7 @@ class xcolorPicker {
     #createCopyButton(copyElm) {
         let _copyButton = xjs.withnew(xjs.htmlElements.button)
             .setProperty("innerHTML", this.#copyIcon)
-            .setStyle({ width: '24px', height: '24px', padding: '0px' })
+            .setStyle({ width: '24px', height: '24px', padding: '0px', borderRadius: '4px' })
             .bindEvent("click", function () {
                 navigator.clipboard.writeText(copyElm.value);
             });
@@ -173,9 +174,10 @@ class xcolorPicker {
                 float: "right",
                 width: "220px",
                 height: "520px",
-                backgroundColor: "rgb(241, 241, 241)",
-                border: "1px solid #ccc",
-                borderRadius: "4px"
+                backgroundColor: "rgb(41, 41, 41)",
+                border: "1px solid rgb(41, 41, 41)",
+                borderRadius: "4px",
+                color: "rgb(255, 255, 255)"
             });
 
         return _formPanel;
@@ -586,19 +588,19 @@ class xcolorPicker {
                 display: 'flex',
                 flexDirection: 'column',
                 padding: '0px',
-                border: '1px solid gray',
+                border: '1px solid rgb(41, 41, 41)',
                 borderRadius: '3px',
-                backgroundColor: 'white'
+                backgroundColor: '#fff',
             })
             .appendTo(this.colorPickerForm);
 
         this.tabPanel = xjs.withnew(xjs.htmlElements.div)
             .setClass("tab")
             .setStyle({
-                padding: '0px 0px 0px 0px !important',
+                padding: '0px 0px 0px 6px',
                 overflow: 'hidden',
-                border: '1px solid #ccc',
-                backgroundColor: '#f1f1f1'
+                border: '1px solid rgb(41, 41, 41)',
+                backgroundColor: 'rgb(41, 41, 41)'
             });
 
         this.rgbTab = xjs.withnew(xjs.htmlElements.button)
@@ -651,11 +653,11 @@ class xcolorPicker {
         this.tablinks = [this.rgbTab, this.hslTab, this.hsbTab, this.htmlTab];
         for (var i = 0; i < this.tablinks.length; i++) {
             this.tablinks[i].onmouseover = function () {
-                (this.className.indexOf("active") == -1) ? this.style.backgroundColor = "#ddd" : this.style.backgroundColor = "#ccc";
+                (this.className.indexOf("active") == -1) ? this.style.backgroundColor = "#818181" : this.style.backgroundColor = "#ccc";
             };
 
             this.tablinks[i].onmouseout = function () {
-                (this.className.indexOf("active") == -1) ? this.style.backgroundColor = "inherit" : this.style.backgroundColor = "#ccc";
+                (this.className.indexOf("active") == -1) ? this.style.backgroundColor = "inherit" : this.style.backgroundColor = "#fff";
             };
         }
 
@@ -703,8 +705,13 @@ class xcolorPicker {
         this.acceptBtn = xjs.withnew(xjs.htmlElements.button)
             .setText("Accept")
             .setStyle({
-                float: "right",
-                margin: "0 15px 5px 0"
+                float: 'right',
+                margin: '0px 7px 5px 0px',
+                backgroundColor: 'rgb(41,41,41)',
+                color: 'white',
+                borderRadius: '15px',
+                padding: '4px 15px',
+                fontWeight: 'bold'
             })
             .bindEvent("click", function () {
                 this.acceptBtn.focus();
@@ -726,7 +733,7 @@ class xcolorPicker {
             .setStyle(this.tabcontentStyle);
         if (isActive) {
             this.rgbPanel.style.display = "";
-            this.rgbTab.style.backgroundColor = "#ccc";
+            this.rgbTab.style.backgroundColor = "#fff";
         }
 
         /// rgb form panel
@@ -981,7 +988,7 @@ class xcolorPicker {
 
         if (isActive) {
             this.hslPanel.style.display = "";
-            this.hslTab.style.backgroundColor = "#ccc";
+            this.hslTab.style.backgroundColor = "#fff";
         }
 
         /// hsl form panel
@@ -1205,7 +1212,7 @@ class xcolorPicker {
             .setStyle(this.tabcontentStyle);
         if (isActive) {
             this.style.display = "";
-            this.hsbTab.style.backgroundColor = "#ccc";
+            this.hsbTab.style.backgroundColor = "#fff";
         }
 
         /// hsl form panel
@@ -1427,7 +1434,7 @@ class xcolorPicker {
             .setStyle(this.tabcontentStyle);
         if (isActive) {
             this.htmlPanel.style.display = "";
-            this.htmlTab.style.backgroundColor = "#ccc";
+            this.htmlTab.style.backgroundColor = "#fff";
         }
 
         /// rgb form panel
@@ -1458,7 +1465,8 @@ class xcolorPicker {
             .setStyle({
                 width: '24px',
                 height: '24px',
-                padding: '0px'
+                padding: '0px',
+                borderRadius: '4px'
             })
             .setHTML(this.#copyIcon)
             .bindEvent("click", function () { navigator.clipboard.writeText(_self.labelhcHtml.innerText); }, this)

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XJS Showcase</title>
+    <script src="xjs.js"></script>
+    <script src="./assets/js/xjsSelect.js"></script>
+    <style>
+        :root {
+            --primary-color: #ce2267; /*#3498db;*/
+            --secondary-color: #ccc12e;
+            --background-color: #f5f6fa;
+            --text-color: #2c3e50;
+            --code-bg: #2d3436;
+            --box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--background-color);
+            color: var(--text-color);
+        }
+
+        header {
+            /*text-align: center;*/
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin: 0 auto 0 0;
+            max-width: 1500px;
+        }
+
+        .example-box {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .example-box h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .example-result {
+            padding: 15px;
+            background: var(--background-color);
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            color: #fff;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .nav-menu {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .nav-menu a {
+            display: block;
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 5px 10px;
+        }
+
+        .nav-menu a:hover {
+            background: var(--background-color);
+            border-radius: 4px;
+        }
+
+        #creation-result {
+            height: 150px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>XJS Showcase (under construction)</h1>
+        <p>A comprehensive showcase of XJS functionality and features</p>
+    </header>
+
+    <nav class="nav-menu">
+        <a href="#dom-manipulation">DOM Manipulation</a>
+        <a href="#custom-elements">Custom Elements</a>
+        <a href="#events">Events</a>
+        <a href="#styling">Styling</a>
+        <a href="#animation">Animation</a>
+        <a href="#utilities">Utilities</a>
+    </nav>
+
+    <div class="showcase-grid">
+        <!-- DOM Manipulation Examples -->
+        <section id="dom-manipulation" class="example-box">
+            <h3>Element Creation</h3>
+            <div class="example-result" id="creation-result"></div>
+            <div class="code-block">
+                <pre>
+const panel = xjs.withnew('panel', 'myPanel');
+panel.setText('Hello XJS!');
+panel.setStyle({
+    backgroundColor: '#3498db',
+    color: 'white',
+    padding: '20px',
+    borderRadius: '4px'
+});
+panel.appendTo(xjs.with('creation-result'));</pre>
+            </div>
+            <button onclick="runElementCreation()">Run Example</button>
+        </section>
+
+        <section id="custom-elements" class="example-box">
+            <h3>Custom Elements</h3>
+            <div class="example-result" id="custom-elements-result"></div>
+            <div class="code-block">
+                <pre>
+''' javascript
+xjs.withnew(xjs.xjselements.xjsSelect, "selectId").setStyle({margin: "10px 0px"}).appendTo(document.body);
+
+''' html
+&lt;xjs-select id="select" 
+    options='[{"value": "1", "textContent": "uno"}, {"value": "2", "textContent": "dos"}, {"value": "3", "textContent": "tres"}]' 
+    style="background-color: rgb(173, 233, 181);" width="200px" arrow-color="green"&gt;&lt;/xjs-select&gt;
+                </pre>
+            </div>
+            <button onclick="runCustomElements()">Run Example</button>
+        </section>
+
+        <!-- Event Handling -->
+        <section id="events" class="example-box">
+            <h3>Event Handling</h3>
+            <div class="example-result" id="events-result"></div>
+            <div class="code-block">
+                <pre>
+const btn = xjs.withnew('button');
+btn.setText('Click me!');
+btn.bindEvent('click', function() {
+    this.setText('Clicked: ' + new Date().toLocaleTimeString());
+});
+btn.appendTo(xjs.with('events-result'));</pre>
+            </div>
+            <button onclick="runEventHandling()">Run Example</button>
+        </section>
+
+        <!-- Styling Example -->
+        <section id="styling" class="example-box">
+            <h3>Dynamic Styling</h3>
+            <div class="example-result" id="styling-result"></div>
+            <div class="code-block">
+                <pre>
+const box = xjs.withnew('div');
+box.setStyle({
+    width: '100px',
+    height: '100px',
+    transition: 'all 0.3s'
+});
+
+box.bindEvent('mouseenter', function() {
+    this.bg().gradient()
+        .linear()
+        .angle(45)
+        .color('#3498db', 0)
+        .color('#2ecc71', 100)
+        .set();
+});
+
+box.bindEvent('mouseleave', function() {
+    this.bgColor('#3498db');
+});
+
+box.bgColor('#3498db');
+box.appendTo(xjs.with('styling-result'));</pre>
+            </div>
+            <button onclick="runStylingExample()">Run Example</button>
+        </section>
+
+        <!-- Animation Example -->
+        <section id="animation" class="example-box">
+            <h3>Animation</h3>
+            <div class="example-result" id="animation-result"></div>
+            <div class="code-block">
+                <pre>
+const animBox = xjs.withnew('div');
+animBox.setStyle({
+    width: '50px',
+    height: '50px',
+    backgroundColor: '#3498db',
+    position: 'relative'
+});
+
+animBox.bindEvent('click', function() {
+    xjs.animate([this], [{
+        left: { start: 0, end: 200, ease: 'easeInOutQuad' },
+        backgroundColor: { start: '#3498db', end: '#2ecc71' }
+    }], 1000);
+});
+
+animBox.appendTo(xjs.with('animation-result'));</pre>
+            </div>
+            <button onclick="runAnimationExample()">Run Example</button>
+        </section>
+
+        <!-- Utilities Example -->
+        <section id="utilities" class="example-box">
+            <h3>Utilities</h3>
+            <div class="example-result" id="utilities-result"></div>
+            <div class="code-block">
+                <pre>
+const utilBox = xjs.withnew('div');
+utilBox.setHTML(`
+    <p>Random number (0-100): ${xjs.randomInt(0, 100)}</p>
+    <p>Formatted date: ${xjs.formatDate()}</p>
+    <p>Lorem ipsum: ${xjs.loremipsum(50)}</p>
+`);
+utilBox.appendTo(xjs.with('utilities-result'));</pre>
+            </div>
+            <button onclick="runUtilitiesExample()">Run Example</button>
+        </section>
+    </div>
+
+    <script>
+        function runElementCreation() {
+            const result = xjs.with('creation-result');
+            result.innerHTML = '';
+            
+            const panel = xjs.withnew('panel', 'myPanel');
+            panel.setText('Hello XJS!');
+            panel.setStyle({
+                backgroundColor: '#3498db',
+                color: 'white',
+                padding: '20px',
+                borderRadius: '4px'
+            });
+            panel.appendTo(result);
+        }
+
+        function runCustomElements() {
+            const result = xjs.with('custom-elements-result');
+            result.innerHTML = '';
+            
+            xjs.withnew(xjs.xjselements.xjsSelect, "selectId").setStyle({margin: "10px 0px"}).appendTo(result);
+
+            //const customSelect = xjs.with('selectId');
+            //customSelect.setProperty('options', '[{"value": "1", "textContent": "uno"}, {"value": "2", "textContent": "dos"}, {"value": "3", "textContent": "tres"}]');
+            //customSelect.setStyle({ backgroundColor: 'rgb(173, 233, 181)' });
+        }
+
+        function runEventHandling() {
+            const result = xjs.with('events-result');
+            result.innerHTML = '';
+            
+            const btn = xjs.withnew('button');
+            btn.setText('Click me!');
+            btn.bindEvent('click', function() {
+                this.setText('Clicked: ' + new Date().toLocaleTimeString());
+            });
+            btn.appendTo(result);
+        }
+
+        function runStylingExample() {
+            const result = xjs.with('styling-result');
+            result.innerHTML = '';
+            
+            const box = xjs.withnew('div');
+            box.setStyle({
+                width: '100px',
+                height: '100px',
+                transition: 'all 0.3s'
+            });
+
+            box.bindEvent('mouseenter', function() {
+                this.bg().gradient()
+                    .linear()
+                    .angle(45)
+                    .color('#3498db', 0)
+                    .color('#2ecc71', 100)
+                    .set();
+            });
+
+            box.bindEvent('mouseleave', function() {
+                this.bgColor('#3498db');
+            });
+
+            box.bgColor('#3498db');
+            box.appendTo(result);
+        }
+
+        function runAnimationExample() {
+            const result = xjs.with('animation-result');
+            result.innerHTML = '';
+            
+            const animBox = xjs.withnew('div');
+            animBox.setStyle({
+                width: '50px',
+                height: '50px',
+                backgroundColor: '#3498db',
+                position: 'relative'
+            });
+
+            animBox.bindEvent('click', function() {
+                xjs.animate([this], [{
+                    left: { start: 0, end: 200, ease: 'easeInOut' },
+                    backgroundColor: { start: '#3498db', end: '#2ecc71' }
+                }], 1000);
+            });
+
+            animBox.appendTo(result);
+        }
+
+        function runUtilitiesExample() {
+            const result = xjs.with('utilities-result');
+            result.innerHTML = '';
+            
+            const utilBox = xjs.withnew('div');
+            utilBox.setHTML(`
+                <p>Random number (0-100): ${xjs.randomInt(0, 100)}</p>
+                <p>Formatted date: ${xjs.formatDate()}</p>
+                <p>Lorem ipsum: ${xjs.loremipsum(50)}</p>
+            `);
+            utilBox.appendTo(result);
+        }
+    </script>
+</body>
+</html>

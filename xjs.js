@@ -8,16 +8,16 @@ if (typeof module !== 'undefined' && module.exports) {
 
 //Window
 setMediaOptions = function (options) {
-    window.mediaOptions = { breakpoints: {} };
+    window.$xjs_mediaOptions = { breakpoints: {} };
     if (options) {
         if (options.breakpoints) {
-            window.mediaOptions.breakpoints = options.breakpoints;
+            window.$xjs_mediaOptions.breakpoints = options.breakpoints;
         }
     }
 };
 
 getMediaOptions = function () {
-    return window.mediaOptions;
+    return window.$xjs_mediaOptions;
 };
 
 
@@ -124,6 +124,10 @@ HTMLElement.prototype.prepend = function (elm) {
     return this;
 };
 
+HTMLElement.prototype.parent = function () {
+    return this.parentElement;
+};
+
 HTMLElement.prototype.clear = function () {
     while (this.firstChild) {
         this.removeChild(this.firstChild);
@@ -141,8 +145,16 @@ HTMLElement.prototype.delChilds = function (...elm) {
     }
 };
 
-HTMLElement.prototype.parent = function () {
-    return this.parentElement;
+HTMLElement.prototype.delChild = function (selector) {
+    //selector can be a number or tag
+    console.log("delChild", selector);
+    console.log(typeof selector == "number");
+    if (typeof selector == "number") {
+        this.removeChild(this.children[selector]);
+    }else{
+        this.removeChild(this.querySelectorAll(selector));
+    }
+    return this;
 };
 
 HTMLElement.prototype.getChild = function (selector) {
@@ -256,14 +268,19 @@ HTMLElement.prototype.setStyle = function (...args) {
     if (args.length === 1) {
         let _style = args[0];
         if (typeof _style === 'object') {
+            let _styleObj = {};
             for (const property in _style) {
-                setStyle(property, _style[property]);
+                //setStyle(property, _style[property]);
+                _styleObj[camelToHyphen(property)] = isColor(_style[property]) ? convertColor(_style[property]) : _style[property];
             }
+            Object.assign(this.style, _styleObj);
         } else if (typeof _style === 'string') {
             let [property, value] = _style.split(':').map(str => str.trim());
             setStyle(property, value);
+            //_styleObj[camelToHyphen(property)] = isColor(value) ? convertColor(value) : value;
         } else if (Array.isArray(_style)) {
             setStyle(_style[0], _style[1], _style[2] || "");
+            //_styleObj[camelToHyphen(_style[0])] = isColor(_style[1]) ? convertColor(_style[1]) : _style[1];
         }
     } else if (args.length > 1) {
         setStyle(args[0], args[1], args[2] || "");
@@ -474,6 +491,12 @@ HTMLElement.prototype.addClass = function (...classes) {
 HTMLElement.prototype.setText = function (text) {
     text = this._cv(text);
     this.innerText = text;
+    return this;
+};
+
+HTMLElement.prototype.addText = function (text) {
+    text = this._cv(text);
+    this.appendChild(document.createTextNode(text));
     return this;
 };
 
@@ -730,6 +753,135 @@ HTMLElement.prototype.hasScrollBarY = function () {
 HTMLElement.prototype.hasScrollBarX = function () {
     return this.scrollWidth > this.offsetWidth;
 };
+
+HTMLElement.prototype.asImage = function () {
+    const width = this.offsetWidth;
+    const height = this.offsetHeight;
+
+    let thisClone = this.cloneNode(true);
+    thisClone.style.position = "unset"; // Ensure the cloned element has no position
+    thisClone.querySelectorAll("input, textarea").forEach(el => {
+        el.remove(); // Remove input elements from the clone
+    });
+
+    // Create an image element
+    const img = document.createElement('img');
+    img.src = 'data:image/svg+xml,' + encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+        <foreignObject width="100%" height="100%">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px; height:${height}px;">
+        ${thisClone.outerHTML}
+        </div>
+        </foreignObject>
+    </svg>
+    `);
+    img.width = width;
+    img.height = height;
+
+    // Return the image element
+    return img;
+}
+
+HTMLElement.prototype.setDraggable = function (draggable, options) {
+    this.dragOptions = {
+        container: options?.container || document,
+        virtual: options?.virtual || false,
+        virtualImage: options?.virtualImage || null,
+        dragFunction: options?.dragFunction || null,
+        dropFunction: options?.dropFunction || null,
+    };
+    //this.dragcontainer =  this.dragOptions.container;
+    if (draggable !== undefined) {
+        //this.setAttribute("draggable", draggable);
+        const me = this;
+        if (draggable) {
+            var img = xjs.withnew(xjs.htmlElements.img); //document.createElement('img');
+            img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+            
+            this.bindEvent("mousedown", (event) => {
+                this.pressed = true;
+                document.body.style.cursor = "grabbing";
+                document.body.style.userSelect = "none";
+                this.initDragGapX = event.clientX-event.target.getBoundingClientRect().left;
+                this.initDragGapY = event.clientY-event.target.getBoundingClientRect().top;
+                //event.dataTransfer.setData("text/plain", event.target.id);
+                if(this.dragOptions.virtual) {
+                    if (this.dragOptions.virtualImage) {
+                        img.src = this.dragOptions.virtualImage;
+                    } else {
+                        //img.src = this.asImage().src; //this.asImage();
+                        img = this.asImage();
+                    }
+                    img.setStyles({position: "absolute", left: (event.clientX-this.initDragGapX) + "px", top: (event.clientY-this.initDragGapY) + "px", zIndex: 1000, border: "1px solid #000", pointerEvents: "none"});
+
+                    this.virtualImage = {img:img, x: this.initDragGapX, y: this.initDragGapY};
+
+                    document.body.appendChild(this.virtualImage.img);
+
+                    //event.dataTransfer.effectAllowed = "move";
+                    //event.dataTransfer.setDragImage(event.target, this.initDragGapX, this.initDragGapY);
+                }else { 
+                    //event.dataTransfer.setDragImage(img, this.initDragGapX, this.initDragGapY);
+                }
+            });
+
+            this.dragOptions.container.bindEvent("mousemove", function(event, src=me) {
+                if (!src.pressed) return;
+                //console.log("dragover", event, src);
+                event.preventDefault();
+                //event.dataTransfer.setData("text/plain", event.target.id);
+                if(src.dragOptions.virtual) {
+                    if (src.virtualImage) {
+                        src.virtualImage.img.style.left = (event.clientX-src.initDragGapX) + "px";
+                        src.virtualImage.img.style.top = (event.clientY-src.initDragGapY) + "px";
+                        if (!document.body.contains(src.virtualImage.img)) {
+                            document.body.appendChild(src.virtualImage.img);
+                        }
+                    }
+                    //event.dataTransfer.dropEffect = "move";
+                    //event.dataTransfer.effectAllowed = "move";
+                    //event.dataTransfer.setDragImage(event.target, src.initDragGapX, src.initDragGapY);
+                }else {
+                    src.pos(event.clientX-src.initDragGapX, event.clientY-src.initDragGapY);
+                    //event.dataTransfer.setDragImage(img, src.initDragGapX, src.initDragGapY);
+                }
+                if (src.dragOptions.dragFunction) {
+                    src.dragOptions.dragFunction.apply(src, [event]);
+                }
+            }, this);
+
+            this.dragOptions.container.bindEvent("mouseup", function(event, src=me) {
+                if (!src.pressed) return;
+                //console.log("dragend", event, src);
+                event.preventDefault();
+                event.stopPropagation();
+                //event.dataTransfer.setData("text/plain", event.target.id);
+                if(src.dragOptions.virtual) {
+                    if (src.virtualImage) {
+                        src.virtualImage.img.remove();
+                        src.virtualImage = null;
+                    }
+                    //event.dataTransfer.dropEffect = "move";
+                    //event.dataTransfer.effectAllowed = "move";
+                    //event.dataTransfer.setDragImage(event.target, src.initDragGapX, src.initDragGapY);
+                }else {
+                    src.pos(event.clientX-src.initDragGapX, event.clientY-src.initDragGapY);
+                    //event.dataTransfer.setDragImage(img, src.initDragGapX, src.initDragGapY);
+                }
+                if (src.dragOptions.dropFunction) {
+                    src.dragOptions.dropFunction(event);
+                }
+                src.pressed = false;
+                document.body.style.cursor = "default";
+                document.body.style.userSelect = "auto";
+            }, this);
+            
+        }
+    } else {
+        return this.getAttribute("draggable");
+    }
+    return this;
+}
 
 //////////////////////////////////////////////////////////////////////////////
 CSSStyleDeclaration.prototype.leftPos = function (_left) {
@@ -1165,6 +1317,34 @@ class _xjs {
 
     lerp01 = function (a, b) {
         return lerp(a, b, 0.5);
+    }
+
+    lerpColor(c1, c2, amt){
+        let r1 = parseInt(c1.slice(1, 3), 16);
+        let g1 = parseInt(c1.slice(3, 5), 16);
+        let b1 = parseInt(c1.slice(5, 7), 16);
+        let r2 = parseInt(c2.slice(1, 3), 16);
+        let g2 = parseInt(c2.slice(3, 5), 16);
+        let b2 = parseInt(c2.slice(5, 7), 16);
+
+        let r = Math.round(r1 + (r2 - r1) * amt).toString(16).padStart(2, '0');
+        let g = Math.round(g1 + (g2 - g1) * amt).toString(16).padStart(2, '0');
+        let b = Math.round(b1 + (b2 - b1) * amt).toString(16).padStart(2, '0');
+
+        return `#${r}${g}${b}`;
+    }
+
+    slerp(x, y, a) {
+        if (x === y) return x;
+        if (a <= 0) return x;
+        if (a >= 1) return y;
+
+        let angle = Math.acos(x * y + Math.sqrt((1 - x * x) * (1 - y * y)));
+        let sinAngle = Math.sin(angle);
+        let a1 = Math.sin((1 - a) * angle) / sinAngle;
+        let a2 = Math.sin(a * angle) / sinAngle;
+
+        return a1 * x + a2 * y;
     }
 
     invlerp(x, y, a) {
@@ -1614,7 +1794,7 @@ class _xjs {
     }
 
     checkMediaOptions() {
-        if (window.mediaOptions !== undefined) {
+        if (window.$xjs_mediaOptions !== undefined) {
             let breakpoints = mediaOptions.breakpoints;
             let breakpoint = (breakpoints) ? Object.keys(breakpoints).reduce((prev, current) => (breakpoints[prev] < breakpoints[current] && breakpoints[current] <= window.innerWidth) ? current : prev) : undefined;
             if (breakpoint) {

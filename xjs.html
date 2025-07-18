@@ -68,7 +68,7 @@
                             bg_gradient_angle: {start: 0, end: 360}
                         }
                     ],
-                    5000
+                    1000
                 ).then(() => {
                     xjs.with("app").bg().gradient().clear().bgColor("#ff0000");
                 });
@@ -183,7 +183,19 @@
                 xjs.with("newdiv").setStyleProperty("backgroundColor", "green");
                 xjs.with("app").delChilds("textinput", xjs.getElm("newdiv"));
 
-                xjs.with(xjs.getComponent("myinputpanel")).setStyleProperty("background-color", "rgb("+xjs.randomInt(255)+", "+xjs.random(255)+", "+xjs.random(255)+")").pos(xjs.random(10, 1500), xjs.random(500, 1000)).appendTo(document.body);
+                xjs.with(xjs.getComponent("myinputpanel"))
+                    .setStyleProperty("background-color", "rgb("+xjs.randomInt(255)+", "+xjs.random(255)+", "+xjs.random(255)+")")
+                    .pos(xjs.random(10, 1500), xjs.random(500, 1000))
+                    .setDraggable(true, {virtual:(Math.random()>0.5)?true:false, dragFunction:function(event){
+                            this.setStyleProperty("color","white"); 
+                            console.log(this); 
+                            this.getChild(1).value=event.clientX+","+event.clientY;
+                        }, 
+                        dropFunction:(event)=>{
+                            alert(event.clientX+","+event.clientY)
+                        }
+                    })
+                    .appendTo(document.body);
                 
                 index = 0;
                 break;

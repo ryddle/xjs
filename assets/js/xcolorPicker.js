@@ -15,7 +15,8 @@ class xcolorPicker {
             display: 'none',
             padding: '6px 6px',
             //border: '1px solid rgb(41, 41, 41)',
-            borderTop: 'none'
+            borderTop: 'none',
+            backgroundColor: '#414141'
         };
 
         this.tabActiveStyle = {
@@ -40,7 +41,7 @@ class xcolorPicker {
             backgroundColor: 'inherit',
             float: 'left',
             border: 'none',
-            outline: 'none',
+            /*outline: 'none',*/
             cursor: 'pointer',
             transition: 'all 0.3s ease 0s',
             fontSize: '12px',
@@ -48,8 +49,8 @@ class xcolorPicker {
             color: 'rgb(255, 255, 255)',
             height: '20px',
             marginTop: '32px',
-            borderTop: '1px solid rgb(41, 41, 41)',
-            borderRight: '1px solid rgb(41, 41, 41)'
+            borderTop: '2px solid #414141',
+            borderLeft: '2px solid #414141'
         };
 
         this.#createColorForms();
@@ -117,7 +118,7 @@ class xcolorPicker {
             .setStyle({ position: "relative", width: "350px", height: "44px", borderRadius: "22px", overflow: "visible", display: "block", marginTop: "12px" });
 
         let slider02 = xjs.withnew(xjs.htmlElements.panel).setAttribute("class", "IroSliderGradient")
-            .setStyle({ top: "0px", left: "0px", width: "100%", height: "100%", borderRadius: "22px", boxSizing: "border-box", border: "4px solid rgb(255, 255, 255)" });
+            .setStyle({ top: "0px", left: "0px", width: "100%", height: "100%", borderRadius: "22px", boxSizing: "border-box", border: "4px solid #414141" });
 
         return { slider01: slider01, slider02: slider02 };
     }
@@ -127,6 +128,7 @@ class xcolorPicker {
             let _circleOut = xjs.withnew(xjs.htmlElements.panel)
                 .pos(left, top)
                 .setStyle({
+                    cursor: 'pointer',
                     border: '2px solid #444',
                     borderRadius: '13px',
                     willChange: 'transform',
@@ -137,6 +139,7 @@ class xcolorPicker {
 
             xjs.withnew(xjs.htmlElements.panel)
                 .setStyle({
+                    cursor: 'pointer',
                     border: '2px solid rgb(255, 255, 255)',
                     borderRadius: '12px',
                     width: '20px',
@@ -435,11 +438,12 @@ class xcolorPicker {
         for (let i = 0; i < this.tabcontents.length; i++) {
             this.tabcontents[i].style.display = "none";
             this.tablinks[i].style.backgroundColor = "inherit";
+            this.tablinks[i].classList.remove("active");
             Object.assign(this.tablinks[i].style, this.tabStyle);
         }
         var tabcontent = this.tabcontents.find(element => element.id == tab.tabPanel);
         tabcontent.style.display = "block";
-        tab.className += " active";
+        tab.classList.add("active");
         Object.assign(tab.style, this.tabActiveStyle);
     }
 
@@ -472,8 +476,11 @@ class xcolorPicker {
         let wx = map(this.color.hsb.s, 0, 100, 0, 322);
         let wy = map(this.color.hsb.b, 0, 100, 322, 0);
 
-        this.rgbWheelSliderCircleOut.left(wx);
-        this.rgbWheelSliderCircleOut.top(wy);
+        let x = map(this.color.hsb.s, 0, 100, 0, 350);
+        let y = map(this.color.hsb.b, 0, 100, 350, 0);
+
+        this.rgbWheelSliderCircleOut.left(Math.max(0, Math.min(326, x)));
+        this.rgbWheelSliderCircleOut.top(Math.max(0, Math.min(326, y)));
 
         this.rgbHueSliderCircleOut.left(Math.max(8, Math.min(315, map(this.color.hsb.h, 0, 360, 8, 315))));
 
@@ -514,7 +521,7 @@ class xcolorPicker {
 
         this.hslLightnessSlider02.setStyles({
             background: "linear-gradient(to right, ".concat(this.color.getRgbString(), " 0%, rgb(255, 255, 255) 100%)"),
-            border: "4px solid " + xcolor.getHsl(0, 0, map(parseInt(this.hslLightnessSliderCircleOut.style.left), 8, 322, 100, 90)).getHexString()
+            /*border: "4px solid " + xcolor.getHsl(0, 0, map(parseInt(this.hslLightnessSliderCircleOut.style.left), 8, 322, 100, 90)).getHexString()*/
         });
     }
 
@@ -590,7 +597,7 @@ class xcolorPicker {
                 padding: '0px',
                 border: '1px solid rgb(41, 41, 41)',
                 borderRadius: '3px',
-                backgroundColor: '#fff',
+                backgroundColor: '#414141',
             })
             .appendTo(this.colorPickerForm);
 
@@ -672,6 +679,7 @@ class xcolorPicker {
         this.closeBtn = xjs.withnew(xjs.htmlElements.button)
             .setText("X")
             .setStyle({
+                cursor: "pointer",
                 width: "24px",
                 height: "24px",
                 padding: "0px",
@@ -699,12 +707,14 @@ class xcolorPicker {
             .setStyle({
                 width: "100%",
                 height: "40px",
-                alignContent: "end"
+                alignContent: "end",
+                backgroundColor: "#414141"
             });
 
         this.acceptBtn = xjs.withnew(xjs.htmlElements.button)
             .setText("Accept")
             .setStyle({
+                cursor: 'pointer',
                 float: 'right',
                 margin: '0px 7px 5px 0px',
                 backgroundColor: 'rgb(41,41,41)',
@@ -778,8 +788,8 @@ class xcolorPicker {
             })
             .bindEvent("click", function (event) {
                 if (event.target.className == "") return;
-                let x = event.layerX - 13;
-                let y = event.layerY - 13;
+                let x = event.layerX + 13;
+                let y = event.layerY + 13;
 
                 this.rgbWheelSliderCircleOut.pos(x, y);
 
@@ -797,6 +807,7 @@ class xcolorPicker {
         this.rgbWheelPanel = xjs.withnew(xjs.htmlElements.div)
             .setClass("IroWheel")
             .setStyle({
+                cursor: 'pointer',
                 width: '350px',
                 height: '350px',
                 position: 'relative',
@@ -851,7 +862,7 @@ class xcolorPicker {
 
         let hueSlider = this.#createSlider();
         this.rgbHueSlider01 = hueSlider.slider01;
-        this.rgbHueSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
+        //this.rgbHueSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
 
         this.rgbHueSlider02 = hueSlider.slider02;
         this.rgbHueSlider02.style.background = "linear-gradient(to right, rgb(255, 0, 0) 0%, rgb(255, 255, 0) 16.666%, rgb(0, 255, 0) 33.333%, rgb(0, 255, 255) 50%, rgb(0, 0, 255) 66.666%, rgb(255, 0, 255) 83.333%, rgb(255, 0, 0) 100%)";
@@ -893,7 +904,7 @@ class xcolorPicker {
 
         let satSlider = this.#createSlider();
         this.rgbSaturationSlider01 = satSlider.slider01;
-        this.rgbSaturationSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";//"conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
+        //this.rgbSaturationSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";//"conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
 
         this.rgbSaturationSlider02 = satSlider.slider02;
         this.rgbSaturationSlider02.style.background = "linear-gradient(to right, rgb(0, 0, 0) 0%, " + this.color.getRgbString() + " 100%)";
@@ -933,7 +944,7 @@ class xcolorPicker {
 
         let lightSlider = this.#createSlider();
         this.rgbLightSlider01 = lightSlider.slider01;
-        this.rgbLightSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
+        //this.rgbLightSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
 
         this.rgbLightSlider02 = lightSlider.slider02;
         this.rgbLightSlider02.style.background = "linear-gradient(to right, " + this.color.getRgbString() + " 0%, rgb(255, 255, 255) 100%)";
@@ -1072,7 +1083,7 @@ class xcolorPicker {
 
         let hueSlider = this.#createSlider();
         this.hslHueSlider01 = hueSlider.slider01;
-        this.hslHueSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
+        //this.hslHueSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
 
         this.hslHueSlider02 = hueSlider.slider02;
         this.hslHueSlider02.style.background = "linear-gradient(to right, rgb(255, 0, 0) 0%, rgb(255, 255, 0) 16.666%, rgb(0, 255, 0) 33.333%, rgb(0, 255, 255) 50%, rgb(0, 0, 255) 66.666%, rgb(255, 0, 255) 83.333%, rgb(255, 0, 0) 100%)";
@@ -1114,7 +1125,7 @@ class xcolorPicker {
 
         let satSlider = this.#createSlider();
         this.hslSaturationSlider01 = satSlider.slider01;
-        this.hslSaturationSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";//"conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
+        //this.hslSaturationSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";//"conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
 
         this.hslSaturationSlider02 = satSlider.slider02;
         this.hslSaturationSlider02.style.background = "linear-gradient(to right, rgb(0, 0, 0) 0%, " + this.color.getRgbString() + " 100%)";
@@ -1156,7 +1167,7 @@ class xcolorPicker {
 
         let lightSlider = this.#createSlider();
         this.hslLightnessSlider01 = lightSlider.slider01;
-        this.hslLightnessSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
+        //this.hslLightnessSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
 
         this.hslLightnessSlider02 = lightSlider.slider02;
         this.hslLightnessSlider02.style.background = "linear-gradient(to right, " + this.color.getRgbString() + " 0%, rgb(255, 255, 255) 100%)";
@@ -1299,7 +1310,7 @@ class xcolorPicker {
 
         let hueSlider = this.#createSlider();
         this.hsbHueSlider01 = hueSlider.slider01;
-        this.hsbHueSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
+        //this.hsbHueSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
 
         this.hsbHueSlider02 = hueSlider.slider02;
         this.hsbHueSlider02.style.background = "linear-gradient(to right, rgb(255, 0, 0) 0%, rgb(255, 255, 0) 16.666%, rgb(0, 255, 0) 33.333%, rgb(0, 255, 255) 50%, rgb(0, 0, 255) 66.666%, rgb(255, 0, 255) 83.333%, rgb(255, 0, 0) 100%)";
@@ -1340,7 +1351,7 @@ class xcolorPicker {
 
         let satSlider = this.#createSlider();
         this.hsbSaturationSlider01 = satSlider.slider01;
-        this.hsbSaturationSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";//"conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
+        //this.hsbSaturationSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";//"conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
 
         this.hsbSaturationSlider02 = satSlider.slider02;
         this.hsbSaturationSlider02.style.background = "linear-gradient(to right, rgb(0, 0, 0) 0%, " + this.color.getRgbString() + " 100%)";
@@ -1380,7 +1391,7 @@ class xcolorPicker {
 
         let brightSlider = this.#createSlider();
         this.hsbBrightnessSlider01 = brightSlider.slider01;
-        this.hsbBrightnessSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
+        //this.hsbBrightnessSlider01.style.background = "conic-gradient(rgb(204, 204, 204) 25%, rgb(255, 255, 255) 0deg, rgb(255, 255, 255) 50%, rgb(204, 204, 204) 0deg, rgb(204, 204, 204) 75%, rgb(255, 255, 255) 0deg) 0% 0% / 8px 8px";
 
         this.hsbBrightnessSlider02 = brightSlider.slider02;
         this.hsbBrightnessSlider02.style.background = "linear-gradient(to right, " + this.color.getRgbString() + " 0%, rgb(255, 255, 255) 100%)";

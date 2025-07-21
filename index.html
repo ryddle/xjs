@@ -68,7 +68,7 @@
     mainCol.el().setProperty("innerText", xjs.loremipsum(1000)); */
 
     xlo.addRows(
-        xgridRow.get(xlo, "auto").addCols(
+        xgridRow.get(xlo, "auto", {style:{backgroundColor: "#636363"}}).addCols(
             xgridCol.get(xlo, "300px", {
                 mediaOpts: {
                     sm: { display: "none" },
@@ -151,7 +151,7 @@
                     })
             ) */
         ),
-        xgridRow.get(xlo, "80px").addCols(
+        xgridRow.get(xlo, "80px", {style:{backgroundColor: "#636363"}}).addCols(
             xgridCol.get(xlo, "auto", { style: { backgroundColor: "var(--bg-color-footer)", borderTop: "1px solid var(--bg-color)" }, id: "footer" }),
         )
     ).resizeGrid();
@@ -327,7 +327,7 @@
                 lg: { display: "none" }
             })
             .setSize(40, 40)
-            .setStyles({ position: "absolute", right: "0px", top: "0px", margin: "15px", cursor: "pointer", border: "0px" })
+            .setStyles({ position: "absolute", right: "0px", top: "0px", margin: "15px", cursor: "pointer", border: "0px", display: "none" })
             .bgColor("var(--bg-color-header)")
             .append(
                 xjs.withnew(xjs.htmlElements.i).setStyle({ color: "white", fontSize: "20px" }).setClass("fas fa-bars")

@@ -1795,7 +1795,7 @@ class _xjs {
 
     checkMediaOptions() {
         if (window.$xjs_mediaOptions !== undefined) {
-            let breakpoints = mediaOptions.breakpoints;
+            let breakpoints = window.$xjs_mediaOptions.breakpoints;
             let breakpoint = (breakpoints) ? Object.keys(breakpoints).reduce((prev, current) => (breakpoints[prev] < breakpoints[current] && breakpoints[current] <= window.innerWidth) ? current : prev) : undefined;
             if (breakpoint) {
                 this.#responsiveElements.forEach(relm => {

@@ -172,7 +172,7 @@ class xgridlayout {
                     cell.style.height = (row.classList.contains('fit-height') ? `${_row.height()}px` : `${row.offsetHeight}px`);
                 });
 
-                const remainingWidth = this.gridcontainer.offsetWidth - totalWidth - (document.body.hasScrollBarX() ? (document.body.hasScrollBarY() ? 17 : 0) : 0);
+                const remainingWidth = this.gridcontainer.offsetWidth - totalWidth - (document.body.hasScrollBarX() ? (document.body.hasScrollBarY() ? 17 : 0) : 0) - 1;
                 const autoWidth = remainingWidth / autoWidthCells.length;
 
                 autoWidthCells.forEach(cell => {
